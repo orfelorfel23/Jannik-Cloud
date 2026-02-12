@@ -1,0 +1,44 @@
+services:
+  mediawiki:
+    image: mediawiki:1.41
+    container_name: mediawiki
+    restart: always
+    networks:
+      - jannik-cloud-net
+    expose:
+      - "11005"
+    environment:
+      MEDIAWIKI_ADMIN_USER: "${USERNAME}"
+      MEDIAWIKI_ADMIN_PASS: "${ADMIN_PASSWORD}"
+      MEDIAWIKI_DB_HOST: mediawiki-postgres
+      MEDIAWIKI_DB_NAME: mediawiki
+      MEDIAWIKI_DB_USER: "${DB_USER}"
+      MEDIAWIKI_DB_PASSWORD: "${DB_PASSWORD}"
+      MEDIAWIKI_SITE_NAME: "Jannik's Wiki"
+      MEDIAWIKI_SITE_LANG: en
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/mediawiki:/var/www/html/images
+    depends_on:
+      - mediawiki-postgres
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  mediawiki-postgres:
+    image: postgres:15-alpine
+    container_name: mediawiki-postgres
+    restart: always
+    networks:
+      - jannik-cloud-net
+    environment:
+      POSTGRES_DB: mediawiki
+      POSTGRES_USER: "${DB_USER}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD}"
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/mediawiki/postgres:/var/lib/postgresql/data
+
+networks:
+  jannik-cloud-net:
+    external: true

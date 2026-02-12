@@ -1,0 +1,46 @@
+services:
+  litellm:
+    image: ghcr.io/berriai/litellm:main
+    container_name: litellm
+    restart: always
+    networks:
+      - jannik-cloud-net
+    expose:
+      - "11001"
+    environment:
+      OPENAI_API_KEY: "${OPENAI_API_KEY}"
+      ANTHROPIC_API_KEY: "${ANTHROPIC_API_KEY}"
+      GOOGLE_API_KEY: "${GOOGLE_API_KEY}"
+      DATABASE_URL: "postgresql://${DB_USER}:${DB_PASSWORD}@litellm-postgres:5432/litellm"
+      LITELLM_MASTER_KEY: "${LITELLM_MASTER_KEY}"
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/litellm:/app/config
+    depends_on:
+      - litellm-postgres
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  litellm-postgres:
+    image: postgres:15-alpine
+    container_name: litellm-postgres
+    restart: always
+    networks:
+      - jannik-cloud-net
+    environment:
+      POSTGRES_DB: litellm
+      POSTGRES_USER: "${DB_USER}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD}"
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/litellm/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  jannik-cloud-net:
+    external: true

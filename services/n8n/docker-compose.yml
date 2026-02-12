@@ -1,0 +1,49 @@
+services:
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n
+    restart: always
+    networks:
+      - jannik-cloud-net
+    expose:
+      - "11010"
+    environment:
+      N8N_HOST: "n8n.orfel.de"
+      N8N_PORT: "5678"
+      N8N_PROTOCOL: "https"
+      NODE_ENV: "production"
+      WEBHOOK_TUNNEL_URL: "https://n8n.orfel.de/"
+      N8N_SECURE_COOKIE: "true"
+      DB_TYPE: "postgresdb"
+      DB_POSTGRESDB_HOST: "n8n-postgres"
+      DB_POSTGRESDB_PORT: 5432
+      DB_POSTGRESDB_DATABASE: "n8n"
+      DB_POSTGRESDB_USER: "${DB_USER}"
+      DB_POSTGRESDB_PASSWORD: "${DB_PASSWORD}"
+      GENERIC_TIMEZONE: "UTC"
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/n8n:/home/node/.n8n
+    depends_on:
+      - n8n-postgres
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5678/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  n8n-postgres:
+    image: postgres:15-alpine
+    container_name: n8n-postgres
+    restart: always
+    networks:
+      - jannik-cloud-net
+    environment:
+      POSTGRES_DB: n8n
+      POSTGRES_USER: "${DB_USER}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD}"
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/n8n/postgres:/var/lib/postgresql/data
+
+networks:
+  jannik-cloud-net:
+    external: true

@@ -1,0 +1,50 @@
+services:
+  owncloud:
+    image: owncloud/server:latest
+    container_name: owncloud
+    restart: always
+    networks:
+      - jannik-cloud-net
+    expose:
+      - "11003"
+    environment:
+      OWNCLOUD_DOMAIN: owncloud.orfel.de
+      OWNCLOUD_ADMIN_USERNAME: "${USERNAME}"
+      OWNCLOUD_ADMIN_PASSWORD: "${ADMIN_PASSWORD}"
+      OWNCLOUD_DB_TYPE: postgresql
+      OWNCLOUD_DB_NAME: owncloud
+      OWNCLOUD_DB_USER: "${DB_USER}"
+      OWNCLOUD_DB_PASSWORD: "${DB_PASSWORD}"
+      OWNCLOUD_DB_HOST: owncloud-postgres
+      OWNCLOUD_TRUSTED_DOMAINS: owncloud.orfel.de
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/owncloud:/mnt/data
+    depends_on:
+      - owncloud-postgres
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/status.php"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  owncloud-postgres:
+    image: postgres:15-alpine
+    container_name: owncloud-postgres
+    restart: always
+    networks:
+      - jannik-cloud-net
+    environment:
+      POSTGRES_DB: owncloud
+      POSTGRES_USER: "${DB_USER}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD}"
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/owncloud/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  jannik-cloud-net:
+    external: true

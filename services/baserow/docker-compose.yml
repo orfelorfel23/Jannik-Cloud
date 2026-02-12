@@ -1,0 +1,58 @@
+services:
+  baserow:
+    image: baserow/baserow:latest
+    container_name: baserow
+    restart: always
+    networks:
+      - jannik-cloud-net
+    expose:
+      - "11006"
+    environment:
+      BASEROW_PRIVATE_USER_CIPHER_PRIVATE_KEY_PATH: "${CIPHER_KEY_PATH}"
+      SECRET_KEY: "${SECRET_KEY}"
+      DATABASE_USER: "${DB_USER}"
+      DATABASE_PASSWORD: "${DB_PASSWORD}"
+      DATABASE_HOST: baserow-postgres
+      DATABASE_NAME: baserow
+      DATABASE_PORT: 5432
+      REDIS_HOST: baserow-redis
+      REDIS_PORT: 6379
+      PUBLIC_BACKEND_URL: "https://br.orfel.de"
+      PUBLIC_WEB_FRONTEND_URL: "https://br.orfel.de"
+      BASEROW_JWT_SIGNING_KEY: "${JWT_SIGNING_KEY}"
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/baserow:/baserow/data
+    depends_on:
+      - baserow-postgres
+      - baserow-redis
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  baserow-postgres:
+    image: postgres:15-alpine
+    container_name: baserow-postgres
+    restart: always
+    networks:
+      - jannik-cloud-net
+    environment:
+      POSTGRES_DB: baserow
+      POSTGRES_USER: "${DB_USER}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD}"
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/baserow/postgres:/var/lib/postgresql/data
+
+  baserow-redis:
+    image: redis:7-alpine
+    container_name: baserow-redis
+    restart: always
+    networks:
+      - jannik-cloud-net
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/baserow/redis:/data
+
+networks:
+  jannik-cloud-net:
+    external: true

@@ -1,0 +1,22 @@
+services:
+  stirling-pdf:
+    image: frooodle/s-pdf:latest
+    container_name: stirling-pdf
+    restart: always
+    networks:
+      - jannik-cloud-net
+    expose:
+      - "11013"
+    environment:
+      DOCKER_ENABLE_SECURITY: "true"
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/stirling-pdf:/tmp
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  jannik-cloud-net:
+    external: true

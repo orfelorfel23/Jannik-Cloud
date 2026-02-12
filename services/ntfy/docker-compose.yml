@@ -1,0 +1,26 @@
+services:
+  ntfy:
+    image: binwiederhier/ntfy:latest
+    container_name: ntfy
+    restart: always
+    networks:
+      - jannik-cloud-net
+    expose:
+      - "11009"
+    environment:
+      NTFY_BASE_URL: "https://ntfy.orfel.de"
+      NTFY_LISTEN: "0.0.0.0:8080"
+      NTFY_BEHIND_PROXY: "true"
+      NTFY_WEB_ROOT: "/"
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/ntfy:/var/cache/ntfy
+      - /mnt/Jannik-Cloud-Volume-01/ntfy/etc:/etc/ntfy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  jannik-cloud-net:
+    external: true

@@ -1,0 +1,23 @@
+services:
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: always
+    networks:
+      - jannik-cloud-net
+    expose:
+      - "11002"
+    environment:
+      INITIAL_ADMIN_PASSWORD: "${ADMIN_PASSWORD}"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /mnt/Jannik-Cloud-Volume-01/portainer:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  jannik-cloud-net:
+    external: true

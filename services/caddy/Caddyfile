@@ -1,0 +1,125 @@
+# Jannik's Cloud Caddyfile
+# Reverse proxy configuration with automatic HTTPS
+
+{
+  email {$EMAIL}
+  acme_dns route53 {
+    aws_profile default
+  }
+}
+
+# Outline - Knowledge management
+outline.orfel.de {
+  reverse_proxy outline:11000
+  encode gzip
+}
+
+# LiteLLM - LLM Proxy
+llm.orfel.de {
+  reverse_proxy litellm:11001
+  encode gzip
+}
+
+# Portainer - Docker management
+port.orfel.de {
+  reverse_proxy portainer:11002
+  encode gzip
+}
+
+# OwnCloud - File sync
+owncloud.orfel.de {
+  reverse_proxy owncloud:11003
+  encode gzip
+}
+
+# NextCloud - File sync
+nextcloud.orfel.de {
+  reverse_proxy nextcloud:11004
+  encode gzip
+  # NextCloud specific headers
+  header Strict-Transport-Security "max-age=31536000"
+}
+
+# MediaWiki - Wiki
+wiki.orfel.de {
+  reverse_proxy mediawiki:11005
+  encode gzip
+}
+
+# Baserow - Database
+br.orfel.de {
+  reverse_proxy baserow:11006
+  encode gzip
+}
+
+# Vaultwarden - Password manager
+pw.orfel.de {
+  reverse_proxy vaultwarden:11007
+  encode gzip
+}
+
+# LibreChat - Chat interface
+chat.orfel.de {
+  reverse_proxy librechat:11008
+  encode gzip
+}
+
+# Ntfy - Push notifications
+ntfy.orfel.de {
+  reverse_proxy ntfy:11009
+  encode gzip
+}
+
+# N8N - Workflow automation
+n8n.orfel.de {
+  reverse_proxy n8n:11010
+  encode gzip
+  # WebSocket support for real-time features
+  @websocket {
+    header Connection "upgrade"
+    header Upgrade "websocket"
+  }
+  reverse_proxy @websocket n8n:11010 {
+    transport http {
+      compression off
+    }
+  }
+}
+
+# Gitea - Git service
+git.orfel.de {
+  reverse_proxy gitea:11011
+  encode gzip
+}
+
+# HomeAssistant - Home automation
+home.orfel.de {
+  reverse_proxy homeassistant:11012
+  encode gzip
+  # WebSocket support
+  @websocket {
+    header Connection "upgrade"
+    header Upgrade "websocket"
+  }
+  reverse_proxy @websocket homeassistant:11012 {
+    transport http {
+      compression off
+    }
+  }
+}
+
+# Stirling PDF - PDF tools
+pdf.orfel.de {
+  reverse_proxy stirling-pdf:11013
+  encode gzip
+}
+
+# Root domain
+orfel.de {
+  respond "Jannik's Cloud Infrastructure - All services operational" 200
+}
+
+# Health check endpoint
+/health {
+  respond "OK" 200
+}

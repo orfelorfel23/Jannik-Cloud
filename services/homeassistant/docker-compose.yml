@@ -1,0 +1,22 @@
+services:
+  homeassistant:
+    image: ghcr.io/home-assistant/home-assistant:latest
+    container_name: homeassistant
+    restart: always
+    networks:
+      - jannik-cloud-net
+    expose:
+      - "11012"
+    environment:
+      TZ: "UTC"
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/homeassistant:/config
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8123/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  jannik-cloud-net:
+    external: true

@@ -1,0 +1,66 @@
+# Environment files (unencrypted)
+*.env
+!.env.example
+.env.age
+
+# Docker volumes and data
+.docker/
+docker-volume-*/
+
+# Secrets and keys
+/opt/
+*.key
+*.pem
+*.crt
+*.key.pub
+age-key.txt
+
+# Backups and archives
+*.backup
+*.sql
+*.tar
+*.tar.gz
+*.zip
+backup/
+backups/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# System files
+Thumbs.db
+.AppleDouble
+
+# Node modules (if any frontend exists)
+node_modules/
+package-lock.json
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+.tmp/
+
+# OS-specific
+.env.local
+.env.local.php
+
+# Database dumps (unless explicitly tracked)
+*.sql
+
+# System configuration
+/mnt/Jannik-Cloud-Volume-01/

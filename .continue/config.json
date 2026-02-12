@@ -1,0 +1,16 @@
+{
+  "models": [
+    {
+      "title": "Claude Opus",
+      "provider": "anthropic",
+      "model": "claude-opus-4-1",
+      "apiKey": "${ANTHROPIC_API_KEY}"
+    }
+  ],
+  "tabAutocompleteModel": {
+    "title": "Claude Opus",
+    "provider": "anthropic",
+    "model": "claude-opus-4-1",
+    "apiKey": "${ANTHROPIC_API_KEY}"
+  }
+}

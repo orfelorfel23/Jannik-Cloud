@@ -1,0 +1,27 @@
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: always
+    networks:
+      - jannik-cloud-net
+    expose:
+      - "11007"
+    environment:
+      DOMAIN: https://pw.orfel.de
+      SIGNUPS_ALLOWED: "true"
+      SHOW_PASSWORD_HINT: "false"
+      INVITATIONS_ORG_INVITE_EXPIRATION_HOURS: 120
+      LOG_FILE: "/data/vaultwarden.log"
+      LOG_LEVEL: info
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/vaultwarden:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/alive"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  jannik-cloud-net:
+    external: true
