@@ -1,0 +1,25 @@
+# Environment files (plaintext - DO NOT COMMIT)
+.env
+*.env
+!*.env.age
+
+# AGE keys (DO NOT COMMIT)
+age-key.txt
+*.key
+
+# Docker volumes
+/volumes/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~

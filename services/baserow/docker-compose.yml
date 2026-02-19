@@ -1,0 +1,47 @@
+services:
+  baserow:
+    image: baserow/baserow:latest
+    container_name: baserow
+    restart: unless-stopped
+    environment:
+      - BASEROW_PUBLIC_URL=https://br.orfel.de
+      - DATABASE_HOST=baserow-postgres
+      - DATABASE_NAME=${POSTGRES_DB}
+      - DATABASE_USER=${POSTGRES_USER}
+      - DATABASE_PASSWORD=${POSTGRES_PASSWORD}
+      - REDIS_URL=redis://baserow-redis:6379
+    expose:
+      - "2273"
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/baserow/data:/baserow/data
+    networks:
+      - jannik-cloud-net
+    depends_on:
+      - baserow-postgres
+      - baserow-redis
+
+  baserow-postgres:
+    image: postgres:16-alpine
+    container_name: baserow-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/baserow/postgres:/var/lib/postgresql/data
+    networks:
+      - jannik-cloud-net
+
+  baserow-redis:
+    image: redis:7-alpine
+    container_name: baserow-redis
+    restart: unless-stopped
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/baserow/redis:/data
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true

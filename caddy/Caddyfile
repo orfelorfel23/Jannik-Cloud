@@ -1,0 +1,60 @@
+{
+    email jannik.mueller.jannik+git@googlemail.com
+    auto_https on
+}
+
+outline.orfel.de {
+    reverse_proxy outline:3000
+}
+
+llm.orfel.de {
+    reverse_proxy litellm:4000
+}
+
+port.orfel.de {
+    reverse_proxy portainer:9000
+}
+
+owncloud.orfel.de {
+    reverse_proxy owncloud:8080
+}
+
+nextcloud.orfel.de {
+    reverse_proxy nextcloud:80
+}
+
+wiki.orfel.de {
+    reverse_proxy mediawiki:80
+}
+
+br.orfel.de {
+    reverse_proxy baserow:80
+}
+
+pw.orfel.de {
+    reverse_proxy vaultwarden:80
+}
+
+chat.orfel.de {
+    reverse_proxy librechat:3080
+}
+
+ntfy.orfel.de {
+    reverse_proxy ntfy:80
+}
+
+n8n.orfel.de {
+    reverse_proxy n8n:5678
+}
+
+git.orfel.de {
+    reverse_proxy gitea:3000
+}
+
+home.orfel.de {
+    reverse_proxy homeassistant:8123
+}
+
+pdf.orfel.de {
+    reverse_proxy stirling-pdf:8080
+}

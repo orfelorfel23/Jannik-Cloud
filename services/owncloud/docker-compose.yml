@@ -1,0 +1,53 @@
+services:
+  owncloud:
+    image: owncloud/server:latest
+    container_name: owncloud
+    restart: unless-stopped
+    environment:
+      - OWNCLOUD_DOMAIN=owncloud.orfel.de
+      - OWNCLOUD_TRUSTED_DOMAINS=owncloud.orfel.de
+      - OWNCLOUD_DB_TYPE=mysql
+      - OWNCLOUD_DB_NAME=${MYSQL_DATABASE}
+      - OWNCLOUD_DB_USERNAME=${MYSQL_USER}
+      - OWNCLOUD_DB_PASSWORD=${MYSQL_PASSWORD}
+      - OWNCLOUD_DB_HOST=owncloud-mariadb
+      - OWNCLOUD_ADMIN_USERNAME=${ADMIN_USERNAME}
+      - OWNCLOUD_ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - OWNCLOUD_REDIS_ENABLED=true
+      - OWNCLOUD_REDIS_HOST=owncloud-redis
+    expose:
+      - "8080"
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/owncloud/data:/mnt/data
+    networks:
+      - jannik-cloud-net
+    depends_on:
+      - owncloud-mariadb
+      - owncloud-redis
+
+  owncloud-mariadb:
+    image: mariadb:11
+    container_name: owncloud-mariadb
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/owncloud/mysql:/var/lib/mysql
+    networks:
+      - jannik-cloud-net
+
+  owncloud-redis:
+    image: redis:7-alpine
+    container_name: owncloud-redis
+    restart: unless-stopped
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/owncloud/redis:/data
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true

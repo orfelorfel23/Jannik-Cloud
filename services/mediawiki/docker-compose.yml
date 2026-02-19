@@ -1,0 +1,38 @@
+services:
+  mediawiki:
+    image: mediawiki:latest
+    container_name: mediawiki
+    restart: unless-stopped
+    environment:
+      - MEDIAWIKI_DB_HOST=mediawiki-mariadb
+      - MEDIAWIKI_DB_NAME=${MYSQL_DATABASE}
+      - MEDIAWIKI_DB_USER=${MYSQL_USER}
+      - MEDIAWIKI_DB_PASSWORD=${MYSQL_PASSWORD}
+      - MEDIAWIKI_SITE_SERVER=https://wiki.orfel.de
+    expose:
+      - "80"
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/mediawiki/images:/var/www/html/images
+      - /mnt/Jannik-Cloud-Volume-01/mediawiki/data:/var/www/data
+    networks:
+      - jannik-cloud-net
+    depends_on:
+      - mediawiki-mariadb
+
+  mediawiki-mariadb:
+    image: mariadb:11
+    container_name: mediawiki-mariadb
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/mediawiki/mysql:/var/lib/mysql
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true

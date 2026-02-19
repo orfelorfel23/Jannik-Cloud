@@ -1,0 +1,20 @@
+services:
+  stirling-pdf:
+    image: frooodle/s-pdf:latest
+    container_name: stirling-pdf
+    restart: unless-stopped
+    environment:
+      - DOCKER_ENABLE_SECURITY=true
+      - SECURITY_ENABLELOGIN=true
+      - SYSTEM_DEFAULTLOCALE=en-US
+    expose:
+      - "8080"
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/stirling-pdf/data:/usr/share/tessdata
+      - /mnt/Jannik-Cloud-Volume-01/stirling-pdf/config:/configs
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true

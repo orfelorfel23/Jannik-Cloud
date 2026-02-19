@@ -1,0 +1,19 @@
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: unless-stopped
+    environment:
+      - DOMAIN=https://pw.orfel.de
+      - SIGNUPS_ALLOWED=true
+      - ADMIN_TOKEN=${ADMIN_TOKEN}
+    expose:
+      - "80"
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/vaultwarden/data:/data
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true

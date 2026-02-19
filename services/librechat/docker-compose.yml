@@ -1,0 +1,35 @@
+services:
+  librechat:
+    image: ghcr.io/danny-avila/librechat:latest
+    container_name: librechat
+    restart: unless-stopped
+    environment:
+      - HOST=0.0.0.0
+      - PORT=3080
+      - MONGO_URI=mongodb://librechat-mongodb:27017/LibreChat
+      - DOMAIN_CLIENT=https://chat.orfel.de
+      - DOMAIN_SERVER=https://chat.orfel.de
+      - JWT_SECRET=${JWT_SECRET}
+      - CREDS_KEY=${CREDS_KEY}
+      - CREDS_IV=${CREDS_IV}
+    expose:
+      - "3080"
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/librechat/data:/app/client/public/images
+    networks:
+      - jannik-cloud-net
+    depends_on:
+      - librechat-mongodb
+
+  librechat-mongodb:
+    image: mongo:7
+    container_name: librechat-mongodb
+    restart: unless-stopped
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/librechat/mongodb:/data/db
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true

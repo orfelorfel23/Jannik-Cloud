@@ -1,0 +1,22 @@
+services:
+  ntfy:
+    image: binwiederhier/ntfy:latest
+    container_name: ntfy
+    restart: unless-stopped
+    command: serve
+    environment:
+      - NTFY_BASE_URL=https://ntfy.orfel.de
+      - NTFY_CACHE_FILE=/var/cache/ntfy/cache.db
+      - NTFY_AUTH_FILE=/var/lib/ntfy/user.db
+      - NTFY_AUTH_DEFAULT_ACCESS=deny-all
+    expose:
+      - "80"
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/ntfy/cache:/var/cache/ntfy
+      - /mnt/Jannik-Cloud-Volume-01/ntfy/data:/var/lib/ntfy
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true

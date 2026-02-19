@@ -1,0 +1,48 @@
+services:
+  outline:
+    image: outlinewiki/outline:latest
+    container_name: outline
+    restart: unless-stopped
+    environment:
+      - PGSSLMODE=disable
+      - SECRET_KEY=${SECRET_KEY}
+      - UTILS_SECRET=${UTILS_SECRET}
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@outline-postgres:5432/${POSTGRES_DB}
+      - REDIS_URL=redis://outline-redis:6379
+      - URL=https://outline.orfel.de
+      - PORT=3000
+    expose:
+      - "3000"
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/outline/data:/var/lib/outline/data
+    networks:
+      - jannik-cloud-net
+    depends_on:
+      - outline-postgres
+      - outline-redis
+
+  outline-postgres:
+    image: postgres:16-alpine
+    container_name: outline-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/outline/postgres:/var/lib/postgresql/data
+    networks:
+      - jannik-cloud-net
+
+  outline-redis:
+    image: redis:7-alpine
+    container_name: outline-redis
+    restart: unless-stopped
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/outline/redis:/data
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true
