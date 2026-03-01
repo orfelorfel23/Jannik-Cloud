@@ -1,0 +1,19 @@
+services:
+  homeassistant:
+    image: ghcr.io/home-assistant/home-assistant:latest
+    container_name: homeassistant
+    restart: unless-stopped
+    privileged: true
+    ports:
+      - "4663:8123"
+    environment:
+      TZ: Europe/Berlin
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/homeassistant:/config
+      - /run/dbus:/run/dbus:ro
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true

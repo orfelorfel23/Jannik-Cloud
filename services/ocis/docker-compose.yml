@@ -1,0 +1,28 @@
+services:
+  ocis:
+    image: owncloud/ocis:latest
+    container_name: ocis
+    restart: unless-stopped
+    ports:
+      - "696:9200"
+    environment:
+      OCIS_URL: https://owncloud.orfel.de
+      PROXY_HTTP_ADDR: 0.0.0.0:9200
+      OCIS_INSECURE: "false"
+      PROXY_TLS: "false"
+      OCIS_LOG_LEVEL: warn
+      OCIS_ADMIN_USER_ID: ${USERNAME}
+      OCIS_SYSTEM_USER_API_KEY: ${SECRET_KEY}
+      IDM_ADMIN_PASSWORD: ${PASSWORD}
+    entrypoint:
+      - /bin/sh
+    command: [ "-c", "ocis init || true && ocis server" ]
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/ocis/config:/etc/ocis
+      - /mnt/Jannik-Cloud-Volume-01/ocis/data:/var/lib/ocis
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true

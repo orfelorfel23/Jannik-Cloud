@@ -1,0 +1,3 @@
+port.orfel.de {
+	reverse_proxy portainer:7678
+}

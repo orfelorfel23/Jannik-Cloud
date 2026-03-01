@@ -1,0 +1,33 @@
+services:
+  librechat:
+    image: ghcr.io/danny-avila/librechat:latest
+    container_name: librechat
+    restart: unless-stopped
+    ports:
+      - "2428:3080"
+    environment:
+      HOST: 0.0.0.0
+      PORT: 3080
+      MONGO_URI: ""
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      REDIS_URI: redis://redis:6379
+      DOMAIN_SERVER: https://chat.orfel.de
+      DOMAIN_CLIENT: https://chat.orfel.de
+      CREDS_KEY: ${SECRET_KEY}
+      CREDS_IV: ${CREDS_IV}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      LITELLM_API_KEY: ${LITELLM_API_KEY}
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/librechat/images:/app/client/public/images
+      - /mnt/Jannik-Cloud-Volume-01/librechat/logs:/app/api/logs
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true

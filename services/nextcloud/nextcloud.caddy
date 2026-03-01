@@ -1,0 +1,3 @@
+nextcloud.orfel.de {
+	reverse_proxy nextcloud:6398
+}

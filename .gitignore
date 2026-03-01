@@ -1,0 +1,16 @@
+# Environment files (contain secrets)
+**/.env
+
+# AGE private key (never commit)
+**/age-key.txt
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/

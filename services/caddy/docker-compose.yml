@@ -1,0 +1,19 @@
+services:
+  caddy:
+    image: caddy:latest
+    container_name: caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/caddy/data:/data
+      - /mnt/Jannik-Cloud-Volume-01/caddy/config:/config
+      - /mnt/Jannik-Cloud-Volume-01/caddy/fragments:/etc/caddy/fragments
+      - ./Caddyfile:/etc/caddy/Caddyfile
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true

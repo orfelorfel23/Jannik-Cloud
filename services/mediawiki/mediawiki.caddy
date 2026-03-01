@@ -1,0 +1,3 @@
+wiki.orfel.de {
+	reverse_proxy mediawiki:9454
+}

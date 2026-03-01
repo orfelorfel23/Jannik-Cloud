@@ -1,0 +1,3 @@
+owncloud.orfel.de {
+	reverse_proxy ocis:696
+}

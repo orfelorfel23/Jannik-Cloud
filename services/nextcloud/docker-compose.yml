@@ -1,0 +1,25 @@
+services:
+  nextcloud:
+    image: nextcloud:latest
+    container_name: nextcloud
+    restart: unless-stopped
+    ports:
+      - "6398:80"
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      NEXTCLOUD_ADMIN_USER: ${USERNAME}
+      NEXTCLOUD_ADMIN_PASSWORD: ${PASSWORD}
+      NEXTCLOUD_TRUSTED_DOMAINS: nextcloud.orfel.de
+      OVERWRITEPROTOCOL: https
+      OVERWRITEHOST: nextcloud.orfel.de
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/nextcloud:/var/www/html
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true

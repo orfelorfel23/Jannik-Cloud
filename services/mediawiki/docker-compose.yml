@@ -1,0 +1,27 @@
+services:
+  mediawiki:
+    image: mediawiki:latest
+    container_name: mediawiki
+    restart: unless-stopped
+    ports:
+      - "9454:80"
+    environment:
+      MEDIAWIKI_DB_HOST: postgres
+      MEDIAWIKI_DB_NAME: ${DB_NAME}
+      MEDIAWIKI_DB_USER: ${DB_USER}
+      MEDIAWIKI_DB_PASSWORD: ${DB_PASSWORD}
+      MEDIAWIKI_DB_TYPE: postgres
+      MEDIAWIKI_SITE_NAME: "Jannik Wiki"
+      MEDIAWIKI_SITE_SERVER: https://wiki.orfel.de
+      MEDIAWIKI_ADMIN_USER: ${USERNAME}
+      MEDIAWIKI_ADMIN_PASS: ${PASSWORD}
+      MEDIAWIKI_SECRET_KEY: ${SECRET_KEY}
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/mediawiki/images:/var/www/html/images
+      - /mnt/Jannik-Cloud-Volume-01/mediawiki/config:/var/www/html/config
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true

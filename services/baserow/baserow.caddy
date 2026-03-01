@@ -1,0 +1,3 @@
+br.orfel.de {
+	reverse_proxy baserow:2273
+}

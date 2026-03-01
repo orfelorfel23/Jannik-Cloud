@@ -1,0 +1,3 @@
+home.orfel.de {
+	reverse_proxy homeassistant:4663
+}

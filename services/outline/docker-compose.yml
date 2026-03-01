@@ -1,0 +1,32 @@
+services:
+  outline:
+    image: outlinewiki/outline:latest
+    container_name: outline
+    restart: unless-stopped
+    ports:
+      - "688:3000"
+    environment:
+      NODE_ENV: production
+      SECRET_KEY: ${SECRET_KEY}
+      UTILS_SECRET: ${UTILS_SECRET}
+      DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}
+      REDIS_URL: redis://redis:6379
+      URL: https://outline.orfel.de
+      PORT: 3000
+      FILE_STORAGE: local
+      FILE_STORAGE_LOCAL_ROOT_DIR: /var/lib/outline/data
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      FORCE_HTTPS: "false"
+      ENABLE_UPDATES: "true"
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/outline/data:/var/lib/outline/data
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true

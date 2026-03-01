@@ -1,0 +1,18 @@
+services:
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: unless-stopped
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/redis:/data
+    networks:
+      - jannik-cloud-net
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  jannik-cloud-net:
+    external: true

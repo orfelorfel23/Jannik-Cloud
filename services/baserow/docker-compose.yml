@@ -1,0 +1,25 @@
+services:
+  baserow:
+    image: baserow/baserow:latest
+    container_name: baserow
+    restart: unless-stopped
+    ports:
+      - "2273:80"
+    environment:
+      BASEROW_PUBLIC_URL: https://br.orfel.de
+      DATABASE_HOST: postgres
+      DATABASE_NAME: ${DB_NAME}
+      DATABASE_USER: ${DB_USER}
+      DATABASE_PASSWORD: ${DB_PASSWORD}
+      DATABASE_PORT: 5432
+      SECRET_KEY: ${SECRET_KEY}
+      BASEROW_ADMIN_EMAIL: ${EMAIL}
+      BASEROW_ADMIN_PASSWORD: ${PASSWORD}
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/baserow:/baserow/data
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true

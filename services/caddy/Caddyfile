@@ -1,0 +1,5 @@
+{
+	email jannik.mueller.jannik+git@googlemail.com
+}
+
+import /etc/caddy/fragments/*.caddy

@@ -1,0 +1,3 @@
+git.orfel.de {
+	reverse_proxy gitea:448
+}

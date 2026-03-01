@@ -1,0 +1,19 @@
+services:
+  litellm:
+    image: ghcr.io/berriai/litellm:latest
+    container_name: litellm
+    restart: unless-stopped
+    ports:
+      - "556:4000"
+    environment:
+      DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}
+      LITELLM_MASTER_KEY: ${SECRET_KEY}
+      LITELLM_SALT_KEY: ${SALT_KEY}
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/litellm:/app/data
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true

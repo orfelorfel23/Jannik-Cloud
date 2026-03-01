@@ -1,0 +1,20 @@
+services:
+  ntfy:
+    image: binwiederhier/ntfy:latest
+    container_name: ntfy
+    restart: unless-stopped
+    ports:
+      - "6939:80"
+    command: serve
+    environment:
+      NTFY_BASE_URL: https://ntfy.orfel.de
+      NTFY_UPSTREAM_BASE_URL: https://ntfy.sh
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/ntfy/cache:/var/cache/ntfy
+      - /mnt/Jannik-Cloud-Volume-01/ntfy/etc:/etc/ntfy
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true

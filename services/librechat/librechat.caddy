@@ -1,0 +1,3 @@
+chat.orfel.de {
+	reverse_proxy librechat:2428
+}
