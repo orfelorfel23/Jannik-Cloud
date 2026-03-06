@@ -6,11 +6,11 @@ services:
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - /mnt/Jannik-Cloud-Volume-01/postgres:/var/lib/postgresql/data
+      - /mnt/Jannik-Cloud-Volume-01/postgres:/var/lib/postgresql
     networks:
       - jannik-cloud-net
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 10s
       timeout: 5s
       retries: 5
