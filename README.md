@@ -38,19 +38,15 @@ Self-hosted cloud infrastructure on Hetzner Ubuntu 24 LTS, managed via Docker Co
 
 ```bash
 # Clone the repository
-git clone https://github.com/Jannik/Jannik-Cloud.git /opt/Jannik-Cloud
+git clone https://github.com/orfelorfel23/Jannik-Cloud.git /opt/Jannik-Cloud
 cd /opt/Jannik-Cloud
 ```
 
 ### 2. AGE Key Setup
 
-Generate a new AGE keypair (or use an existing one):
-
-```bash
-age-keygen -o /opt/Jannik-Cloud/keys/age-key.txt
-```
 
 The public key is already committed at `keys/age-public-key.txt`. The private key must **never** be committed to Git.
+
 
 ### 3. Generate Environment Files
 
