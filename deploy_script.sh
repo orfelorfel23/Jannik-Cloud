@@ -278,7 +278,8 @@ pull_images() {
     for svc_name in "${ACTIVE_SERVICES[@]}"; do
         local svc_dir="${SERVICES_DIR}/${svc_name}"
         cd "${svc_dir}"
-        docker compose pull 2>/dev/null || warn "  Pull failed for ${svc_name} (may use local build)"
+        log "  Pulling ${svc_name}..."
+        timeout 120 docker compose pull 2>&1 || warn "  Pull failed/timed out for ${svc_name} (will use cached image if available)"
     done
 }
 
