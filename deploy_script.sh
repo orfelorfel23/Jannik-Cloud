@@ -7,6 +7,7 @@
 set -euo pipefail
 
 REPO_DIR="/opt/Jannik-Cloud"
+GIT_REPO_URL="https://github.com/orfelorfel23/Jannik-Cloud.git"
 VOLUME_BASE="/mnt/Jannik-Cloud-Volume-01"
 DOCKER_NETWORK="jannik-cloud-net"
 SERVICES_DIR="${REPO_DIR}/services"
@@ -137,13 +138,30 @@ handle_age_key() {
 }
 
 ###############################################################################
-# 4. Git pull
+# 4. Git clone / pull
 ###############################################################################
 update_repo() {
-    log "Pulling latest repository state..."
-    cd "${REPO_DIR}"
-    git pull --ff-only origin main || git pull --ff-only origin master || true
-    log "Repository updated."
+    log "Updating repository..."
+    if [[ ! -d "${REPO_DIR}/.git" ]]; then
+        log "No .git directory found — cloning repository for the first time..."
+        local tmp_dir
+        tmp_dir="$(mktemp -d)"
+        git clone "${GIT_REPO_URL}" "${tmp_dir}/repo"
+        # Copy repo contents over, preserving local-only files (e.g. keys/age-key.txt)
+        rsync -a --ignore-existing "${tmp_dir}/repo/" "${REPO_DIR}/"
+        # Now copy .git so subsequent runs can use git pull
+        cp -a "${tmp_dir}/repo/.git" "${REPO_DIR}/.git"
+        rm -rf "${tmp_dir}"
+        # Reset working tree to match remote (picks up any files we missed)
+        cd "${REPO_DIR}"
+        git checkout -- . 2>/dev/null || true
+        log "Repository cloned successfully."
+    else
+        cd "${REPO_DIR}"
+        git fetch origin
+        git reset --hard origin/main || git reset --hard origin/master || true
+        log "Repository updated via git pull."
+    fi
 }
 
 ###############################################################################
