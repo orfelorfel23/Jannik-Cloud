@@ -23,7 +23,7 @@ chmod 600 "${SCRIPT_DIR}/.env"
 
 cat > "${SCRIPT_DIR}/gitea.caddy" <<'EOF'
 git.orfel.de {
-	reverse_proxy gitea:448
+	reverse_proxy gitea:3000
 }
 EOF
 

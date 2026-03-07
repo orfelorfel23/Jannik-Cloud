@@ -1,3 +1,3 @@
 pdf.orfel.de {
-	reverse_proxy stirlingpdf:733
+	reverse_proxy stirlingpdf:8080
 }

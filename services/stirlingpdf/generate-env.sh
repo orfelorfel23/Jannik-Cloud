@@ -18,7 +18,7 @@ chmod 600 "${SCRIPT_DIR}/.env"
 
 cat > "${SCRIPT_DIR}/stirlingpdf.caddy" <<'EOF'
 pdf.orfel.de {
-	reverse_proxy stirlingpdf:733
+	reverse_proxy stirlingpdf:8080
 }
 EOF
 

@@ -22,7 +22,7 @@ chmod 600 "${SCRIPT_DIR}/.env"
 
 cat > "${SCRIPT_DIR}/n8n.caddy" <<'EOF'
 n8n.orfel.de {
-	reverse_proxy n8n:686
+	reverse_proxy n8n:5678
 }
 EOF
 

@@ -18,7 +18,7 @@ chmod 600 "${SCRIPT_DIR}/.env"
 
 cat > "${SCRIPT_DIR}/ntfy.caddy" <<'EOF'
 ntfy.orfel.de {
-	reverse_proxy ntfy:6939
+	reverse_proxy ntfy:80
 }
 EOF
 

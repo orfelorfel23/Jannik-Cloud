@@ -23,7 +23,7 @@ chmod 600 "${SCRIPT_DIR}/.env"
 
 cat > "${SCRIPT_DIR}/litellm.caddy" <<'EOF'
 llm.orfel.de {
-	reverse_proxy litellm:556
+	reverse_proxy litellm:4000
 }
 EOF
 

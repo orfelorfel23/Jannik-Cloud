@@ -22,7 +22,7 @@ chmod 600 "${SCRIPT_DIR}/.env"
 
 cat > "${SCRIPT_DIR}/mediawiki.caddy" <<'EOF'
 wiki.orfel.de {
-	reverse_proxy mediawiki:9454
+	reverse_proxy mediawiki:80
 }
 EOF
 

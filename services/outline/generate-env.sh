@@ -29,7 +29,7 @@ chmod 600 "${SCRIPT_DIR}/.env"
 # Generate Caddy fragment
 cat > "${SCRIPT_DIR}/outline.caddy" <<'EOF'
 outline.orfel.de {
-	reverse_proxy outline:688
+	reverse_proxy outline:3000
 }
 EOF
 

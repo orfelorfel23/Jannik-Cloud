@@ -22,7 +22,7 @@ chmod 600 "${SCRIPT_DIR}/.env"
 
 cat > "${SCRIPT_DIR}/baserow.caddy" <<'EOF'
 br.orfel.de {
-	reverse_proxy baserow:2273
+	reverse_proxy baserow:80
 }
 EOF
 

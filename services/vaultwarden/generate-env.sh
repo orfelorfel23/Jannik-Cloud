@@ -23,7 +23,7 @@ chmod 600 "${SCRIPT_DIR}/.env"
 
 cat > "${SCRIPT_DIR}/vaultwarden.caddy" <<'EOF'
 pw.orfel.de {
-	reverse_proxy vaultwarden:7277
+	reverse_proxy vaultwarden:80
 }
 EOF
 

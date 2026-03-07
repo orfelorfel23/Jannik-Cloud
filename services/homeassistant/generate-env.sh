@@ -18,7 +18,7 @@ chmod 600 "${SCRIPT_DIR}/.env"
 
 cat > "${SCRIPT_DIR}/homeassistant.caddy" <<'EOF'
 home.orfel.de {
-	reverse_proxy homeassistant:4663
+	reverse_proxy homeassistant:8123
 }
 EOF
 

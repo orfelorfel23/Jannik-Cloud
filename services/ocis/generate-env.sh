@@ -18,7 +18,7 @@ chmod 600 "${SCRIPT_DIR}/.env"
 
 cat > "${SCRIPT_DIR}/ocis.caddy" <<'EOF'
 owncloud.orfel.de {
-	reverse_proxy ocis:696
+	reverse_proxy ocis:9200
 }
 EOF
 

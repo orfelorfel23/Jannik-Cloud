@@ -18,7 +18,7 @@ chmod 600 "${SCRIPT_DIR}/.env"
 
 cat > "${SCRIPT_DIR}/portainer.caddy" <<'EOF'
 port.orfel.de {
-	reverse_proxy portainer:7678
+	reverse_proxy portainer:9000
 }
 EOF
 

@@ -22,7 +22,7 @@ chmod 600 "${SCRIPT_DIR}/.env"
 
 cat > "${SCRIPT_DIR}/nextcloud.caddy" <<'EOF'
 nextcloud.orfel.de {
-	reverse_proxy nextcloud:6398
+	reverse_proxy nextcloud:80
 }
 EOF
 

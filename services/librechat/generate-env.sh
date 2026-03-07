@@ -26,7 +26,7 @@ chmod 600 "${SCRIPT_DIR}/.env"
 
 cat > "${SCRIPT_DIR}/librechat.caddy" <<'EOF'
 chat.orfel.de {
-	reverse_proxy librechat:2428
+	reverse_proxy librechat:3080
 }
 EOF
 
