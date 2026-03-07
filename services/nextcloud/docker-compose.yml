@@ -4,7 +4,7 @@ services:
     container_name: nextcloud
     restart: unless-stopped
     ports:
-      - "6398:80"
+      - "127.0.0.1:6398:80"
     environment:
       POSTGRES_HOST: postgres
       POSTGRES_DB: ${DB_NAME}

@@ -4,7 +4,7 @@ services:
     container_name: webhook
     restart: unless-stopped
     ports:
-      - "9500:9000"
+      - "127.0.0.1:9500:9000"
     command: [ "-verbose", "-hooks=/etc/webhook/hooks.json", "-hotreload" ]
     environment:
       WEBHOOK_SECRET: ${WEBHOOK_SECRET}

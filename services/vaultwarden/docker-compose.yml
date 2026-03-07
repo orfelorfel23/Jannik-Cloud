@@ -4,7 +4,7 @@ services:
     container_name: vaultwarden
     restart: unless-stopped
     ports:
-      - "7277:80"
+      - "127.0.0.1:7277:80"
     environment:
       DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}
       DOMAIN: https://pw.orfel.de

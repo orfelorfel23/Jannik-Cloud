@@ -4,7 +4,7 @@ services:
     container_name: outline
     restart: unless-stopped
     ports:
-      - "688:3000"
+      - "127.0.0.1:688:3000"
     environment:
       NODE_ENV: production
       SECRET_KEY: ${SECRET_KEY}

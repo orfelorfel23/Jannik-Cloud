@@ -4,7 +4,7 @@ services:
     container_name: mediawiki
     restart: unless-stopped
     ports:
-      - "9454:80"
+      - "127.0.0.1:9454:80"
     environment:
       MEDIAWIKI_DB_HOST: postgres
       MEDIAWIKI_DB_NAME: ${DB_NAME}

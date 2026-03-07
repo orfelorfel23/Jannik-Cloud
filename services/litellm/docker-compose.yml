@@ -4,7 +4,7 @@ services:
     container_name: litellm
     restart: unless-stopped
     ports:
-      - "556:4000"
+      - "127.0.0.1:556:4000"
     environment:
       DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}
       LITELLM_MASTER_KEY: ${SECRET_KEY}

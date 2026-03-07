@@ -10,7 +10,7 @@ services:
     container_name: linus
     restart: unless-stopped
     ports:
-      - "1326:80"
+      - "127.0.0.1:1326:80"
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/linus:/data
     networks:

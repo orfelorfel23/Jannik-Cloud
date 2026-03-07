@@ -4,7 +4,7 @@ services:
     container_name: baserow
     restart: unless-stopped
     ports:
-      - "2273:80"
+      - "127.0.0.1:2273:80"
     environment:
       BASEROW_PUBLIC_URL: https://br.orfel.de
       DATABASE_HOST: postgres

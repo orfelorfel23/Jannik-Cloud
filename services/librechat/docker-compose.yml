@@ -4,7 +4,7 @@ services:
     container_name: librechat
     restart: unless-stopped
     ports:
-      - "2428:3080"
+      - "127.0.0.1:2428:3080"
     environment:
       HOST: 0.0.0.0
       PORT: 3080
