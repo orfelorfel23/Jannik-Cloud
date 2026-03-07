@@ -1,0 +1,7 @@
+linus.orfel.de {
+	reverse_proxy linus:80
+}
+
+lsound.orfel.de {
+	reverse_proxy linus:80
+}

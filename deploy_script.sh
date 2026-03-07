@@ -271,15 +271,20 @@ assemble_caddy_fragments() {
 }
 
 ###############################################################################
-# 12. Pull latest Docker images
+# 12. Pull / build Docker images
 ###############################################################################
 pull_images() {
-    log "Pulling latest Docker images for all active services..."
+    log "Pulling/building Docker images for all active services..."
     for svc_name in "${ACTIVE_SERVICES[@]}"; do
         local svc_dir="${SERVICES_DIR}/${svc_name}"
         cd "${svc_dir}"
-        log "  Pulling ${svc_name}..."
-        timeout 120 docker compose pull 2>&1 || warn "  Pull failed/timed out for ${svc_name} (will use cached image if available)"
+        if [[ -f "${svc_dir}/Dockerfile" ]]; then
+            log "  Building ${svc_name} (has Dockerfile)..."
+            timeout 300 docker compose build --no-cache 2>&1 || warn "  Build failed/timed out for ${svc_name}"
+        else
+            log "  Pulling ${svc_name}..."
+            timeout 120 docker compose pull 2>&1 || warn "  Pull failed/timed out for ${svc_name} (will use cached image if available)"
+        fi
     done
 }
 

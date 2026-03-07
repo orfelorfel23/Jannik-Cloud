@@ -1,0 +1,3 @@
+webhook.orfel.de {
+	reverse_proxy webhook:9000
+}

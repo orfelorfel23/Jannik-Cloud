@@ -1,0 +1,46 @@
+[
+  {
+    "id": "rebuild-linus",
+    "execute-command": "/etc/webhook/scripts/rebuild-linus.sh",
+    "command-working-directory": "/opt/Jannik-Cloud",
+    "response-message": "Linus rebuild triggered.",
+    "trigger-rule": {
+      "and": [
+        {
+          "match": {
+            "type": "payload-hmac-sha256",
+            "secret": "{{getenv \"WEBHOOK_SECRET\"}}",
+            "parameter": {
+              "source": "header",
+              "name": "X-Hub-Signature-256"
+            }
+          }
+        }
+      ]
+    },
+    "pass-arguments-to-command": [],
+    "include-command-output-in-response": true
+  },
+  {
+    "id": "deploy-cloud",
+    "execute-command": "/etc/webhook/scripts/deploy-cloud.sh",
+    "command-working-directory": "/opt/Jannik-Cloud",
+    "response-message": "Jannik-Cloud deploy triggered.",
+    "trigger-rule": {
+      "and": [
+        {
+          "match": {
+            "type": "payload-hmac-sha256",
+            "secret": "{{getenv \"WEBHOOK_SECRET\"}}",
+            "parameter": {
+              "source": "header",
+              "name": "X-Hub-Signature-256"
+            }
+          }
+        }
+      ]
+    },
+    "pass-arguments-to-command": [],
+    "include-command-output-in-response": true
+  }
+]
