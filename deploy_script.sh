@@ -162,6 +162,11 @@ update_repo() {
         git reset --hard origin/main || git reset --hard origin/master || true
         log "Repository updated via git pull."
     fi
+
+    # Restore executable permissions (git reset may strip them)
+    chmod 700 "${REPO_DIR}/deploy_script.sh" "${REPO_DIR}/decrypt-secrets.sh" 2>/dev/null || true
+    find "${SERVICES_DIR}" -name "generate-env.sh" -exec chmod 700 {} \; 2>/dev/null || true
+    find "${SERVICES_DIR}" -name "*.sh" -exec chmod 700 {} \; 2>/dev/null || true
 }
 
 ###############################################################################
