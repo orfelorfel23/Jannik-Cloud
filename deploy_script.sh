@@ -257,6 +257,44 @@ create_volumes() {
 }
 
 ###############################################################################
+# 10b. Configure Home Assistant trusted proxies
+###############################################################################
+configure_homeassistant() {
+    local ha_config="${VOLUME_BASE}/homeassistant/configuration.yaml"
+    if [[ " ${ACTIVE_SERVICES[*]} " =~ " homeassistant " ]]; then
+        if [[ ! -f "${ha_config}" ]]; then
+            log "Creating Home Assistant configuration.yaml with trusted proxies..."
+            cat > "${ha_config}" <<'EOF'
+homeassistant:
+  name: Home
+  unit_system: metric
+  time_zone: Europe/Berlin
+
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 172.16.0.0/12
+    - 10.0.0.0/8
+    - 192.168.0.0/16
+
+default_config:
+EOF
+        elif ! grep -q "trusted_proxies" "${ha_config}"; then
+            log "Adding trusted proxy config to Home Assistant..."
+            cat >> "${ha_config}" <<'EOF'
+
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 172.16.0.0/12
+    - 10.0.0.0/8
+    - 192.168.0.0/16
+EOF
+        fi
+    fi
+}
+
+###############################################################################
 # 11. Assemble Caddy fragments
 ###############################################################################
 assemble_caddy_fragments() {
@@ -431,6 +469,7 @@ main() {
     stop_all_services
     decrypt_envs
     create_volumes
+    configure_homeassistant
     assemble_caddy_fragments
     pull_images
     start_infra

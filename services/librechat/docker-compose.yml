@@ -5,10 +5,13 @@ services:
     restart: unless-stopped
     ports:
       - "127.0.0.1:2428:3080"
+    depends_on:
+      librechat-mongo:
+        condition: service_healthy
     environment:
       HOST: 0.0.0.0
       PORT: 3080
-      MONGO_URI: ""
+      MONGO_URI: mongodb://librechat-mongo:27017/librechat
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
@@ -25,6 +28,20 @@ services:
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/librechat/images:/app/client/public/images
       - /mnt/Jannik-Cloud-Volume-01/librechat/logs:/app/api/logs
+    networks:
+      - jannik-cloud-net
+
+  librechat-mongo:
+    image: mongo:7
+    container_name: librechat-mongo
+    restart: unless-stopped
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/librechat/mongodb:/data/db
+    healthcheck:
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - jannik-cloud-net
 

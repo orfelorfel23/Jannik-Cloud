@@ -8,7 +8,7 @@ services:
     environment:
       OCIS_URL: https://owncloud.orfel.de
       PROXY_HTTP_ADDR: 0.0.0.0:9200
-      OCIS_INSECURE: "false"
+      OCIS_INSECURE: "true"
       PROXY_TLS: "false"
       OCIS_LOG_LEVEL: warn
       OCIS_ADMIN_USER_ID: ${USERNAME}
