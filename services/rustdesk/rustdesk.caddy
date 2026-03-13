@@ -1,0 +1,3 @@
+rust.orfel.de {
+	reverse_proxy rustdesk:21114
+}

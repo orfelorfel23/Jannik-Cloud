@@ -1,0 +1,60 @@
+use_default_settings: true
+
+general:
+  instance_name: "SearXNG — orfel.de"
+  privacypolicy_url: false
+  donation_url: false
+  contact_url: false
+  enable_metrics: false
+
+search:
+  safe_search: 0
+  autocomplete: "google"
+  default_lang: "en"
+
+server:
+  secret_key: "GENERATED_AT_RUNTIME"
+  bind_address: "0.0.0.0"
+  port: 8080
+  base_url: "https://go.orfel.de/"
+  image_proxy: true
+  limiter: true
+
+ui:
+  static_use_hash: true
+  default_theme: "simple"
+  theme_args:
+    simple_style: "dark"
+
+outgoing:
+  request_timeout: 5.0
+  max_request_timeout: 15.0
+
+engines:
+  - name: google
+    engine: google
+    shortcut: g
+
+  - name: duckduckgo
+    engine: duckduckgo
+    shortcut: ddg
+
+  - name: wikipedia
+    engine: wikipedia
+    shortcut: wp
+
+  - name: github
+    engine: github
+    shortcut: gh
+
+  - name: stackoverflow
+    engine: stackoverflow
+    shortcut: so
+
+  - name: arch wiki
+    engine: arch_linux_wiki
+    shortcut: aw
+
+  - name: reddit
+    engine: reddit
+    shortcut: re

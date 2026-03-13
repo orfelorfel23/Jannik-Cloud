@@ -1,0 +1,45 @@
+services:
+  authentik-server:
+    image: ghcr.io/goauthentik/server:latest
+    container_name: authentik-server
+    restart: unless-stopped
+    command: server
+    ports:
+      - "127.0.0.1:2884:9000"
+    environment:
+      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY}
+      AUTHENTIK_ERROR_REPORTING__ENABLED: "false"
+      AUTHENTIK_REDIS__HOST: redis
+      AUTHENTIK_POSTGRESQL__HOST: postgres
+      AUTHENTIK_POSTGRESQL__NAME: ${DB_NAME}
+      AUTHENTIK_POSTGRESQL__USER: ${DB_USER}
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/authentik/media:/media
+      - /mnt/Jannik-Cloud-Volume-01/authentik/templates:/templates
+    networks:
+      - jannik-cloud-net
+
+  authentik-worker:
+    image: ghcr.io/goauthentik/server:latest
+    container_name: authentik-worker
+    restart: unless-stopped
+    command: worker
+    environment:
+      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY}
+      AUTHENTIK_ERROR_REPORTING__ENABLED: "false"
+      AUTHENTIK_REDIS__HOST: redis
+      AUTHENTIK_POSTGRESQL__HOST: postgres
+      AUTHENTIK_POSTGRESQL__NAME: ${DB_NAME}
+      AUTHENTIK_POSTGRESQL__USER: ${DB_USER}
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/authentik/media:/media
+      - /mnt/Jannik-Cloud-Volume-01/authentik/templates:/templates
+      - /mnt/Jannik-Cloud-Volume-01/authentik/certs:/certs
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true

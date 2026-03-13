@@ -1,0 +1,21 @@
+services:
+  zipline:
+    image: ghcr.io/diced/zipline:latest
+    container_name: zipline
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:947:3000"
+    environment:
+      CORE_SECRET: ${CORE_SECRET}
+      CORE_DATABASE_URL: ${CORE_DATABASE_URL}
+      CORE_HOST: "0.0.0.0"
+      CORE_PORT: "3000"
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/zipline/uploads:/zipline/uploads
+      - /mnt/Jannik-Cloud-Volume-01/zipline/public:/zipline/public
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true

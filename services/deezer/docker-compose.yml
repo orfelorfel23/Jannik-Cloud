@@ -1,0 +1,18 @@
+services:
+  deezer:
+    image: kmille2/deezer-downloader:latest
+    container_name: deezer
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:673:6123"
+    environment:
+      DEEZER_ARL: ${DEEZER_ARL}
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/deezer/downloads:/downloads
+      - /mnt/Jannik-Cloud-Volume-01/deezer/config:/config
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true

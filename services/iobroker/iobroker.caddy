@@ -1,0 +1,3 @@
+io.orfel.de {
+	reverse_proxy iobroker:8081
+}

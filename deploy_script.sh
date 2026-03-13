@@ -349,6 +349,14 @@ start_infra() {
         cd "${SERVICES_DIR}/redis"
         docker compose up -d --remove-orphans
     fi
+
+    # Start ILIAS MySQL (dedicated instance, not shared PostgreSQL)
+    if [[ " ${ACTIVE_SERVICES[*]} " =~ " ilias " ]]; then
+        log "Starting ILIAS MySQL..."
+        cd "${SERVICES_DIR}/ilias"
+        docker compose up -d ilias-mysql
+        wait_for_ilias_mysql
+    fi
 }
 
 wait_for_postgres() {
@@ -364,6 +372,21 @@ wait_for_postgres() {
         sleep 2
     done
     log "PostgreSQL is healthy."
+}
+
+wait_for_ilias_mysql() {
+    log "Waiting for ILIAS MySQL to be healthy..."
+    local retries=30
+    local count=0
+    while ! docker exec ilias-mysql mysqladmin ping -h localhost --silent &>/dev/null; do
+        count=$((count + 1))
+        if [[ ${count} -ge ${retries} ]]; then
+            die "ILIAS MySQL did not become healthy within ${retries} attempts."
+        fi
+        log "  Waiting... (${count}/${retries})"
+        sleep 2
+    done
+    log "ILIAS MySQL is healthy."
 }
 
 ###############################################################################

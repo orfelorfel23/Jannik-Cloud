@@ -1,0 +1,18 @@
+services:
+  searxng:
+    image: searxng/searxng:latest
+    container_name: searxng
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3463:8080"
+    environment:
+      SEARXNG_SECRET: ${SEARXNG_SECRET_KEY}
+    volumes:
+      - ./settings.yml:/etc/searxng/settings.yml:ro
+      - /mnt/Jannik-Cloud-Volume-01/searxng:/etc/searxng/data
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true

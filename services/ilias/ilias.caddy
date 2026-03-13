@@ -1,0 +1,3 @@
+ilias.orfel.de {
+	reverse_proxy ilias:80
+}

@@ -1,0 +1,3 @@
+link.orfel.de {
+	reverse_proxy linkding:9090
+}

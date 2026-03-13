@@ -1,0 +1,3 @@
+go.orfel.de {
+	reverse_proxy searxng:8080
+}

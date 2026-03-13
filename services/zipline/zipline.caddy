@@ -1,0 +1,3 @@
+short.orfel.de {
+	reverse_proxy zipline:3000
+}

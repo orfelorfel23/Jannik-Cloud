@@ -1,0 +1,23 @@
+services:
+  kestra:
+    image: kestra/kestra:latest
+    container_name: kestra
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5378:8080"
+    environment:
+      KESTRA_CONFIGURATION: |
+        datasources:
+          postgres:
+            url: jdbc:postgresql://postgres:5432/${DB_NAME}
+            username: ${DB_USER}
+            password: ${DB_PASSWORD}
+      KESTRA_SECRET_KEY: ${KESTRA_SECRET_KEY}
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/kestra:/app/storage
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true

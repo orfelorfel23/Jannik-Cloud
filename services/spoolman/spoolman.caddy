@@ -1,0 +1,3 @@
+3d.orfel.de {
+	reverse_proxy spoolman:7912
+}

@@ -1,0 +1,32 @@
+services:
+  rustdesk:
+    image: rustdesk/rustdesk-server:latest
+    container_name: rustdesk
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:7878:21114"
+      - "21115:21115"
+      - "21116:21116"
+      - "21116:21116/udp"
+      - "21117:21117"
+      - "21118:21118"
+      - "21119:21119"
+    command: hbbs
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/rustdesk:/root
+    networks:
+      - jannik-cloud-net
+
+  rustdesk-relay:
+    image: rustdesk/rustdesk-server:latest
+    container_name: rustdesk-relay
+    restart: unless-stopped
+    command: hbbr
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/rustdesk:/root
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true

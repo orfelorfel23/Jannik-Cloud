@@ -1,0 +1,46 @@
+services:
+  ilias:
+    image: ilias/ilias:latest
+    container_name: ilias
+    restart: unless-stopped
+    depends_on:
+      ilias-mysql:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:45427:80"
+    environment:
+      ILIAS_DB_HOST: ilias-mysql
+      ILIAS_DB_PORT: 3306
+      ILIAS_DB_NAME: ${MYSQL_DATABASE}
+      ILIAS_DB_USER: ${MYSQL_USER}
+      ILIAS_DB_PASSWORD: ${MYSQL_PASSWORD}
+      ILIAS_ROOT_PASSWORD: ${PASSWORD}
+      ILIAS_HTTP_PATH: https://ilias.orfel.de
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/ilias/data:/var/www/html/data
+      - /mnt/Jannik-Cloud-Volume-01/ilias/iliasdata:/var/iliasdata
+    networks:
+      - jannik-cloud-net
+
+  ilias-mysql:
+    image: mysql:8
+    container_name: ilias-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/ilias/mysql:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true

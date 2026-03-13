@@ -31,6 +31,18 @@ Self-hosted cloud infrastructure on Hetzner Ubuntu 24 LTS, managed via Docker Co
 | Gitea | git.orfel.de | 448 |
 | Home Assistant | home.orfel.de | 4663 |
 | Stirling PDF | pdf.orfel.de | 733 |
+| Linus (lsound) | linus.orfel.de, lsound.orfel.de | 1326 |
+| Webhook | webhook.orfel.de | 9500 |
+| Authentik | auth.orfel.de | 2884 |
+| Linkding | link.orfel.de | 5465 |
+| Zipline | short.orfel.de | 947 |
+| SearXNG | go.orfel.de | 3463 |
+| ioBroker | io.orfel.de | 46 |
+| RustDesk Server | rust.orfel.de | 7878 |
+| ILIAS | ilias.orfel.de | 45427 |
+| Spoolman | 3d.orfel.de | 33 |
+| Kestra | kestra.orfel.de | 5378 |
+| Deezer Downloader | deezer.orfel.de | 673 |
 
 ## First-Time Setup
 
