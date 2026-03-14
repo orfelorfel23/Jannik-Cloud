@@ -6,12 +6,7 @@ services:
     ports:
       - "127.0.0.1:33:7912"
     environment:
-      SPOOLMAN_DB_TYPE: postgres
-      SPOOLMAN_DB_HOST: postgres
-      SPOOLMAN_DB_PORT: 5432
-      SPOOLMAN_DB_NAME: ${DB_NAME}
-      SPOOLMAN_DB_USERNAME: ${DB_USER}
-      SPOOLMAN_DB_PASSWORD: ${DB_PASSWORD}
+      SPOOLMAN_DB_URL: ${SPOOLMAN_DB_URL}
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/spoolman:/home/app/.local/share/spoolman
     networks:

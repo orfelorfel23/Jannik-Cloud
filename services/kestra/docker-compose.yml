@@ -3,6 +3,7 @@ services:
     image: kestra/kestra:latest
     container_name: kestra
     restart: unless-stopped
+    command: server standalone
     ports:
       - "127.0.0.1:5378:8080"
     environment:

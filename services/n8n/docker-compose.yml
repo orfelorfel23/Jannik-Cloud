@@ -20,7 +20,6 @@ services:
       QUEUE_BULL_REDIS_HOST: redis
       QUEUE_BULL_REDIS_PORT: 6379
       N8N_ENCRYPTION_KEY: ${SECRET_KEY}
-      N8N_RUNNERS_MODE: external
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/n8n:/home/node/.n8n
     networks:
