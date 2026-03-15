@@ -413,7 +413,7 @@ create_postgres_dbs() {
         local db_name db_user db_pass
         db_name=$(grep -E "^DB_NAME=" "${env_file}" | cut -d= -f2 | tr -d '[:space:]"' || echo "${svc_name}_db")
         db_user=$(grep -E "^DB_USER=" "${env_file}" | cut -d= -f2 | tr -d '[:space:]"' || echo "${svc_name}_user")
-        db_pass=$(grep -E "^DB_PASSWORD=" "${env_file}" | cut -d= -f2 | tr -d '"' || true)
+        db_pass=$(grep -E "^DB_PASSWORD=" "${env_file}" | cut -d= -f2 | tr -d '"\r' || true)
 
         if [[ -z "${db_pass}" ]]; then
             warn "  No DB_PASSWORD found for ${svc_name}, skipping DB creation."
