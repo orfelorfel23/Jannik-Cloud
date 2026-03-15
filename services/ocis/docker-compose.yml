@@ -14,6 +14,7 @@ services:
       OCIS_ADMIN_USER_ID: ${USERNAME}
       OCIS_SYSTEM_USER_API_KEY: ${SECRET_KEY}
       IDM_ADMIN_PASSWORD: ${PASSWORD}
+      OCIS_JWT_SECRET: ${SECRET_KEY}
     entrypoint:
       - /bin/sh
     command: [ "-c", "ocis init || true && ocis server" ]

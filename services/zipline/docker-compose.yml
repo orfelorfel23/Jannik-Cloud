@@ -7,7 +7,7 @@ services:
       - "127.0.0.1:947:3000"
     environment:
       CORE_SECRET: ${CORE_SECRET}
-      CORE_DATABASE_URL: ${CORE_DATABASE_URL}
+      DATABASE_URL: ${CORE_DATABASE_URL}
       CORE_HOST: "0.0.0.0"
       CORE_PORT: "3000"
     volumes:

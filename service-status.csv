@@ -1,0 +1,27 @@
+﻿https://outline.orfel.de;Ausnahme beim Aufrufen von "GetResponse" mit 0 Argument(en):  "Die Anfrage wurde abgebrochen: Es konnte kein geschützter SSL/TLS-Kanal erstellt werden.."
+https://llm.orfel.de;OK
+https://port.orfel.de;OK
+https://owncloud.orfel.de;Ausnahme beim Aufrufen von "GetResponse" mit 0 Argument(en):  "Der Remoteserver hat einen Fehler zurückgegeben: (502) Ungültiges Gateway."
+https://nextcloud.orfel.de;OK
+https://wiki.orfel.de;OK
+https://br.orfel.de;OK
+https://pw.orfel.de;OK
+https://chat.orfel.de;OK
+https://ntfy.orfel.de;OK
+https://n8n.orfel.de;Ausnahme beim Aufrufen von "GetResponse" mit 0 Argument(en):  "Der Remoteserver hat einen Fehler zurückgegeben: (502) Ungültiges Gateway."
+https://git.orfel.de;OK
+https://home.orfel.de;Ausnahme beim Aufrufen von "GetResponse" mit 0 Argument(en):  "Der Remoteserver hat einen Fehler zurückgegeben: (405) Unzulässige Methode."
+https://pdf.orfel.de;OK
+https://linus.orfel.de;OK
+https://lsound.orfel.de;OK
+https://webhook.orfel.de;OK
+https://auth.orfel.de;Ausnahme beim Aufrufen von "GetResponse" mit 0 Argument(en):  "Der Remoteserver hat einen Fehler zurückgegeben: (502) Ungültiges Gateway."
+https://link.orfel.de;OK
+https://short.orfel.de;Ausnahme beim Aufrufen von "GetResponse" mit 0 Argument(en):  "Der Remoteserver hat einen Fehler zurückgegeben: (502) Ungültiges Gateway."
+https://go.orfel.de;OK
+https://io.orfel.de;OK
+https://rust.orfel.de;Ausnahme beim Aufrufen von "GetResponse" mit 0 Argument(en):  "Der Remoteserver hat einen Fehler zurückgegeben: (502) Ungültiges Gateway."
+https://ilias.orfel.de;Ausnahme beim Aufrufen von "GetResponse" mit 0 Argument(en):  "Die Anfrage wurde abgebrochen: Es konnte kein geschützter SSL/TLS-Kanal erstellt werden.."
+https://3d.orfel.de;Ausnahme beim Aufrufen von "GetResponse" mit 0 Argument(en):  "Der Remoteserver hat einen Fehler zurückgegeben: (502) Ungültiges Gateway."
+https://kestra.orfel.de;Ausnahme beim Aufrufen von "GetResponse" mit 0 Argument(en):  "Der Remoteserver hat einen Fehler zurückgegeben: (502) Ungültiges Gateway."
+https://deezer.orfel.de;Ausnahme beim Aufrufen von "GetResponse" mit 0 Argument(en):  "Der Remoteserver hat einen Fehler zurückgegeben: (502) Ungültiges Gateway."

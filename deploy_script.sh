@@ -465,6 +465,14 @@ start_remaining() {
             continue
         fi
         log "  Starting ${svc_name}..."
+        
+        # Ensure correct permissions for services requiring UID/GID 1000
+        if [[ "${svc_name}" == "n8n" ]] || [[ "${svc_name}" == "spoolman" ]] || [[ "${svc_name}" == "authentik" ]] || [[ "${svc_name}" == "ocis" ]]; then
+            log "    Setting permissions to UID/GID 1000 for ${svc_name} volumes..."
+            mkdir -p "${BASE_MOUNT_DIR}/${svc_name}"
+            chown -R 1000:1000 "${BASE_MOUNT_DIR}/${svc_name}"
+        fi
+
         cd "${SERVICES_DIR}/${svc_name}"
         docker compose up -d --remove-orphans
     done
