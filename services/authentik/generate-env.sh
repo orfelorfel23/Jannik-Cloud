@@ -19,6 +19,7 @@ DB_NAME=authentik_db
 DB_USER=authentik_user
 DB_PASSWORD=${DB_PASSWORD}
 AUTHENTIK_SECRET_KEY=$(generate_hex 32)
+REQUIRED_UID=1000
 EOF
 
 chmod 600 "${SCRIPT_DIR}/.env"

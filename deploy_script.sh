@@ -466,17 +466,23 @@ start_remaining() {
         fi
         log "  Starting ${svc_name}..."
         
-        # Ensure correct permissions for services requiring UID/GID 1000
-        if [[ "${svc_name}" == "n8n" ]] || [[ "${svc_name}" == "spoolman" ]] || [[ "${svc_name}" == "authentik" ]] || [[ "${svc_name}" == "ocis" ]] || [[ "${svc_name}" == "zipline" ]]; then
-            log "    Setting permissions to UID/GID 1000 for ${svc_name} volumes..."
-            mkdir -p "${VOLUME_BASE}/${svc_name}"
-            # Extract volume host paths and create them so Docker daemon doesn't auto-create them as root
-            grep -E "^\s*- /mnt/Jannik-Cloud-Volume-01" "${SERVICES_DIR}/${svc_name}/docker-compose.yml" | awk -F ':' '{print $1}' | sed -e 's/^[[:space:]]*- //' | while read -r host_path; do
-                if [[ -n "${host_path}" ]]; then
-                    mkdir -p "${host_path}"
-                fi
-            done
-            chown -R 1000:1000 "${VOLUME_BASE}/${svc_name}"
+        # Ensure correct permissions if the service defines REQUIRED_UID in its .env
+        local env_file="${SERVICES_DIR}/${svc_name}/.env"
+        if [[ -f "${env_file}" ]]; then
+            local req_uid
+            req_uid=$(grep -E "^REQUIRED_UID=" "${env_file}" 2>/dev/null | cut -d= -f2 | tr -d '[:space:]"' || true)
+            
+            if [[ -n "${req_uid}" ]]; then
+                log "    Setting permissions to UID/GID ${req_uid} for ${svc_name} volumes..."
+                mkdir -p "${VOLUME_BASE}/${svc_name}"
+                # Extract volume host paths and create them so Docker daemon doesn't auto-create them as root
+                grep -E "^\s*- /mnt/Jannik-Cloud-Volume-01" "${SERVICES_DIR}/${svc_name}/docker-compose.yml" | awk -F ':' '{print $1}' | sed -e 's/^[[:space:]]*- //' | while read -r host_path; do
+                    if [[ -n "${host_path}" ]]; then
+                        mkdir -p "${host_path}"
+                    fi
+                done
+                chown -R "${req_uid}:${req_uid}" "${VOLUME_BASE}/${svc_name}"
+            fi
         fi
 
         cd "${SERVICES_DIR}/${svc_name}"

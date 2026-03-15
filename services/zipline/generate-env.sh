@@ -20,6 +20,7 @@ DB_USER=zipline_user
 DB_PASSWORD=${DB_PASSWORD}
 CORE_SECRET=$(generate_hex 32)
 CORE_DATABASE_URL=postgresql://zipline_user:${DB_PASSWORD}@postgres:5432/zipline_db
+REQUIRED_UID=1000
 EOF
 
 chmod 600 "${SCRIPT_DIR}/.env"

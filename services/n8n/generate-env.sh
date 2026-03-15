@@ -16,6 +16,7 @@ DB_USER=n8n_user
 DB_PASSWORD=$(generate_password)
 SECRET_KEY=$(generate_hex 32)
 NEEDS_POSTGRES=true
+REQUIRED_UID=1000
 EOF
 
 chmod 600 "${SCRIPT_DIR}/.env"

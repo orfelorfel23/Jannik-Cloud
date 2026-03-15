@@ -12,6 +12,7 @@ USERNAME=Jannik
 EMAIL=jannik.mueller.jannik+git@googlemail.com
 PASSWORD=$(generate_password)
 SECRET_KEY=$(generate_hex 32)
+REQUIRED_UID=1000
 EOF
 
 chmod 600 "${SCRIPT_DIR}/.env"

@@ -19,6 +19,7 @@ DB_NAME=spoolman_db
 DB_USER=spoolman_user
 DB_PASSWORD=${DB_PASSWORD}
 SPOOLMAN_DB_URL=postgresql://spoolman_user:${DB_PASSWORD}@postgres:5432/spoolman_db
+REQUIRED_UID=1000
 EOF
 
 chmod 600 "${SCRIPT_DIR}/.env"
