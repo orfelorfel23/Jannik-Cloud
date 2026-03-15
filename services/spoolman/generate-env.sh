@@ -26,7 +26,7 @@ chmod 600 "${SCRIPT_DIR}/.env"
 
 cat > "${SCRIPT_DIR}/spoolman.caddy" <<'EOF'
 3d.orfel.de {
-	reverse_proxy spoolman:7912
+	reverse_proxy spoolman:8000
 }
 EOF
 
