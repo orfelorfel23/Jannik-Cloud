@@ -3,6 +3,9 @@ services:
     image: docker.n8n.io/n8nio/n8n:latest
     container_name: n8n
     restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
     ports:
       - "127.0.0.1:686:5678"
     environment:
@@ -12,13 +15,13 @@ services:
       WEBHOOK_URL: https://n8n.orfel.de/
       DB_TYPE: postgresdb
       DB_POSTGRESDB_HOST: postgres
-      DB_POSTGRESDB_PORT: 5432
+      DB_POSTGRESDB_PORT: "5432"
       DB_POSTGRESDB_DATABASE: ${DB_NAME}
       DB_POSTGRESDB_USER: ${DB_USER}
       DB_POSTGRESDB_PASSWORD: ${DB_PASSWORD}
       EXECUTIONS_MODE: regular
       QUEUE_BULL_REDIS_HOST: redis
-      QUEUE_BULL_REDIS_PORT: 6379
+      QUEUE_BULL_REDIS_PORT: "6379"
       N8N_ENCRYPTION_KEY: ${SECRET_KEY}
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/n8n:/home/node/.n8n

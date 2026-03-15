@@ -409,6 +409,9 @@ create_postgres_dbs() {
             continue
         fi
 
+        # Sanitize .env file to ensure no CRLF line endings break docker-compose variable interpolation
+        sed -i 's/\r$//' "${env_file}"
+
         # Read DB credentials from service .env
         local db_name db_user db_pass
         db_name=$(grep -E "^DB_NAME=" "${env_file}" | cut -d= -f2 | tr -d '[:space:]"' || echo "${svc_name}_db")
