@@ -25,6 +25,8 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
       LITELLM_API_KEY: ${LITELLM_API_KEY}
+      ALLOW_REGISTRATION: "true"
+      ALLOW_EMAIL_LOGIN: "true"
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/librechat/images:/app/client/public/images
       - /mnt/Jannik-Cloud-Volume-01/librechat/logs:/app/api/logs
