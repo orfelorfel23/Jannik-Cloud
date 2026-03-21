@@ -32,6 +32,7 @@ services:
   ilias-mysql:
     image: mysql:8
     container_name: ilias-mysql
+    command: --innodb_strict_mode=0
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
