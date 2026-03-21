@@ -11,13 +11,22 @@ services:
       DATABASE_NAME: ${DB_NAME}
       DATABASE_USER: ${DB_USER}
       DATABASE_PASSWORD: ${DB_PASSWORD}
-      DATABASE_PORT: 5432
+      DATABASE_PORT: "5432"
       SECRET_KEY: ${SECRET_KEY}
       BASEROW_ADMIN_EMAIL: ${EMAIL}
       BASEROW_ADMIN_PASSWORD: ${PASSWORD}
       BASEROW_CADDY_ADDRESSES: ":80"
+      # --- Performance tuning ---
+      BASEROW_AMOUNT_OF_WORKERS: "1"
+      BASEROW_TRIGGER_SYNC_TEMPLATES_AFTER_MIGRATION: "false"
+      BASEROW_AMOUNT_OF_GUNICORN_WORKERS: "2"
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/baserow:/baserow/data
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1024M
     networks:
       - jannik-cloud-net
 
