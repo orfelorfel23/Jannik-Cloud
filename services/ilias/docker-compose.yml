@@ -19,6 +19,11 @@ services:
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/ilias/data:/var/www/html/data
       - /mnt/Jannik-Cloud-Volume-01/ilias/iliasdata:/var/iliasdata
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
     networks:
       - jannik-cloud-net
 
@@ -38,6 +43,11 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
     networks:
       - jannik-cloud-net
 

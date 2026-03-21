@@ -17,6 +17,11 @@ services:
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/authentik/media:/media
       - /mnt/Jannik-Cloud-Volume-01/authentik/templates:/templates
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
     networks:
       - jannik-cloud-net
 
@@ -37,6 +42,11 @@ services:
       - /mnt/Jannik-Cloud-Volume-01/authentik/media:/media
       - /mnt/Jannik-Cloud-Volume-01/authentik/templates:/templates
       - /mnt/Jannik-Cloud-Volume-01/authentik/certs:/certs
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 768M
     networks:
       - jannik-cloud-net
 

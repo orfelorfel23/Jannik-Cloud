@@ -26,6 +26,11 @@ services:
       KESTRA_SECRET_KEY: ${KESTRA_SECRET_KEY}
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/kestra:/app/storage
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 768M
     networks:
       - jannik-cloud-net
 

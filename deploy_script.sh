@@ -110,6 +110,31 @@ EOF
 }
 
 ###############################################################################
+# 2b. Ensure swap is configured
+###############################################################################
+setup_swap() {
+    local SWAP_FILE="/swapfile"
+    local SWAP_SIZE="4G"
+
+    if swapon --show | grep -q "${SWAP_FILE}"; then
+        log "Swap already active."
+        return
+    fi
+
+    log "Setting up ${SWAP_SIZE} swap file..."
+    fallocate -l "${SWAP_SIZE}" "${SWAP_FILE}"
+    chmod 600 "${SWAP_FILE}"
+    mkswap "${SWAP_FILE}"
+    swapon "${SWAP_FILE}"
+
+    # Make permanent
+    if ! grep -q "${SWAP_FILE}" /etc/fstab; then
+        echo "${SWAP_FILE} none swap sw 0 0" >> /etc/fstab
+    fi
+    log "Swap is active (${SWAP_SIZE})."
+}
+
+###############################################################################
 # 3. Handle AGE private key
 ###############################################################################
 handle_age_key() {
@@ -507,6 +532,7 @@ main() {
 
     install_packages
     setup_fail2ban
+    setup_swap
     handle_age_key
     update_repo
     ensure_network
