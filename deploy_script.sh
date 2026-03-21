@@ -479,7 +479,7 @@ start_remaining() {
                 log "    Setting permissions to UID/GID ${req_uid} for ${svc_name} volumes..."
                 mkdir -p "${VOLUME_BASE}/${svc_name}"
                 # Extract volume host paths and create them so Docker daemon doesn't auto-create them as root
-                grep -E "^\s*- /mnt/Jannik-Cloud-Volume-01" "${SERVICES_DIR}/${svc_name}/docker-compose.yml" | awk -F ':' '{print $1}' | sed -e 's/^[[:space:]]*- //' | while read -r host_path; do
+                grep -E "^\s*- /mnt/Jannik-Cloud-Volume-01" "${SERVICES_DIR}/${svc_name}/docker-compose.yml" | tr -d '\r' | awk -F ':' '{print $1}' | sed -e 's/^[[:space:]]*- //' | while read -r host_path; do
                     if [[ -n "${host_path}" ]]; then
                         mkdir -p "${host_path}"
                     fi
