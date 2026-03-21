@@ -1,6 +1,6 @@
 services:
   ilias:
-    image: ilias/ilias:latest
+    image: srsolutions/ilias:latest
     container_name: ilias
     restart: unless-stopped
     depends_on:
