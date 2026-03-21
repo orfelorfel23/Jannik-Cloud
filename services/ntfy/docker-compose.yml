@@ -12,6 +12,11 @@ services:
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/ntfy/cache:/var/cache/ntfy
       - /mnt/Jannik-Cloud-Volume-01/ntfy/etc:/etc/ntfy
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 128M
     networks:
       - jannik-cloud-net
 

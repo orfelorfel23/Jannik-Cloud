@@ -28,6 +28,11 @@ services:
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/librechat/images:/app/client/public/images
       - /mnt/Jannik-Cloud-Volume-01/librechat/logs:/app/api/logs
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
     networks:
       - jannik-cloud-net
 
@@ -42,6 +47,11 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
     networks:
       - jannik-cloud-net
 

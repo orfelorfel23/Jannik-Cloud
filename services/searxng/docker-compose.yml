@@ -10,6 +10,11 @@ services:
     volumes:
       - ./settings.yml:/etc/searxng/settings.yml:ro
       - /mnt/Jannik-Cloud-Volume-01/searxng:/etc/searxng/data
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
     networks:
       - jannik-cloud-net
 

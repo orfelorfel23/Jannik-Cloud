@@ -13,6 +13,11 @@ services:
       - "127.0.0.1:1326:80"
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/linus:/data
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 128M
     networks:
       - jannik-cloud-net
 

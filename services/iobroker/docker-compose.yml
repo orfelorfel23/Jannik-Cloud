@@ -9,6 +9,11 @@ services:
       IOB_ADMINPORT: 8081
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/iobroker:/opt/iobroker
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 768M
     networks:
       - jannik-cloud-net
 

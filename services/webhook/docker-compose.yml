@@ -14,6 +14,11 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /opt/Jannik-Cloud:/opt/Jannik-Cloud:ro
       - /usr/bin/docker:/usr/bin/docker:ro
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 128M
     networks:
       - jannik-cloud-net
 

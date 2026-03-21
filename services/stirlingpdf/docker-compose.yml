@@ -13,6 +13,11 @@ services:
       - /mnt/Jannik-Cloud-Volume-01/stirlingpdf/data:/usr/share/tessdata
       - /mnt/Jannik-Cloud-Volume-01/stirlingpdf/config:/configs
       - /mnt/Jannik-Cloud-Volume-01/stirlingpdf/logs:/logs
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1536M
     networks:
       - jannik-cloud-net
 

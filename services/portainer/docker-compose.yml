@@ -8,6 +8,11 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /mnt/Jannik-Cloud-Volume-01/portainer:/data
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 256M
     networks:
       - jannik-cloud-net
 

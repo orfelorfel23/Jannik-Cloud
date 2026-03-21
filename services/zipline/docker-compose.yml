@@ -13,6 +13,11 @@ services:
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/zipline/uploads:/zipline/uploads
       - /mnt/Jannik-Cloud-Volume-01/zipline/public:/zipline/public
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
     networks:
       - jannik-cloud-net
 

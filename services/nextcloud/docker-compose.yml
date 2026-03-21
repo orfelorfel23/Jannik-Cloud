@@ -17,6 +17,11 @@ services:
       OVERWRITEHOST: nextcloud.orfel.de
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/nextcloud:/var/www/html
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
     networks:
       - jannik-cloud-net
 

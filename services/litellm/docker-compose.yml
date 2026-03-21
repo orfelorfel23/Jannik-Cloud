@@ -11,6 +11,11 @@ services:
       LITELLM_SALT_KEY: ${SALT_KEY}
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/litellm:/app/data
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1024M
     networks:
       - jannik-cloud-net
 

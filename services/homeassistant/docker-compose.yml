@@ -11,6 +11,11 @@ services:
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/homeassistant:/config
       - /run/dbus:/run/dbus:ro
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
     networks:
       - jannik-cloud-net
 

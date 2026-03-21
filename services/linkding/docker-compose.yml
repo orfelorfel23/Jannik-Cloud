@@ -16,6 +16,11 @@ services:
       LD_SUPERUSER_PASSWORD: ${LINKDING_SUPERUSER_PASSWORD}
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/linkding:/etc/linkding/data
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
     networks:
       - jannik-cloud-net
 

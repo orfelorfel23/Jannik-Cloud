@@ -26,6 +26,11 @@ services:
       - /mnt/Jannik-Cloud-Volume-01/gitea:/data
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
     networks:
       - jannik-cloud-net
 

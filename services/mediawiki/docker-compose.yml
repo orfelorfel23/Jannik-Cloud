@@ -19,6 +19,11 @@ services:
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/mediawiki/images:/var/www/html/images
       - /mnt/Jannik-Cloud-Volume-01/mediawiki/config:/var/www/html/config
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 256M
     networks:
       - jannik-cloud-net
 

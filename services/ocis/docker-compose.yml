@@ -21,6 +21,11 @@ services:
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/ocis/config:/etc/ocis
       - /mnt/Jannik-Cloud-Volume-01/ocis/data:/var/lib/ocis
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
     networks:
       - jannik-cloud-net
 
