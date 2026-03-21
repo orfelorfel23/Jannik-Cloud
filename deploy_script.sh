@@ -469,11 +469,11 @@ start_remaining() {
         fi
         log "  Starting ${svc_name}..."
         
-        # Ensure correct permissions if the service defines REQUIRED_UID in its .env
-        local env_file="${SERVICES_DIR}/${svc_name}/.env"
-        if [[ -f "${env_file}" ]]; then
+        # Ensure correct permissions if the service has a service.uid file
+        local uid_file="${SERVICES_DIR}/${svc_name}/service.uid"
+        if [[ -f "${uid_file}" ]]; then
             local req_uid
-            req_uid=$(grep -E "^REQUIRED_UID=" "${env_file}" 2>/dev/null | cut -d= -f2 | tr -d '[:space:]"' || true)
+            req_uid=$(tr -d '[:space:]\r' < "${uid_file}")
             
             if [[ -n "${req_uid}" ]]; then
                 log "    Setting permissions to UID/GID ${req_uid} for ${svc_name} volumes..."
