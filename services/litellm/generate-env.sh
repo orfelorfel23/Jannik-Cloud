@@ -15,8 +15,10 @@ DB_NAME=litellm_db
 DB_USER=litellm_user
 DB_PASSWORD=$(generate_password)
 SECRET_KEY=$(generate_hex 32)
+MASTER_KEY=sk-$(generate_hex 32)
 SALT_KEY=$(generate_hex 32)
 NEEDS_POSTGRES=true
+
 EOF
 
 chmod 600 "${SCRIPT_DIR}/.env"
