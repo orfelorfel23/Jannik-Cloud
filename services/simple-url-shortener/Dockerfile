@@ -11,7 +11,8 @@ RUN docker-php-ext-install pdo pdo_sqlite
 RUN rm -rf /var/www/html/* \
     && git clone https://github.com/azlux/Simple-URL-Shortener.git /tmp/shortener \
     && cp -r /tmp/shortener/* /var/www/html/ \
-    && rm -rf /tmp/shortener
+    && rm -rf /tmp/shortener \
+    && cp /var/www/html/inc/config.example.php /var/www/html/inc/config.php
 
 # Configure permissions
 RUN chown -R www-data:www-data /var/www/html
