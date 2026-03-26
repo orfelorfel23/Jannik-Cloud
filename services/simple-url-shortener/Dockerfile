@@ -12,7 +12,9 @@ RUN rm -rf /var/www/html/* \
     && git clone https://github.com/azlux/Simple-URL-Shortener.git /tmp/shortener \
     && cp -r /tmp/shortener/* /var/www/html/ \
     && rm -rf /tmp/shortener \
-    && cp /var/www/html/inc/config.example.php /var/www/html/inc/config.php
+    && cp /var/www/html/inc/config.example.php /var/www/html/inc/config.php \
+    && sed -i "s/'mysql'/'sqlite3'/" /var/www/html/inc/config.php \
+    && sed -i "s|'./database.sqlite3'|'./data/database.sqlite3'|" /var/www/html/inc/config.php
 
 # Configure permissions
 RUN chown -R www-data:www-data /var/www/html
