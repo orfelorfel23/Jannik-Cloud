@@ -1,0 +1,26 @@
+services:
+  handbrake:
+    image: jlesage/handbrake
+    container_name: handbrake
+    restart: unless-stopped
+    ports:
+      - "5800:5800"
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/handbrake/config:/config
+      - /mnt/Jannik-Cloud-Volume-01/handbrake/storage:/storage
+      - /mnt/Jannik-Cloud-Volume-01/handbrake/watch:/watch
+      - /mnt/Jannik-Cloud-Volume-01/handbrake/output:/output
+    environment:
+      - USER_ID=1000
+      - GROUP_ID=1000
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 2G
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true

@@ -1,0 +1,20 @@
+services:
+  clink:
+    image: clink:latest
+    container_name: clink
+    restart: unless-stopped
+    ports:
+      - "5234:80"
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/clink:/data
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 256M
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true

@@ -1,0 +1,20 @@
+services:
+  bit:
+    image: sjdonado/bit:latest
+    container_name: bit
+    restart: unless-stopped
+    ports:
+      - "5233:8080"
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/bit:/app/data
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 256M
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true

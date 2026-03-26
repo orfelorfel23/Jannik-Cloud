@@ -1,0 +1,21 @@
+services:
+  simple-url-shortener:
+    image: azlux/simple-url-shortener:latest
+    container_name: simple-url-shortener
+    restart: unless-stopped
+    # Depending on the image it exposes 80 inside the container
+    ports:
+      - "8086:80"
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/simple-url-shortener:/var/www/html/data
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true

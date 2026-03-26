@@ -1,0 +1,20 @@
+services:
+  slash:
+    image: yourselfhosted/slash:latest
+    container_name: slash
+    restart: unless-stopped
+    ports:
+      - "5231:5231"
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/slash:/var/opt/slash
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true

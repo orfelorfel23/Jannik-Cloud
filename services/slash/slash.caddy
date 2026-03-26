@@ -1,0 +1,3 @@
+slash.orfel.de {
+    reverse_proxy slash:5231
+}
