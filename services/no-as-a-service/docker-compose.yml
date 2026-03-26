@@ -1,0 +1,21 @@
+services:
+  no-as-a-service:
+    image: node:20-alpine
+    container_name: no-as-a-service
+    restart: unless-stopped
+    command: node /app/server.js
+    volumes:
+      - ./server.js:/app/server.js:ro
+      - ./excuses.json:/app/excuses.json:ro
+    working_dir: /app
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 128M
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true
