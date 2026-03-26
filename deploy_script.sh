@@ -533,6 +533,16 @@ start_remaining() {
     done
 }
 
+}
+
+###############################################################################
+# 16. Cleanup unused Docker images
+###############################################################################
+cleanup_docker() {
+    log "Cleaning up unused Docker images to free disk space..."
+    docker image prune -af 2>/dev/null || true
+}
+
 ###############################################################################
 # MAIN
 ###############################################################################
@@ -564,6 +574,7 @@ main() {
     create_postgres_dbs
     start_caddy
     start_remaining
+    cleanup_docker
 
     log "=========================================="
     log "  Deployment complete!"
