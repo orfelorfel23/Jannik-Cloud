@@ -1,0 +1,3 @@
+nein.orfel.de {
+    reverse_proxy nein:8080
+}

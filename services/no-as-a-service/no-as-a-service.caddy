@@ -1,3 +1,0 @@
-no.orfel.de {
-    reverse_proxy no-as-a-service:8080
-}
