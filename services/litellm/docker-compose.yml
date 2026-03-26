@@ -7,8 +7,10 @@ services:
       - "127.0.0.1:556:4000"
     environment:
       DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}
-      LITELLM_MASTER_KEY: ${SECRET_KEY}
+      LITELLM_MASTER_KEY: ${MASTER_KEY}
       LITELLM_SALT_KEY: ${SALT_KEY}
+      UI_USERNAME: ${USERNAME}
+      UI_PASSWORD: ${PASSWORD}
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/litellm:/app/data
     deploy:
