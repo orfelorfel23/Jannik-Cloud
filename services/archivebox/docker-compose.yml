@@ -11,6 +11,8 @@ services:
       - .env
     environment:
       - ALLOWED_HOSTS=*
+      - ADMIN_USERNAME=${USERNAME}
+      - ADMIN_PASSWORD=${PASSWORD}
     deploy:
       resources:
         limits:
