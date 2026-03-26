@@ -135,6 +135,21 @@ setup_swap() {
 }
 
 ###############################################################################
+# 2c. Ensure crontab is configured for daily auto-deploy
+###############################################################################
+setup_cron_job() {
+    log "Configuring daily automatic deployment (cron) for 02:31..."
+    local CRON_JOB="31 2 * * * cd /opt/Jannik-Cloud && git pull && /bin/bash /opt/Jannik-Cloud/deploy_script.sh >> /var/log/jannik-cloud-deploy.log 2>&1"
+    
+    # Remove old copies of this cron job to prevent duplicates
+    crontab -l 2>/dev/null | grep -v "/opt/Jannik-Cloud/deploy_script.sh" | crontab - || true
+    
+    # Install the new cron job
+    (crontab -l 2>/dev/null; echo "$CRON_JOB") | crontab -
+    log "Cron job active for 02:31."
+}
+
+###############################################################################
 # 3. Handle AGE private key
 ###############################################################################
 handle_age_key() {
@@ -533,6 +548,7 @@ main() {
     install_packages
     setup_fail2ban
     setup_swap
+    setup_cron_job
     handle_age_key
     update_repo
     ensure_network
