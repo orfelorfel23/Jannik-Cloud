@@ -1,6 +1,6 @@
 services:
   simple-url-shortener:
-    image: azlux/simple-url-shortener:latest
+    build: https://github.com/azlux/Simple-URL-Shortener.git#master
     container_name: simple-url-shortener
     restart: unless-stopped
     # Depending on the image it exposes 80 inside the container

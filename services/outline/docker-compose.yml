@@ -21,9 +21,6 @@ services:
       ENABLE_UPDATES: "true"
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/outline/data:/var/lib/outline/data
-    depends_on:
-      - postgres
-      - redis
     networks:
       - jannik-cloud-net
 
