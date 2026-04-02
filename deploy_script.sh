@@ -297,41 +297,18 @@ create_volumes() {
 }
 
 ###############################################################################
-# 10b. Configure Home Assistant trusted proxies
+# 10b. Run per-service init hooks (service.init scripts)
 ###############################################################################
-configure_homeassistant() {
-    local ha_config="${VOLUME_BASE}/homeassistant/configuration.yaml"
-    if [[ " ${ACTIVE_SERVICES[*]} " =~ " homeassistant " ]]; then
-        if [[ ! -f "${ha_config}" ]]; then
-            log "Creating Home Assistant configuration.yaml with trusted proxies..."
-            cat > "${ha_config}" <<'EOF'
-homeassistant:
-  name: Home
-  unit_system: metric
-  time_zone: Europe/Berlin
-
-http:
-  use_x_forwarded_for: true
-  trusted_proxies:
-    - 172.16.0.0/12
-    - 10.0.0.0/8
-    - 192.168.0.0/16
-
-default_config:
-EOF
-        elif ! grep -q "trusted_proxies" "${ha_config}"; then
-            log "Adding trusted proxy config to Home Assistant..."
-            cat >> "${ha_config}" <<'EOF'
-
-http:
-  use_x_forwarded_for: true
-  trusted_proxies:
-    - 172.16.0.0/12
-    - 10.0.0.0/8
-    - 192.168.0.0/16
-EOF
+run_service_init_hooks() {
+    log "Running service init hooks..."
+    for svc_name in "${ACTIVE_SERVICES[@]}"; do
+        local init_script="${SERVICES_DIR}/${svc_name}/service.init"
+        if [[ -f "${init_script}" ]]; then
+            log "  Running init hook for ${svc_name}..."
+            chmod +x "${init_script}" 2>/dev/null || true
+            bash "${init_script}"
         fi
-    fi
+    done
 }
 
 ###############################################################################
@@ -390,13 +367,6 @@ start_infra() {
         docker compose up -d --remove-orphans
     fi
 
-    # Start ILIAS MySQL (dedicated instance, not shared PostgreSQL)
-    if [[ " ${ACTIVE_SERVICES[*]} " =~ " ilias " ]]; then
-        log "Starting ILIAS MySQL..."
-        cd "${SERVICES_DIR}/ilias"
-        docker compose up -d ilias-mysql
-        wait_for_ilias_mysql
-    fi
 }
 
 wait_for_postgres() {
@@ -414,20 +384,7 @@ wait_for_postgres() {
     log "PostgreSQL is healthy."
 }
 
-wait_for_ilias_mysql() {
-    log "Waiting for ILIAS MySQL to be healthy..."
-    local retries=30
-    local count=0
-    while ! docker exec ilias-mysql mysqladmin ping -h localhost --silent &>/dev/null; do
-        count=$((count + 1))
-        if [[ ${count} -ge ${retries} ]]; then
-            die "ILIAS MySQL did not become healthy within ${retries} attempts."
-        fi
-        log "  Waiting... (${count}/${retries})"
-        sleep 2
-    done
-    log "ILIAS MySQL is healthy."
-}
+
 
 ###############################################################################
 # 14. Auto-create PostgreSQL databases and users
@@ -566,7 +523,7 @@ main() {
     stop_all_services
     decrypt_envs
     create_volumes
-    configure_homeassistant
+    run_service_init_hooks
     assemble_caddy_fragments
     pull_images
     start_infra

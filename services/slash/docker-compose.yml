@@ -4,7 +4,7 @@ services:
     container_name: slash
     restart: unless-stopped
     ports:
-      - "5231:5231"
+      - "127.0.0.1:5231:5231"
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/slash:/var/opt/slash
     deploy:

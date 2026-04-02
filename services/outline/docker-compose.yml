@@ -21,6 +21,11 @@ services:
       ENABLE_UPDATES: "true"
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/outline/data:/var/lib/outline/data
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1024M
     networks:
       - jannik-cloud-net
 

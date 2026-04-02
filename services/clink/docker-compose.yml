@@ -1,12 +1,12 @@
 services:
   clink:
-    image: clink:latest
+    image: crueter/clink:latest
     container_name: clink
     restart: unless-stopped
     ports:
-      - "5234:80"
+      - "127.0.0.1:5234:3000"
     volumes:
-      - /mnt/Jannik-Cloud-Volume-01/clink:/data
+      - /mnt/Jannik-Cloud-Volume-01/clink:/app/data
     deploy:
       resources:
         limits:

@@ -5,15 +5,15 @@ REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 AGE_PUB_KEY="${REPO_ROOT}/keys/age-public-key.txt"
 
 cat > "${SCRIPT_DIR}/.env" <<EOF
-# Home Assistant — Smart Home
-# No secrets needed; HA uses its own config file.
+# Quizmaster — Quiz Application
+# No secrets needed; configured via quiz-config.yml in the volume.
 EOF
 
 chmod 600 "${SCRIPT_DIR}/.env"
 
-cat > "${SCRIPT_DIR}/homeassistant.caddy" <<'EOF'
-home.orfel.de {
-	reverse_proxy homeassistant:8123
+cat > "${SCRIPT_DIR}/quizmaster.caddy" <<'EOF'
+quiz.orfel.de {
+	reverse_proxy quizmaster:9000
 }
 EOF
 
@@ -21,4 +21,4 @@ if [[ -f "${AGE_PUB_KEY}" ]]; then
     age -r "$(cat "${AGE_PUB_KEY}")" -o "${SCRIPT_DIR}/.env.age" "${SCRIPT_DIR}/.env"
     echo "Encrypted .env → .env.age"
 fi
-echo "Home Assistant environment generated."
+echo "Quizmaster environment generated."

@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+###############################################################################
+# Home Assistant — service.init
+# Creates a default configuration.yaml with trusted proxies for Caddy
+# if one does not already exist.
+###############################################################################
+set -euo pipefail
+
+VOLUME_BASE="/mnt/Jannik-Cloud-Volume-01"
+HA_CONFIG="${VOLUME_BASE}/homeassistant/configuration.yaml"
+
+mkdir -p "${VOLUME_BASE}/homeassistant"
+
+if [[ ! -f "${HA_CONFIG}" ]]; then
+    echo "[INIT] Creating Home Assistant configuration.yaml with trusted proxies..."
+    cat > "${HA_CONFIG}" <<'EOF'
+homeassistant:
+  name: Home
+  unit_system: metric
+  time_zone: Europe/Berlin
+
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 172.16.0.0/12
+    - 10.0.0.0/8
+    - 192.168.0.0/16
+
+default_config:
+EOF
+elif ! grep -q "trusted_proxies" "${HA_CONFIG}"; then
+    echo "[INIT] Adding trusted proxy config to Home Assistant..."
+    cat >> "${HA_CONFIG}" <<'EOF'
+
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 172.16.0.0/12
+    - 10.0.0.0/8
+    - 192.168.0.0/16
+EOF
+fi

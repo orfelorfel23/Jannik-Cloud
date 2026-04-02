@@ -10,9 +10,6 @@ services:
       DOMAIN: https://pw.orfel.de
       ADMIN_TOKEN: ${ADMIN_TOKEN}
       SIGNUPS_ALLOWED: "true"
-      WEBSOCKET_ENABLED: "true"
-      SMTP_HOST: ""
-      SMTP_FROM: ${EMAIL}
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/vaultwarden:/data
     deploy:

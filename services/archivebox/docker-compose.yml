@@ -4,15 +4,13 @@ services:
     container_name: archivebox
     restart: unless-stopped
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/archivebox:/data
     env_file:
       - .env
     environment:
       - ALLOWED_HOSTS=*
-      - ADMIN_USERNAME=${USERNAME}
-      - ADMIN_PASSWORD=${PASSWORD}
     deploy:
       resources:
         limits:

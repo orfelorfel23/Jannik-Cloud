@@ -1,16 +1,16 @@
 services:
-  bit:
-    image: sjdonado/bit:latest
-    container_name: bit
+  quizmaster:
+    image: nymanjens/quizmaster:latest
+    container_name: quizmaster
     restart: unless-stopped
     ports:
-      - "127.0.0.1:5233:8080"
+      - "127.0.0.1:5235:9000"
     volumes:
-      - /mnt/Jannik-Cloud-Volume-01/bit:/app/data
+      - /mnt/Jannik-Cloud-Volume-01/quizmaster/quiz:/app/conf/quiz
     deploy:
       resources:
         limits:
-          cpus: "0.25"
+          cpus: "0.5"
           memory: 256M
     networks:
       - jannik-cloud-net

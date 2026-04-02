@@ -10,6 +10,11 @@ services:
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/deezer/downloads:/downloads
       - /mnt/Jannik-Cloud-Volume-01/deezer/config:/config
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
     networks:
       - jannik-cloud-net
 
