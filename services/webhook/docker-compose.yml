@@ -1,6 +1,6 @@
 services:
   webhook:
-    image: almir/webhook:latest
+    build: .
     container_name: webhook
     user: "root"
     restart: unless-stopped
@@ -14,7 +14,6 @@ services:
       - ./scripts:/etc/webhook/scripts:ro
       - /var/run/docker.sock:/var/run/docker.sock
       - /opt/Jannik-Cloud:/opt/Jannik-Cloud:ro
-      - /usr/bin/docker:/usr/bin/docker:ro
     deploy:
       resources:
         limits:
