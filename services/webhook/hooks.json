@@ -1,8 +1,18 @@
 [
   {
     "id": "rebuild-linus",
-    "execute-command": "/etc/webhook/scripts/rebuild-linus.sh",
+    "execute-command": "sh",
     "command-working-directory": "/opt/Jannik-Cloud",
+    "pass-arguments-to-command": [
+      {
+        "source": "string",
+        "name": "-c"
+      },
+      {
+        "source": "string",
+        "name": "/etc/webhook/scripts/rebuild-linus.sh"
+      }
+    ],
     "response-message": "Linus rebuild triggered.",
     "trigger-rule": {
       "and": [
@@ -18,13 +28,22 @@
         }
       ]
     },
-    "pass-arguments-to-command": [],
     "include-command-output-in-response": true
   },
   {
     "id": "deploy-cloud",
-    "execute-command": "/etc/webhook/scripts/deploy-cloud.sh",
+    "execute-command": "sh",
     "command-working-directory": "/opt/Jannik-Cloud",
+    "pass-arguments-to-command": [
+      {
+        "source": "string",
+        "name": "-c"
+      },
+      {
+        "source": "string",
+        "name": "/etc/webhook/scripts/deploy-cloud.sh"
+      }
+    ],
     "response-message": "Jannik-Cloud deploy triggered.",
     "trigger-rule": {
       "and": [
@@ -40,7 +59,6 @@
         }
       ]
     },
-    "pass-arguments-to-command": [],
     "include-command-output-in-response": true
   }
 ]
