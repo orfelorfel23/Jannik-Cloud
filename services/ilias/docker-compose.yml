@@ -16,7 +16,7 @@ services:
       ILIAS_DB_PASSWORD: ${MYSQL_PASSWORD}
       ILIAS_ROOT_PASSWORD: ${PASSWORD}
       ILIAS_HTTP_PATH: https://ilias.orfel.de
-      ILIAS_AUTO_SETUP: "1"
+      ILIAS_AUTO_SETUP: "0"
       ILIAS_CLIENT_NAME: default
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/ilias/data:/var/www/html/data

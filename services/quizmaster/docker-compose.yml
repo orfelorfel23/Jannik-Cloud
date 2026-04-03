@@ -3,6 +3,9 @@ services:
     image: nymanjens/quizmaster:latest
     container_name: quizmaster
     restart: unless-stopped
+    environment:
+      - BIND=0.0.0.0
+      - HOST=0.0.0.0
     ports:
       - "127.0.0.1:5235:9000"
     volumes:
