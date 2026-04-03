@@ -23,7 +23,7 @@ PROJECT_PREFIX="jannik-cloud"
 INFRA_SERVICES=("postgres" "redis" "caddy")
 
 # ntfy push notifications
-NTFY_URL="http://127.0.0.1:6939/Jannik-Cloud-Deploy-Trigger"
+NTFY_URL="https://ntfy.orfel.de/Jannik-Cloud-Deploy-Trigger"
 DEPLOY_START_TIME=""
 
 ###############################################################################
@@ -549,6 +549,14 @@ main() {
     # Trap failures so we always get a notification
     trap on_deploy_failure ERR
 
+    # --- Notify early before anything is checked or updated ---
+    notify "Deployment startet" \
+        "Deploy-Skript um $(date '+%H:%M') gestartet. System wird überprüft und aktualisiert..." \
+        "default" "gear"
+        
+    log "Waiting 5 seconds to ensure the start notification is delivered safely..."
+    sleep 5
+
     install_packages
     setup_fail2ban
     setup_swap
@@ -562,14 +570,6 @@ main() {
     ensure_network
     discover_services
     cleanup_deactivated
-
-    # --- Notify before stopping services ---
-    notify "Deployment startet" \
-        "Deploy-Skript um $(date '+%H:%M') gestartet. Stoppe alte Container und deploye ${#ACTIVE_SERVICES[@]} Dienste neu..." \
-        "default" "gear"
-        
-    log "Waiting 10 seconds to ensure the push notification is delivered before tearing down the proxy..."
-    sleep 10
 
     stop_all_services
     decrypt_envs
