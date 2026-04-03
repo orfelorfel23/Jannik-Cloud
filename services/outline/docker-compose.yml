@@ -9,8 +9,7 @@ services:
       NODE_ENV: production
       SECRET_KEY: ${SECRET_KEY}
       UTILS_SECRET: ${UTILS_SECRET}
-      DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}
-      PGSSLMODE: disable
+      DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}?sslmode=disable
       REDIS_URL: redis://redis:6379
       URL: https://outline.orfel.de
       PORT: 3000

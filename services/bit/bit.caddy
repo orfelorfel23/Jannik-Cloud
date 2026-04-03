@@ -1,3 +1,3 @@
 bit.orfel.de {
-    reverse_proxy bit:8080
+    reverse_proxy bit:4000
 }

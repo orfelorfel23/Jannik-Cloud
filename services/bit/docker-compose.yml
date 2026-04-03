@@ -6,8 +6,10 @@ services:
     environment:
       - ADMIN_NAME=admin
       - ADMIN_API_KEY=bit-admin-secret-key-123
+      - APP_URL=https://bit.orfel.de
+      - ENV=production
     ports:
-      - "127.0.0.1:5233:8080"
+      - "127.0.0.1:5233:4000"
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/bit:/app/data
     deploy:
