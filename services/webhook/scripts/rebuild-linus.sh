@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-NTFY_URL="https://ntfy.orfel.de/Jannik-Cloud-Deploy-Trigger"
+NTFY_URL="http://127.0.0.1:6939/Jannik-Cloud-Deploy-Trigger"
 
 # All work happens on the host via chroot
 docker run --rm \
@@ -20,6 +20,7 @@ curl -s -o /dev/null --retry 3 --retry-delay 2 --max-time 10 \\
   -H 'Title: Linus Rebuild startet' \\
   -H 'Priority: default' \\
   -H 'Tags: hammer' \\
+  -H 'Host: ntfy.orfel.de' \\
   -d \"Push für Linus-Website um \${TIMESTAMP} erkannt. Container wird neu gebaut...\" \\
   \"\${NTFY_URL}\"
 
@@ -29,6 +30,7 @@ docker compose build --no-cache 2>&1 || {
     -H 'Title: Linus Rebuild FEHLGESCHLAGEN' \\
     -H 'Priority: urgent' \\
     -H 'Tags: x' \\
+    -H 'Host: ntfy.orfel.de' \\
     -d 'Linus Container Build ist fehlgeschlagen. Prüfe die Server-Logs.' \\
     \"\${NTFY_URL}\"
   exit 1
@@ -40,6 +42,7 @@ curl -s -o /dev/null --retry 3 --retry-delay 2 --max-time 10 \\
   -H 'Title: Linus Rebuild abgeschlossen' \\
   -H 'Priority: default' \\
   -H 'Tags: white_check_mark' \\
+  -H 'Host: ntfy.orfel.de' \\
   -d 'Linus Website-Container wurde erfolgreich neu gebaut und gestartet.' \\
   \"\${NTFY_URL}\"
 " 2>&1

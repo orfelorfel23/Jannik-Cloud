@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-NTFY_URL="https://ntfy.orfel.de/Jannik-Cloud-Deploy-Trigger"
+NTFY_URL="http://127.0.0.1:6939/Jannik-Cloud-Deploy-Trigger"
 LOCK_FILE="/tmp/jannik-cloud-deploy.lock"
 LOG_FILE="/var/log/jannik-cloud-deploy.log"
 
@@ -25,6 +25,7 @@ curl -s -o /dev/null --retry 3 --retry-delay 2 --max-time 10 \\
   -H 'Title: GitHub Push erkannt' \\
   -H 'Priority: default' \\
   -H 'Tags: rocket' \\
+  -H 'Host: ntfy.orfel.de' \\
   -d \"Neuer Push zu Jannik-Cloud um \${TIMESTAMP}. Deployment wird vorbereitet...\" \\
   \"\${NTFY_URL}\" 2>/dev/null || true
 
@@ -37,6 +38,7 @@ if [ -f \"\${LOCK_FILE}\" ]; then
     -H 'Title: Deployment übersprungen' \\
     -H 'Priority: low' \\
     -H 'Tags: warning' \\
+    -H 'Host: ntfy.orfel.de' \\
     -d \"Ein Deployment läuft bereits (PID: \${LOCK_PID}). Dieser Trigger wird übersprungen.\" \\
     \"\${NTFY_URL}\" 2>/dev/null || true
   echo \"[\${TIMESTAMP}] Skipped — already running (PID: \${LOCK_PID})\" >> \"\${LOG_FILE}\"
