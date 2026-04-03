@@ -1,7 +1,7 @@
 [
   {
     "id": "rebuild-linus",
-    "execute-command": "sh",
+    "execute-command": "/bin/sh",
     "command-working-directory": "/opt/Jannik-Cloud",
     "pass-arguments-to-command": [
       {
@@ -32,7 +32,7 @@
   },
   {
     "id": "deploy-cloud",
-    "execute-command": "sh",
+    "execute-command": "/bin/sh",
     "command-working-directory": "/opt/Jannik-Cloud",
     "pass-arguments-to-command": [
       {
