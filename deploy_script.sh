@@ -120,7 +120,31 @@ install_packages() {
 }
 
 ###############################################################################
-# 2. Enable fail2ban for SSH
+# 2. Configure Docker Daemon globally (prevents log bloat crashing the SSD)
+###############################################################################
+configure_docker_daemon() {
+    log "Configuring Docker daemon log limits..."
+    mkdir -p /etc/docker
+    # Only write if it does not already exist with log limitations
+    if ! grep -q "max-file" /etc/docker/daemon.json 2>/dev/null; then
+        cat > /etc/docker/daemon.json <<'EOF'
+{
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "50m",
+    "max-file": "3"
+  }
+}
+EOF
+        systemctl restart docker || true
+        log "Docker log rotation activated (Max 150MB per service)."
+    else
+        log "Docker log rotation already active."
+    fi
+}
+
+###############################################################################
+# 2b. Enable fail2ban for SSH
 ###############################################################################
 setup_fail2ban() {
     log "Configuring fail2ban for SSH..."
@@ -524,11 +548,12 @@ start_remaining() {
 
 
 ###############################################################################
-# 16. Cleanup unused Docker images
+# 16. Cleanup unused Docker images and caches
 ###############################################################################
 cleanup_docker() {
-    log "Cleaning up unused Docker images to free disk space..."
+    log "Cleaning up unused Docker images and build caches to free disk space..."
     docker image prune -af 2>/dev/null || true
+    docker builder prune -af 2>/dev/null || true
 }
 
 ###############################################################################
@@ -558,6 +583,7 @@ main() {
     sleep 5
 
     install_packages
+    configure_docker_daemon
     setup_fail2ban
     setup_swap
     setup_cron_job
