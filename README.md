@@ -12,37 +12,45 @@ Self-hosted cloud infrastructure on Hetzner Ubuntu 24 LTS, managed via Docker Co
 
 ## Services
 
-| Service | Subdomain | Port |
-|---------|-----------|------|
+| Service | Subdomain (Clickable) | Port |
+|---------|-----------------------|------|
 | Caddy | — | 80, 443 |
 | PostgreSQL | (internal) | 5432 |
 | Redis | (internal) | 6379 |
-| Outline | outline.orfel.de | 688 |
-| LiteLLM | llm.orfel.de | 556 |
-| Portainer | port.orfel.de | 7678 |
-| OwnCloud (OCIS) | owncloud.orfel.de | 696 |
-| Nextcloud | nextcloud.orfel.de | 6398 |
-| MediaWiki | wiki.orfel.de | 9454 |
-| Baserow | br.orfel.de | 2273 |
-| Vaultwarden | pw.orfel.de | 7277 |
-| LibreChat | chat.orfel.de | 2428 |
-| NTFY | ntfy.orfel.de | 6939 |
-| N8N | n8n.orfel.de | 686 |
-| Gitea | git.orfel.de | 448 |
-| Home Assistant | home.orfel.de | 4663 |
-| Stirling PDF | pdf.orfel.de | 733 |
-| Linus (lsound) | linus.orfel.de, lsound.orfel.de | 1326 |
-| Webhook | webhook.orfel.de | 9500 |
-| Authentik | auth.orfel.de | 2884 |
-| Linkding | link.orfel.de | 5465 |
-| Zipline | short.orfel.de | 947 |
-| SearXNG | go.orfel.de | 3463 |
-| ioBroker | io.orfel.de | 46 |
+| ArchiveBox | [archive.orfel.de](https://archive.orfel.de) | 884 |
+| Authentik | [auth.orfel.de](https://auth.orfel.de) | 2884 |
+| Baserow | [br.orfel.de](https://br.orfel.de) | 2273 |
+| Bit | [bit.orfel.de](https://bit.orfel.de) | 811 |
+| Clink | [clink.orfel.de](https://clink.orfel.de) | 6112 |
+| Deezer | [deezer.orfel.de](https://deezer.orfel.de) | 673 |
+| Gitea | [git.orfel.de](https://git.orfel.de) | 448 |
+| Handbrake | [hb.orfel.de](https://hb.orfel.de) | 5800 |
+| Home Assistant | [home.orfel.de](https://home.orfel.de) | 4663 |
+| ILIAS | [ilias.orfel.de](https://ilias.orfel.de) | 45427 |
+| ioBroker | [io.orfel.de](https://io.orfel.de) | 46 |
+| Kestra | [kestra.orfel.de](https://kestra.orfel.de) | 5378 |
+| LibreChat | [chat.orfel.de](https://chat.orfel.de) | 2428 |
+| Linkding | [link.orfel.de](https://link.orfel.de) | 5465 |
+| Linus (lsound) | [linus.orfel.de](https://linus.orfel.de), [lsound.orfel.de](https://lsound.orfel.de) | 1326 |
+| LiteLLM | [llm.orfel.de](https://llm.orfel.de) | 556 |
+| MediaWiki | [wiki.orfel.de](https://wiki.orfel.de) | 9454 |
+| N8N | [n8n.orfel.de](https://n8n.orfel.de) | 686 |
+| Nein | [nein.orfel.de](https://nein.orfel.de) | 8113 |
+| Nextcloud | [nextcloud.orfel.de](https://nextcloud.orfel.de) | 6398 |
+| NTFY | [ntfy.orfel.de](https://ntfy.orfel.de) | 6939 |
+| OwnCloud (OCIS) | [owncloud.orfel.de](https://owncloud.orfel.de) | 696 |
+| Outline | [outline.orfel.de](https://outline.orfel.de) | 688 |
+| Portainer | [port.orfel.de](https://port.orfel.de) | 7678 |
+| Quizmaster | [quiz.orfel.de](https://quiz.orfel.de) | 8223 |
 | RustDesk Server | rust.orfel.de | 7878 |
-| ILIAS | ilias.orfel.de | 45427 |
-| Spoolman | 3d.orfel.de | 33 |
-| Kestra | kestra.orfel.de | 5378 |
-| Deezer Downloader | deezer.orfel.de | 673 |
+| SearXNG | [go.orfel.de](https://go.orfel.de) | 3463 |
+| Simple URL Shortener | [tiny.orfel.de](https://tiny.orfel.de) | 821 |
+| Slash | [slash.orfel.de](https://slash.orfel.de) | 511 |
+| Spoolman | [3d.orfel.de](https://3d.orfel.de) | 33 |
+| Stirling PDF | [pdf.orfel.de](https://pdf.orfel.de) | 733 |
+| Vaultwarden | [pw.orfel.de](https://pw.orfel.de) | 7277 |
+| Webhook | [webhook.orfel.de](https://webhook.orfel.de) | 9500 |
+| Zipline | [short.orfel.de](https://short.orfel.de) | 947 |
 
 ## First-Time Setup
 
