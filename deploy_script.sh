@@ -567,6 +567,9 @@ main() {
     notify "Deployment startet" \
         "Deploy-Skript um $(date '+%H:%M') gestartet. Stoppe alte Container und deploye ${#ACTIVE_SERVICES[@]} Dienste neu..." \
         "default" "gear"
+        
+    log "Waiting 10 seconds to ensure the push notification is delivered before tearing down the proxy..."
+    sleep 10
 
     stop_all_services
     decrypt_envs
