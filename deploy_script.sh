@@ -22,6 +22,10 @@ PROJECT_PREFIX="jannik-cloud"
 # Infrastructure services that are started in a specific order
 INFRA_SERVICES=("postgres" "redis" "caddy")
 
+# ntfy push notifications
+NTFY_URL="https://ntfy.orfel.de/Jannik-Cloud-Deploy-Trigger"
+DEPLOY_START_TIME=""
+
 ###############################################################################
 # Helpers
 ###############################################################################
@@ -29,6 +33,32 @@ log()  { echo -e "\e[32m[DEPLOY]\e[0m $*"; }
 warn() { echo -e "\e[33m[WARN]\e[0m $*"; }
 err()  { echo -e "\e[31m[ERROR]\e[0m $*" >&2; }
 die()  { err "$@"; exit 1; }
+
+# Send a push notification via ntfy (non-blocking, fails silently)
+notify() {
+    local title="$1"
+    local message="$2"
+    local priority="${3:-default}"
+    local tags="${4:-}"
+    curl -s -o /dev/null --max-time 5 \
+        -H "Title: ${title}" \
+        -H "Priority: ${priority}" \
+        -H "Tags: ${tags}" \
+        -d "${message}" \
+        "${NTFY_URL}" 2>/dev/null || true
+}
+
+# Called on failure (via trap)
+on_deploy_failure() {
+    local duration_msg=""
+    if [[ -n "${DEPLOY_START_TIME}" ]]; then
+        local elapsed=$(( $(date +%s) - DEPLOY_START_TIME ))
+        duration_msg=" after $((elapsed / 60))m $((elapsed % 60))s"
+    fi
+    notify "Deployment FAILED" \
+        "Deploy script failed${duration_msg}. Check server logs for details." \
+        "urgent" "x,rotating_light"
+}
 
 is_active_service() {
     local svc_dir="$1"
@@ -511,6 +541,12 @@ main() {
         die "This script must be run as root (sudo)."
     fi
 
+    # Track timing
+    DEPLOY_START_TIME=$(date +%s)
+
+    # Trap failures so we always get a notification
+    trap on_deploy_failure ERR
+
     install_packages
     setup_fail2ban
     setup_swap
@@ -520,6 +556,12 @@ main() {
     ensure_network
     discover_services
     cleanup_deactivated
+
+    # --- Notify before stopping services ---
+    notify "Deployment Starting" \
+        "Deploy script triggered at $(date '+%Y-%m-%d %H:%M'). Stopping services and redeploying ${#ACTIVE_SERVICES[@]} services..." \
+        "default" "gear"
+
     stop_all_services
     decrypt_envs
     create_volumes
@@ -531,6 +573,14 @@ main() {
     start_caddy
     start_remaining
     cleanup_docker
+
+    # --- Notify success ---
+    local elapsed=$(( $(date +%s) - DEPLOY_START_TIME ))
+    notify "Deployment Complete" \
+        "Deploy finished successfully in $((elapsed / 60))m $((elapsed % 60))s. ${#ACTIVE_SERVICES[@]} services started." \
+        "default" "white_check_mark,tada"
+
+    trap - ERR
 
     log "=========================================="
     log "  Deployment complete!"
