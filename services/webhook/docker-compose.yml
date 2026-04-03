@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     ports:
       - "127.0.0.1:9500:9000"
-    command: [ "-verbose", "-hooks=/etc/webhook/hooks.json", "-hotreload" ]
+    command: [ "-verbose", "-hooks=/etc/webhook/hooks.json", "-hotreload", "-template" ]
     environment:
       WEBHOOK_SECRET: ${WEBHOOK_SECRET}
     volumes:
