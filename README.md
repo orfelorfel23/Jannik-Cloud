@@ -140,3 +140,20 @@ All persistent data is stored at `/mnt/Jannik-Cloud-Volume-01/<service>/`.
 - fail2ban protects SSH access
 - Only Caddy exposes ports 80/443 to the host — all other services are internal
 - Private keys have `chmod 600`
+
+## Push Notifications (Ntfy)
+
+Jannik-Cloud features a built-in CI/CD notification pipeline powered by self-hosted Ntfy. 
+All deployment lifecycle events are broadcast securely to a dedicated topic without relying on third-party cloud brokers.
+
+To subscribe to deployment updates on your phone or browser:
+1. Open the [Ntfy Web App](https://ntfy.orfel.de/Jannik-Cloud-Deploy-Trigger) or install the official **Ntfy** iOS/Android app.
+2. If using the mobile app, tap the **+** (Subscribe) button.
+3. Check the box to "Use another server" and enter your domain: `https://ntfy.orfel.de`
+4. Enter the Topic Name exactly as: `Jannik-Cloud-Deploy-Trigger`
+
+You will perfectly receive real-time localized notifications when:
+- A new **GitHub Push** is detected and authenticated by the automated webhook.
+- The **deploy_script.sh** officially starts upgrading the server (whether triggered manually, by webhook, or by the 02:31 AM cron job).
+- The deployment has flawlessly completed and all 37+ services are restarted.
+- An urgent critical failure occurs (for example, if the Linus repository fails to build).
