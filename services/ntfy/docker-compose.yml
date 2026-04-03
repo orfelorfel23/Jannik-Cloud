@@ -9,6 +9,7 @@ services:
     environment:
       NTFY_BASE_URL: https://ntfy.orfel.de
       NTFY_UPSTREAM_BASE_URL: https://ntfy.sh
+      NTFY_BEHIND_PROXY: "true"
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/ntfy/cache:/var/cache/ntfy
       - /mnt/Jannik-Cloud-Volume-01/ntfy/etc:/etc/ntfy
