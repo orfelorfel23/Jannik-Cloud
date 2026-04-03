@@ -6,10 +6,6 @@
     "pass-arguments-to-command": [
       {
         "source": "string",
-        "name": "-c"
-      },
-      {
-        "source": "string",
         "name": "/etc/webhook/scripts/rebuild-linus.sh"
       }
     ],
@@ -35,10 +31,6 @@
     "execute-command": "/bin/sh",
     "command-working-directory": "/opt/Jannik-Cloud",
     "pass-arguments-to-command": [
-      {
-        "source": "string",
-        "name": "-c"
-      },
       {
         "source": "string",
         "name": "/etc/webhook/scripts/deploy-cloud.sh"
