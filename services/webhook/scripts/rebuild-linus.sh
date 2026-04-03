@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-NTFY_URL="https://ntfy.orfel.de/Jannik-Cloud-Deploy-Trigger"
+NTFY_URL="http://127.0.0.1:6939/Jannik-Cloud-Deploy-Trigger"
 
 # All work happens on the host via chroot
 docker run --rm \

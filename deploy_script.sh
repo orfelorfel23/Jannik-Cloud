@@ -23,7 +23,7 @@ PROJECT_PREFIX="jannik-cloud"
 INFRA_SERVICES=("postgres" "redis" "caddy")
 
 # ntfy push notifications
-NTFY_URL="https://ntfy.orfel.de/Jannik-Cloud-Deploy-Trigger"
+NTFY_URL="http://127.0.0.1:6939/Jannik-Cloud-Deploy-Trigger"
 DEPLOY_START_TIME=""
 
 ###############################################################################
