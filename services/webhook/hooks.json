@@ -24,7 +24,7 @@
         }
       ]
     },
-    "include-command-output-in-response": true
+    "include-command-output-in-response": false
   },
   {
     "id": "deploy-cloud",
@@ -51,6 +51,6 @@
         }
       ]
     },
-    "include-command-output-in-response": true
+    "include-command-output-in-response": false
   }
 ]
