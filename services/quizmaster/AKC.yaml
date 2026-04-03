@@ -1,0 +1,704 @@
+# Jugendleistungsmarsch JF RB Mittleres Erzgebirge - Altersklasse C
+# Vollständige Konfiguration mit allen 64 Fragen
+
+quiz:
+  title: "Jugendleistungsmarsch JF RB Mittleres Erzgebirge"
+  subtitle: "Altersklasse C – 64 Fragen"
+  description: "Fragebogen für die Altersklasse C des Jugendleistungsmarsches"
+
+questions:
+  # FRAGEN 1-10: Allgemein & Unfallschutz
+  - number: 1
+    question: "Wie heißt die Kreisstadt des Erzgebirgskreises?"
+    type: "multiple_choice"
+    answers:
+      - text: "Aue"
+        correct: false
+      - text: "Marienberg"
+        correct: false
+      - text: "Annaberg-Buchholz"
+        correct: true
+
+  - number: 2
+    question: "Seit wann existiert der Erzgebirgskreis?"
+    type: "multiple_choice"
+    answers:
+      - text: "2008"
+        correct: false
+      - text: "2009"
+        correct: true
+      - text: "2011"
+        correct: false
+
+  - number: 3
+    question: "Die Jugendsprecher der Jugendfeuerwehren unseres Regionalbereiches bilden … ?"
+    type: "multiple_choice"
+    answers:
+      - text: "… das Jugendforum"
+        correct: true
+      - text: "… die Junge Gemeinde"
+        correct: false
+      - text: "… den Jugendsprecherverein"
+        correct: false
+
+  - number: 4
+    question: "Wann darf ein Jugendlicher in die Aktive Abteilung einer Feuerwehr eintreten?"
+    type: "multiple_choice"
+    answers:
+      - text: "Mit dem vollendeten 15. Lebensjahr und Zustimmung des Wehrleiters"
+        correct: false
+      - text: "Mit dem vollendeten 16. Lebensjahr"
+        correct: true
+      - text: "Mit dem vollendeten 18. Lebensjahr"
+        correct: false
+
+  - number: 5
+    question: "Welchen Hinweis gibt das abgebildete Schild?"
+    type: "multiple_choice"
+    image: "/images/q05-unterflurhydrant-h100.png"
+    answers:
+      - text: "Standort und Leitungsdurchmesser eines Unterflurhydranten"
+        correct: true
+      - text: "Abstand zur nächsten Brandmeldeanlage in öffentlichen Gebäuden"
+        correct: false
+      - text: "Kennzeichnung für Standort eines Oberflurhydranten"
+        correct: false
+
+  - number: 6
+    question: "Welchen Hinweis gibt das abgebildete Schild?"
+    type: "multiple_choice"
+    image: "/images/q06-sammelstelle.png"
+    answers:
+      - text: "Zeichen für den Fluchtweg"
+        correct: false
+      - text: "Zeichen für einen sicheren Raum mit Brandmauern"
+        correct: false
+      - text: "Zeichen für Sammelstelle außerhalb der Gefahrenzone"
+        correct: true
+
+  - number: 7
+    question: "Welche Aussage ist falsch?"
+    type: "multiple_choice"
+    answers:
+      - text: "Für den Unfallschutz ist jedes Jugendfeuerwehrmitglied selbst verantwortlich"
+        correct: false
+      - text: "Im Jugendfeuerwehrdienst gibt es keine Gefahrenquellen"
+        correct: true
+      - text: "Der Jugendfeuerwehrwart muss für die Sicherheit im Jugendfeuerwehrdienst sorgen"
+        correct: false
+
+  - number: 8
+    question: "Wie oft muss jedes Jugendfeuerwehrmitglied an der Unfallschutzbelehrung teilnehmen?"
+    type: "multiple_choice"
+    answers:
+      - text: "Mindestens einmal im Jahr und bei besonderen Vorkommnissen"
+        correct: true
+      - text: "Mindestens halbjährlich, jeweils im Winter und im Sommer"
+        correct: false
+      - text: "Vor jedem Jugendfeuerwehrdienst"
+        correct: false
+
+  - number: 9
+    question: "Welche Unfälle im Jugendfeuerwehrdienst müssen dem Jugendfeuerwehrwart oder einem Verantwortlichen gemeldet und dokumentiert werden?"
+    type: "multiple_choice"
+    answers:
+      - text: "Alle Unfälle, auch kleine Bagatellverletzungen"
+        correct: true
+      - text: "Nur Verletzungen, die einen Arztbesuch zur Folge haben"
+        correct: false
+      - text: "Nur Unfälle, die im praktischen Dienst passieren"
+        correct: false
+
+  - number: 10
+    question: "Welche Aussage trifft im Unfallschutz nicht zu?"
+    type: "multiple_choice"
+    answers:
+      - text: "Wer Gefahren erkennen kann, kann sie vermeiden"
+        correct: false
+      - text: "Wer Schutzausrüstung trägt, ist weniger gefährdet sich zu verletzen"
+        correct: false
+      - text: "Unfälle müssen passieren, um daraus zu lernen"
+        correct: true
+
+  # FRAGEN 11-20: Brandbekämpfung & Dienstgrade
+  - number: 11
+    question: "Welche Stoffe gehören zur Brandklasse C?"
+    type: "multiple_choice"
+    answers:
+      - text: "Flüssige brennbare Stoffe"
+        correct: false
+      - text: "Brennbare Metalle"
+        correct: false
+      - text: "Gasförmige brennbare Stoffe"
+        correct: true
+
+  - number: 12
+    question: "Was ist die Hauptlöschwirkung des Löschmittels Wasser?"
+    type: "multiple_choice"
+    answers:
+      - text: "Erstickende Wirkung"
+        correct: false
+      - text: "Verdünnende Wirkung"
+        correct: false
+      - text: "Kühlende Wirkung"
+        correct: true
+
+  - number: 13
+    question: "Speise-Öl in einer Fritteuse wird welcher Brandklasse zugeordnet?"
+    type: "multiple_choice"
+    answers:
+      - text: "Brandklasse F"
+        correct: true
+      - text: "Brandklasse B"
+        correct: false
+      - text: "Brandklasse A"
+        correct: false
+
+  - number: 14
+    question: "Welches gefährliche Gas entsteht bei einer unvollständigen Verbrennung?"
+    type: "multiple_choice"
+    answers:
+      - text: "Sauerstoff"
+        correct: false
+      - text: "Kohlenmonoxid"
+        correct: true
+      - text: "Stickstoff"
+        correct: false
+
+  - number: 15
+    question: "Welche Brände dürfen nicht mit Wasser gelöscht werden?"
+    type: "multiple_choice"
+    answers:
+      - text: "Fettbrände, Öle"
+        correct: true
+      - text: "Holz, Kohle, Papier"
+        correct: false
+      - text: "Brennende Personenkraftwagen"
+        correct: false
+
+  - number: 16
+    question: "Welches Vorgehen ist beim Löschen mit einem Feuerlöscher zu beachten?"
+    type: "multiple_choice"
+    answers:
+      - text: "Feuer gegen die Windrichtung angreifen"
+        correct: true
+      - text: "Feuer mit der Windrichtung angreifen"
+        correct: false
+      - text: "Beim Löschen direkt auf die Flamme zielen"
+        correct: false
+
+  - number: 17
+    question: "Welcher Dienstgrad ist abgebildet?"
+    type: "multiple_choice"
+    image: "/images/q17-dienstgrad-1.png"
+    answers:
+      - text: "Feuerwehrmann"
+        correct: false
+      - text: "Oberfeuerwehrmann"
+        correct: true
+      - text: "Hauptfeuerwehrmann"
+        correct: false
+
+  - number: 18
+    question: "Welcher Dienstgrad ist abgebildet?"
+    type: "multiple_choice"
+    image: "/images/q18-dienstgrad-2.png"
+    answers:
+      - text: "Oberfeuerwehrmann"
+        correct: false
+      - text: "Hauptfeuerwehrmann"
+        correct: true
+      - text: "Brandmeister"
+        correct: false
+
+  - number: 19
+    question: "Welcher Dienstgrad ist abgebildet?"
+    type: "multiple_choice"
+    image: "/images/q19-dienstgrad-3.png"
+    answers:
+      - text: "Hauptfeuerwehrmann"
+        correct: false
+      - text: "Brandmeister"
+        correct: true
+      - text: "Oberbrandmeister"
+        correct: false
+
+  - number: 20
+    question: "Welcher Dienstgrad ist abgebildet?"
+    type: "multiple_choice"
+    image: "/images/q20-dienstgrad-4.png"
+    answers:
+      - text: "Brandmeister"
+        correct: false
+      - text: "Oberbrandmeister"
+        correct: true
+      - text: "Hauptbrandmeister"
+        correct: false
+
+  # FRAGEN 21-30: Schläuche & Ausrüstung
+  - number: 21
+    question: "Welche Strahlrohre sind genormt?"
+    type: "multiple_choice"
+    answers:
+      - text: "A, B, C"
+        correct: false
+      - text: "B, C, D"
+        correct: false
+      - text: "A, C, E"
+        correct: true
+
+  - number: 22
+    question: "Welche Aussage ist falsch? Ein genormter B-Schlauch …"
+    type: "multiple_choice"
+    answers:
+      - text: "… ist 20 m lang und hat einen Innendurchmesser von 85 mm"
+        correct: false
+      - text: "… gehört zu den Druckschläuchen"
+        correct: false
+      - text: "… hat einen Innendurchmesser von 75 mm und ist 20 m lang"
+        correct: true
+
+  - number: 23
+    question: "Welcher Druckschlauch hat eine genormte Länge von 15 m und einen Innendurchmesser von 52 mm?"
+    type: "multiple_choice"
+    answers:
+      - text: "A-Schlauch"
+        correct: true
+      - text: "B-Schlauch"
+        correct: false
+      - text: "C-Schlauch"
+        correct: false
+
+  - number: 24
+    question: "Wo werden Sonderrohre am Verteiler angekuppelt?"
+    type: "multiple_choice"
+    answers:
+      - text: "Rechter Abgang"
+        correct: false
+      - text: "Linker Abgang"
+        correct: true
+      - text: "Mittlerer Abgang"
+        correct: false
+
+  - number: 25
+    question: "Welche Wasserstrahlvariante ermöglicht die größere Oberfläche?"
+    type: "multiple_choice"
+    answers:
+      - text: "Vollstrahl"
+        correct: false
+      - text: "Sprühstrahl"
+        correct: true
+      - text: "Beide Oberflächen sind gleich groß"
+        correct: false
+
+  - number: 26
+    question: "Welchen Innendurchmesser hat ein genormter D-Druckschlauch?"
+    type: "multiple_choice"
+    answers:
+      - text: "15 mm"
+        correct: false
+      - text: "20 mm"
+        correct: false
+      - text: "25 mm"
+        correct: true
+
+  - number: 27
+    question: "Wozu wird das abgebildete Gerät genutzt?"
+    type: "multiple_choice"
+    image: "/images/q27-saugschlauchanlage.png"
+    answers:
+      - text: "Erhöht die Wurfweite des Löschmittels"
+        correct: false
+      - text: "Dient der Ableitung von Rückkräften des Wasserstrahls"
+        correct: true
+      - text: "Erhöht die Fließgeschwindigkeit des Wassers"
+        correct: false
+
+  - number: 28
+    question: "Welchen Zweck erfüllt das abgebildete Gerät?"
+    type: "multiple_choice"
+    image: "/images/q28-schaumeinspeisung.png"
+    answers:
+      - text: "Ansaugen von flachen Wasserständen aus Kellerräumen"
+        correct: false
+      - text: "Zumischen von Schaummittel zum Erzeugen von Löschschaum"
+        correct: true
+      - text: "Wasser aus einer B-Leitung wird in eine C-Leitung übergeleitet"
+        correct: false
+
+  - number: 29
+    question: "Welche Aufgabe hat die abgebildete Armatur?"
+    type: "multiple_choice"
+    image: "/images/q29-saugkorb.png"
+    answers:
+      - text: "Verhindert die Schädigung von Pflanzen und Tieren im Wasser"
+        correct: false
+      - text: "Verhindert, dass Fremdkörper in die Feuerlöschkreiselpumpe gelangen"
+        correct: true
+      - text: "Verhindert den Austritt von Schmutz aus der Saugleitung ins Gewässer"
+        correct: false
+
+  - number: 30
+    question: "Wie lautet die Bezeichnung für das abgebildete Gerät?"
+    type: "multiple_choice"
+    image: "/images/q30-verteiler.png"
+    answers:
+      - text: "B-CB-Verteiler"
+        correct: false
+      - text: "C-BCB-Verteiler"
+        correct: true
+      - text: "B-CBC-Verteiler"
+        correct: false
+
+  # FRAGEN 31-40: Knoten & Erste Hilfe
+  - number: 31
+    question: "Welcher Knoten ist abgebildet?"
+    type: "multiple_choice"
+    image: "/images/q31-knoten-schotenstich.png"
+    answers:
+      - text: "Schotenstich"
+        correct: true
+      - text: "Mastwurf"
+        correct: false
+      - text: "Zimmermannschlag"
+        correct: false
+
+  - number: 32
+    question: "Wie wird der abgebildete Knoten bezeichnet?"
+    type: "multiple_choice"
+    image: "/images/q32-knoten-achterknoten.png"
+    answers:
+      - text: "Einfacher Ankerstich"
+        correct: false
+      - text: "Doppelter Achterknoten"
+        correct: true
+      - text: "Karabinerknoten"
+        correct: false
+
+  - number: 33
+    question: "Welcher Knoten ist abgebildet?"
+    type: "multiple_choice"
+    image: "/images/q33-knoten-halbschlag.png"
+    answers:
+      - text: "Mastwurf"
+        correct: false
+      - text: "Ankerstich"
+        correct: false
+      - text: "Halbschlag"
+        correct: true
+
+  - number: 34
+    question: "Wozu wird der abgebildete Knoten verwendet?"
+    type: "multiple_choice"
+    image: "/images/q34-knoten-verwendung.png"
+    answers:
+      - text: "Zum Verbinden zweier gleich oder ungleich starker Leinen"
+        correct: true
+      - text: "Zum Einbinden von Geräten"
+        correct: false
+      - text: "Befestigung einer Leine am Anschlagpunkt"
+        correct: false
+
+  - number: 35
+    question: "Welche Gefahr für die Gesundheit geht vom Brandrauch aus?"
+    type: "multiple_choice"
+    answers:
+      - text: "Die giftigen, krebserregenden Eigenschaften"
+        correct: true
+      - text: "Die große Hitze"
+        correct: false
+      - text: "Die oftmals dunkle Farbe"
+        correct: false
+
+  - number: 36
+    question: "Wie macht sich eine Gehirnerschütterung bemerkbar?"
+    type: "multiple_choice"
+    answers:
+      - text: "Sehstörungen und Hörstörungen"
+        correct: false
+      - text: "Blutung aus Ohren und Nase"
+        correct: false
+      - text: "Übelkeit, Erbrechen, eventuell Bewusstlosigkeit"
+        correct: true
+
+  - number: 37
+    question: "In welchem Verhältnis stehen Herzdruckmassage und Atmung bei der Reanimation?"
+    type: "multiple_choice"
+    answers:
+      - text: "30 : 2"
+        correct: true
+      - text: "1 : 15"
+        correct: false
+      - text: "2 : 30"
+        correct: false
+
+  - number: 38
+    question: "Welche lebensgefährliche Komplikation kann bei starken Blutungen eintreten?"
+    type: "multiple_choice"
+    answers:
+      - text: "Allergische Reaktionen"
+        correct: false
+      - text: "Schock bis hin zur Bewusstlosigkeit"
+        correct: true
+      - text: "Sehstörungen"
+        correct: false
+
+  - number: 39
+    question: "Welche Aussage in Bezug auf Verbrennungen stimmt nicht?"
+    type: "multiple_choice"
+    answers:
+      - text: "Die Hautstelle sollte unter fließendem, handwarmem Wasser gekühlt werden"
+        correct: false
+      - text: "Brandwunden müssen steril abgedeckt werden"
+        correct: false
+      - text: "Eine Behandlung mit Hausmitteln wie Puder und Salben ist sofort einzuleiten"
+        correct: true
+
+  - number: 40
+    question: "Was sind die 3 lebenswichtigen Organfunktionen?"
+    type: "multiple_choice"
+    answers:
+      - text: "Hören, Sehen, Fühlen"
+        correct: false
+      - text: "Nahrungsaufnahme, Atmung, Ausscheidung"
+        correct: false
+      - text: "Atmung, Bewusstsein, Kreislauf"
+        correct: true
+
+  # FRAGEN 41-50: FwDV & Taktik
+  - number: 41
+    question: "In welcher Feuerwehrdienstvorschrift ist das Vorgehen im Hilfeleistungseinsatz geregelt?"
+    type: "multiple_choice"
+    answers:
+      - text: "FwDV 2"
+        correct: false
+      - text: "FwDV 3"
+        correct: true
+      - text: "FwDV 500"
+        correct: false
+
+  - number: 42
+    question: "Wer setzt laut FwDV 3 beim Löscheinsatz den Verteiler?"
+    type: "multiple_choice"
+    answers:
+      - text: "Melder"
+        correct: false
+      - text: "Wassertrupp"
+        correct: true
+      - text: "Angriffstrupp"
+        correct: false
+
+  - number: 43
+    question: "Welcher Befehl wird bei einem \"Einsatz ohne Bereitstellung\" gegeben?"
+    type: "multiple_choice"
+    answers:
+      - text: "\"Zum Einsatz vor\""
+        correct: true
+      - text: "\"Zum Einsatz fertig\""
+        correct: false
+      - text: "\"Zum Abmarsch fertig\""
+        correct: false
+
+  - number: 44
+    question: "Wer bestimmt laut FwDV 3 die Anzahl der benötigten Sauglängen bei Wasserentnahme aus offenen Gewässern?"
+    type: "multiple_choice"
+    answers:
+      - text: "Wassertruppführer"
+        correct: false
+      - text: "Gruppenführer"
+        correct: true
+      - text: "Maschinist"
+        correct: false
+
+  - number: 45
+    question: "Welche Aufgabe übernimmt laut FwDV 3 der Schlauchtrupp im Löscheinsatz?"
+    type: "multiple_choice"
+    answers:
+      - text: "Setzt den Verteiler"
+        correct: false
+      - text: "Bedient den Verteiler"
+        correct: false
+      - text: "Stellt die Lage fest und bestimmt die Lage des Verteilers"
+        correct: true
+
+  - number: 46
+    question: "Wer ist beim Vorgehen eines Trupps für die Bedienung des Strahlrohres verantwortlich?"
+    type: "multiple_choice"
+    answers:
+      - text: "Der Truppmann"
+        correct: true
+      - text: "Der Truppführer"
+        correct: false
+      - text: "Egal"
+        correct: false
+
+  - number: 47
+    question: "Welche Aussage ist falsch?"
+    type: "multiple_choice"
+    answers:
+      - text: "Der Maschinist fährt das Fahrzeug und bedient Aggregate"
+        correct: false
+      - text: "Der Gruppenführer wird automatisch 2. Maschinist"
+        correct: true
+      - text: "Der Melder arbeitet auf Befehl des Gruppenführers"
+        correct: false
+
+  - number: 48
+    question: "Welche Positionen entfallen bei der Staffel im Vergleich zur Gruppe?"
+    type: "multiple_choice"
+    answers:
+      - text: "Schlauchtrupp und Melder"
+        correct: true
+      - text: "Wassertrupp und Maschinist"
+        correct: false
+      - text: "Wassertrupp und Schlauchtrupp"
+        correct: false
+
+  - number: 49
+    question: "Welche Aufgabe übernimmt der Melder laut FwDV 3 bei der technischen Hilfeleistung?"
+    type: "multiple_choice"
+    answers:
+      - text: "Bringt Geräte in Stellung"
+        correct: false
+      - text: "Sicherung und 3. Angriffstrupp"
+        correct: true
+      - text: "Rettung und 1. Angriffstrupp"
+        correct: false
+
+  - number: 50
+    question: "Was übernimmt der Schlauchtrupp bei der technischen Hilfeleistung laut FwDV 3?"
+    type: "multiple_choice"
+    answers:
+      - text: "1. Angriffstrupp"
+        correct: false
+      - text: "Einsatzstellensicherung und wird 3. Angriffstrupp"
+        correct: false
+      - text: "Bringt Rettungsgeräte in Stellung und wird 2. Angriffstrupp"
+        correct: true
+
+  # FRAGEN 51-64: True/False Fragen
+  - number: 51
+    question: "Wahr oder falsch? Ein LF 10 verfügt laut Norm grundsätzlich nicht über einen Löschwassertank."
+    type: "true_false"
+    answers:
+      - text: "Wahr"
+        correct: true
+      - text: "Falsch"
+        correct: false
+
+  - number: 52
+    question: "Wahr oder falsch? Die Bezeichnung \"TSF-W\" bezeichnet ein Tragkraftspritzenfahrzeug mit Wassertank."
+    type: "true_false"
+    answers:
+      - text: "Wahr"
+        correct: true
+      - text: "Falsch"
+        correct: false
+
+  - number: 53
+    question: "Wahr oder falsch? Eine DLK 23/12 hat eine Nennrettungshöhe von 23m bei einer Nennausladung von 12m."
+    type: "true_false"
+    answers:
+      - text: "Wahr"
+        correct: true
+      - text: "Falsch"
+        correct: false
+
+  - number: 54
+    question: "Wahr oder falsch? Ein Hilfeleistungslöschgruppenfahrzeug wird als \"HLF 20\" bezeichnet, wenn es über eine Pumpenleistung von mindestens 2000l/Minute verfügt."
+    type: "true_false"
+    answers:
+      - text: "Wahr"
+        correct: true
+      - text: "Falsch"
+        correct: false
+
+  - number: 55
+    question: "Wahr oder falsch? Wenn 2 LF 10, eine DLK 23/12 und ein TSF bei voll besetzten Fahrzeugen an der Einsatzstelle sind, befinden sich 29 Kameraden an der Einsatzstelle."
+    type: "true_false"
+    answers:
+      - text: "Wahr"
+        correct: false
+      - text: "Falsch"
+        correct: true
+
+  - number: 56
+    question: "Wahr oder falsch? Ein TSF-W hat Sitzplätze für eine Löschgruppe."
+    type: "true_false"
+    answers:
+      - text: "Wahr"
+        correct: false
+      - text: "Falsch"
+        correct: true
+
+  - number: 57
+    question: "Wahr oder falsch? Ein Löschgruppenfahrzeug kann 9 Personen transportieren."
+    type: "true_false"
+    answers:
+      - text: "Wahr"
+        correct: true
+      - text: "Falsch"
+        correct: false
+
+  - number: 58
+    question: "Wahr oder falsch? Ein TLF wird einsatztaktisch vor allem zur Brandbekämpfung eingesetzt."
+    type: "true_false"
+    answers:
+      - text: "Wahr"
+        correct: true
+      - text: "Falsch"
+        correct: false
+
+  - number: 59
+    question: "Wahr oder falsch? Trupps, die ihre Aufgabe erledigt haben, unterstützen selbstständig einen anderen Trupp bei dessen Aufgabe."
+    type: "true_false"
+    answers:
+      - text: "Wahr"
+        correct: false
+      - text: "Falsch"
+        correct: true
+
+  - number: 60
+    question: "Wahr oder falsch? Bemerkt eine Einsatzkraft eine besondere Gefahr, meldet diese die Gefahr sofort. Alle Einsatzkräfte treten den Rückzug an und sammeln sich am Fahrzeug."
+    type: "true_false"
+    answers:
+      - text: "Wahr"
+        correct: true
+      - text: "Falsch"
+        correct: false
+
+  - number: 61
+    question: "Wahr oder falsch? Die Staffel ist die kleinste Taktische Einheit der Feuerwehr."
+    type: "true_false"
+    answers:
+      - text: "Wahr"
+        correct: true
+      - text: "Falsch"
+        correct: false
+
+  - number: 62
+    question: "Wahr oder falsch? Ein Trupp geht im Einsatz im Gefahrenbereich grundsätzlich gemeinsam vor."
+    type: "true_false"
+    answers:
+      - text: "Wahr"
+        correct: true
+      - text: "Falsch"
+        correct: false
+
+  - number: 63
+    question: "Wahr oder falsch? In jedem Einsatzfall geht die Eigensicherung vor."
+    type: "true_false"
+    answers:
+      - text: "Wahr"
+        correct: true
+      - text: "Falsch"
+        correct: false
+
+  - number: 64
+    question: "Wahr oder falsch? An das Feuerwehrfahrzeug werden Druckschläuche ausschließlich durch den Wassertruppführer angeschlossen."
+    type: "true_false"
+    answers:
+      - text: "Wahr"
+        correct: false
+      - text: "Falsch"
+        correct: true

@@ -1,17 +1,20 @@
 services:
   clink:
-    image: crueter/clink:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: clink:latest
     container_name: clink
     restart: unless-stopped
     ports:
-      - "127.0.0.1:5234:3000"
+      - "127.0.0.1:5234:8080"
     volumes:
-      - /mnt/Jannik-Cloud-Volume-01/clink:/app/data
+      - /mnt/Jannik-Cloud-Volume-01/clink:/srv/clink
     deploy:
       resources:
         limits:
           cpus: "0.25"
-          memory: 256M
+          memory: 128M
     networks:
       - jannik-cloud-net
 
