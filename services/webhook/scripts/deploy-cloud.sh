@@ -49,7 +49,8 @@ trap 'rm -f \"\${LOCK_FILE}\"' EXIT
 
 # --- Pull and deploy (deploy_script.sh handles its own ntfy notifications) ---
 cd /opt/Jannik-Cloud
-git pull >> \"\${LOG_FILE}\" 2>&1
+git fetch origin >> \"\${LOG_FILE}\" 2>&1
+git reset --hard origin/main >> \"\${LOG_FILE}\" 2>&1
 bash deploy_script.sh 2>&1 | tee -a \"\${LOG_FILE}\"
 
 echo \"[\$(date '+%Y-%m-%d %H:%M:%S')] Webhook deploy finished\" >> \"\${LOG_FILE}\"
