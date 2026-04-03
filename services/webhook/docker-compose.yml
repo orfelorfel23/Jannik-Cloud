@@ -2,6 +2,7 @@ services:
   webhook:
     image: almir/webhook:latest
     container_name: webhook
+    user: "root"
     restart: unless-stopped
     ports:
       - "127.0.0.1:9500:9000"

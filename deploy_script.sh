@@ -555,6 +555,10 @@ main() {
     setup_cron_job
     handle_age_key
     update_repo
+    
+    # Fix permissions for webhook scripts so the unprivileged container can read them
+    chmod -R a+rx "${REPO_DIR}/services/webhook/scripts" 2>/dev/null || true
+
     ensure_network
     discover_services
     cleanup_deactivated
