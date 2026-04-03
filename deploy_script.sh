@@ -40,7 +40,7 @@ notify() {
     local message="$2"
     local priority="${3:-default}"
     local tags="${4:-}"
-    curl -s -o /dev/null --max-time 5 \
+    curl -s -o /dev/null --retry 3 --retry-delay 2 --max-time 10 \
         -H "Title: ${title}" \
         -H "Priority: ${priority}" \
         -H "Tags: ${tags}" \
@@ -53,10 +53,10 @@ on_deploy_failure() {
     local duration_msg=""
     if [[ -n "${DEPLOY_START_TIME}" ]]; then
         local elapsed=$(( $(date +%s) - DEPLOY_START_TIME ))
-        duration_msg=" after $((elapsed / 60))m $((elapsed % 60))s"
+        duration_msg=" nach $((elapsed / 60))m $((elapsed % 60))s"
     fi
-    notify "Deployment FAILED" \
-        "Deploy script failed${duration_msg}. Check server logs for details." \
+    notify "Deployment GEFEHLT" \
+        "Deploy-Skript fehlgeschlagen${duration_msg}. Prüfe die Server-Logs." \
         "urgent" "x,rotating_light"
 }
 
@@ -564,8 +564,8 @@ main() {
     cleanup_deactivated
 
     # --- Notify before stopping services ---
-    notify "Deployment Starting" \
-        "Deploy script triggered at $(date '+%Y-%m-%d %H:%M'). Stopping services and redeploying ${#ACTIVE_SERVICES[@]} services..." \
+    notify "Deployment startet" \
+        "Deploy-Skript um $(date '+%H:%M') gestartet. Stoppe alte Container und deploye ${#ACTIVE_SERVICES[@]} Dienste neu..." \
         "default" "gear"
 
     stop_all_services
@@ -582,8 +582,8 @@ main() {
 
     # --- Notify success ---
     local elapsed=$(( $(date +%s) - DEPLOY_START_TIME ))
-    notify "Deployment Complete" \
-        "Deploy finished successfully in $((elapsed / 60))m $((elapsed % 60))s. ${#ACTIVE_SERVICES[@]} services started." \
+    notify "Deployment abgeschlossen" \
+        "Deployment erfolgreich in $((elapsed / 60))m $((elapsed % 60))s abgeschlossen. ${#ACTIVE_SERVICES[@]} Dienste gestartet." \
         "default" "white_check_mark,tada"
 
     trap - ERR

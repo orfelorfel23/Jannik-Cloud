@@ -16,32 +16,32 @@ set -e
 NTFY_URL='${NTFY_URL}'
 TIMESTAMP=\$(date '+%Y-%m-%d %H:%M:%S')
 
-curl -s -o /dev/null \\
-  -H 'Title: Linus Rebuild Starting' \\
+curl -s -o /dev/null --retry 3 --retry-delay 2 --max-time 10 \\
+  -H 'Title: Linus Rebuild startet' \\
   -H 'Priority: default' \\
   -H 'Tags: hammer' \\
-  -d \"Linus website push detected at \${TIMESTAMP}. Rebuilding container...\" \\
-  \"\${NTFY_URL}\"
+  -d "Push für Linus-Website um \${TIMESTAMP} erkannt. Container wird neu gebaut..." \\
+  "\${NTFY_URL}"
 
 cd /opt/Jannik-Cloud/services/linus
 docker compose build --no-cache 2>&1 || {
-  curl -s -o /dev/null \\
-    -H 'Title: Linus Rebuild FAILED' \\
+  curl -s -o /dev/null --retry 3 --retry-delay 2 --max-time 10 \\
+    -H 'Title: Linus Rebuild FEHLGESCHLAGEN' \\
     -H 'Priority: urgent' \\
     -H 'Tags: x' \\
-    -d 'Linus container build failed. Check server logs.' \\
-    \"\${NTFY_URL}\"
+    -d 'Linus Container Build ist fehlgeschlagen. Prüfe die Server-Logs.' \\
+    "\${NTFY_URL}"
   exit 1
 }
 
 docker compose up -d --remove-orphans --force-recreate 2>&1
 
-curl -s -o /dev/null \\
-  -H 'Title: Linus Rebuild Complete' \\
+curl -s -o /dev/null --retry 3 --retry-delay 2 --max-time 10 \\
+  -H 'Title: Linus Rebuild abgeschlossen' \\
   -H 'Priority: default' \\
   -H 'Tags: white_check_mark' \\
-  -d 'Linus website container has been rebuilt and restarted successfully.' \\
-  \"\${NTFY_URL}\"
+  -d 'Linus Website-Container wurde erfolgreich neu gebaut und gestartet.' \\
+  "\${NTFY_URL}"
 " 2>&1
 
 echo "[WEBHOOK] Linus rebuild complete."

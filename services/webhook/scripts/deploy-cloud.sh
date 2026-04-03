@@ -21,24 +21,24 @@ LOG_FILE='${LOG_FILE}'
 TIMESTAMP=\$(date '+%Y-%m-%d %H:%M:%S')
 
 # --- Notify: Push detected ---
-curl -s -o /dev/null --max-time 5 \\
-  -H 'Title: GitHub Push Detected' \\
+curl -s -o /dev/null --retry 3 --retry-delay 2 --max-time 10 \\
+  -H 'Title: GitHub Push erkannt' \\
   -H 'Priority: default' \\
   -H 'Tags: rocket' \\
-  -d \"New push to Jannik-Cloud at \${TIMESTAMP}. Preparing deployment...\" \\
-  \"\${NTFY_URL}\" 2>/dev/null || true
+  -d "Neuer Push zu Jannik-Cloud um \${TIMESTAMP}. Deployment wird vorbereitet..." \\
+  "\${NTFY_URL}" 2>/dev/null || true
 
 echo \"[\${TIMESTAMP}] GitHub push detected\" >> \"\${LOG_FILE}\"
 
 # --- Lock check: prevent concurrent deploys ---
 if [ -f \"\${LOCK_FILE}\" ]; then
   LOCK_PID=\$(cat \"\${LOCK_FILE}\" 2>/dev/null || echo 'unknown')
-  curl -s -o /dev/null --max-time 5 \\
-    -H 'Title: Deploy Skipped' \\
+  curl -s -o /dev/null --retry 3 --retry-delay 2 --max-time 10 \\
+    -H 'Title: Deployment übersprungen' \\
     -H 'Priority: low' \\
     -H 'Tags: warning' \\
-    -d \"A deployment is already running (PID: \${LOCK_PID}). Skipping this trigger.\" \\
-    \"\${NTFY_URL}\" 2>/dev/null || true
+    -d "Ein Deployment läuft bereits (PID: \${LOCK_PID}). Dieser Trigger wird übersprungen." \\
+    "\${NTFY_URL}" 2>/dev/null || true
   echo \"[\${TIMESTAMP}] Skipped — already running (PID: \${LOCK_PID})\" >> \"\${LOG_FILE}\"
   exit 0
 fi
