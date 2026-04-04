@@ -1,24 +1,33 @@
+# Shlink Admin UI (Frontend)
+shlink.orfel.de {
+    reverse_proxy fwproxy-web-client:80
+}
+
+# Shlink API (Backend)
+shlink-api.orfel.de {
+    reverse_proxy fwproxy-shlink:8080
+}
+
+# Access-Limited Reverse Proxy
 fw.orfel.de {
-    # Matches /Anton, /Berta, etc. (no trailing slash or multi-segments)
-    @short_code path_regexp code ^/([a-zA-Z0-9]+)$
-
-    handle @short_code {
-        forward_auth fwproxy-middleware:8000 {
-            uri /check/{re.code.1}
-        }
-        
-        # Map back to the root of the target service
-        rewrite * /
-        reverse_proxy erkw:80
+    # 1. Ask the middleware for permission for EVERY request.
+    # We pass the full URI so the middleware can differentiate between 
+    # a new code (e.g., /Anton) and a resource (e.g., /style.css).
+    forward_auth fwproxy-middleware:8000 {
+        uri /check{uri}
+        copy_headers Set-Cookie X-Is-Code
     }
-
-    # Fallback for assets or non-code paths
-    handle {
-        reverse_proxy erkw:80
-    }
+    
+    # 2. If the middleware marks this as a "code entry" (X-Is-Code),
+    # we rewrite the path to / so erkw serves the index page.
+    # Subsequent resource requests (already at root) will pass through as is.
+    @is_code header X-Is-Code true
+    rewrite @is_code /
+    
+    # 3. Proxy to the target erkw container
+    reverse_proxy erkw:80
     
     log {
         output stdout
     }
 }
-

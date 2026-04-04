@@ -41,7 +41,7 @@ services:
     container_name: fwproxy-web-client
     restart: unless-stopped
     environment:
-      - SHLINK_SERVER_URL=http://fwproxy-shlink:8080
+      - SHLINK_SERVER_URL=https://shlink-api.orfel.de
       - SHLINK_SERVER_API_KEY=${SHLINK_API_KEY}
     networks:
       - jannik-cloud-net
@@ -54,6 +54,7 @@ services:
     environment:
       - SHLINK_URL=http://fwproxy-shlink:8080
       - SHLINK_API_KEY=${SHLINK_API_KEY}
+      - SESSION_SECRET=${SESSION_SECRET}
     networks:
       - jannik-cloud-net
 
