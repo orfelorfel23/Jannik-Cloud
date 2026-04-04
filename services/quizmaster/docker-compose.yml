@@ -11,8 +11,6 @@ services:
       - HOST=0.0.0.0
     ports:
       - "127.0.0.1:5235:9000"
-    volumes:
-      - /mnt/Jannik-Cloud-Volume-01/quizmaster/quiz:/app/conf/quiz
     deploy:
       resources:
         limits:
