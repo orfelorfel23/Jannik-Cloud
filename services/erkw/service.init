@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # erkw — service.init
 # Clones / updates the LFS Sachsen course archive from Gitea into the volume.
-# Called automatically by deploy_script.sh before the container starts.
+# Called automatically by deploy_script.sh after Gitea has been started.
 set -euo pipefail
 
 REPO_URL="https://git.orfel.de/Jannik/L363-Fortbildung-ABC-CBRN-Erkundung.git"
@@ -9,6 +9,19 @@ CONTENT_DIR="/mnt/Jannik-Cloud-Volume-01/erkw/content"
 NGINX_CONF="/mnt/Jannik-Cloud-Volume-01/erkw/nginx.conf"
 
 echo "[erkw] Syncing course content from Gitea..."
+
+# Retry loop — Gitea may need a few extra seconds after starting
+MAX_RETRIES=10
+COUNT=0
+until git ls-remote "${REPO_URL}" &>/dev/null; do
+    COUNT=$((COUNT + 1))
+    if [[ ${COUNT} -ge ${MAX_RETRIES} ]]; then
+        echo "[erkw] ERROR: Cannot reach Gitea after ${MAX_RETRIES} attempts. Aborting."
+        exit 1
+    fi
+    echo "[erkw] Gitea not yet reachable, retrying in 5s... (${COUNT}/${MAX_RETRIES})"
+    sleep 5
+done
 
 if [ -d "${CONTENT_DIR}/.git" ]; then
     echo "[erkw] Repository already cloned — pulling latest changes..."
@@ -33,7 +46,6 @@ server {
     include /etc/nginx/mime.types;
     default_type application/octet-stream;
 
-    # Disable buffering for large JS files to prevent truncation
     sendfile on;
     tcp_nopush on;
     tcp_nodelay on;

@@ -20,7 +20,7 @@ REDIS_CONTAINER="redis"
 PROJECT_PREFIX="jannik-cloud"
 
 # Infrastructure services that are started in a specific order
-INFRA_SERVICES=("postgres" "redis" "caddy")
+INFRA_SERVICES=("postgres" "redis" "gitea" "caddy")
 
 # ntfy push notifications
 NTFY_URL="https://ntfy.orfel.de/Jannik-Cloud-Deploy-Trigger"
@@ -423,6 +423,14 @@ start_infra() {
         docker compose up -d --remove-orphans
     fi
 
+    # Start Gitea early so service.init hooks can clone from git.orfel.de
+    if [[ " ${ACTIVE_SERVICES[*]} " =~ " gitea " ]]; then
+        log "Starting Gitea (needed by service.init hooks)..."
+        cd "${SERVICES_DIR}/gitea"
+        docker compose up -d --remove-orphans
+        wait_for_gitea
+    fi
+
 }
 
 wait_for_postgres() {
@@ -438,6 +446,22 @@ wait_for_postgres() {
         sleep 2
     done
     log "PostgreSQL is healthy."
+}
+
+wait_for_gitea() {
+    log "Waiting for Gitea to be reachable..."
+    local retries=30
+    local count=0
+    while ! curl -sf --max-time 3 "http://localhost:3000" &>/dev/null; do
+        count=$((count + 1))
+        if [[ ${count} -ge ${retries} ]]; then
+            warn "Gitea did not become reachable within ${retries} attempts — init hooks that clone from Gitea may fail."
+            return 0
+        fi
+        log "  Waiting for Gitea... (${count}/${retries})"
+        sleep 2
+    done
+    log "Gitea is reachable."
 }
 
 
