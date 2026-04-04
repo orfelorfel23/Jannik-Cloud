@@ -2,7 +2,9 @@ services:
   quizmaster:
     image: nymanjens/quizmaster:latest
     container_name: quizmaster
-    command: ["bin/server"]
+    stdin_open: true
+    tty: true
+    command: ["bin/server", "-Dhttp.address=0.0.0.0"]
     restart: unless-stopped
     environment:
       - BIND=0.0.0.0
