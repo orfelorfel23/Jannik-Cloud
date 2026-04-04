@@ -10,20 +10,24 @@ shlink-api.orfel.de {
 
 # Access-Limited Reverse Proxy
 fw.orfel.de {
-    # 1. Forward ALL requests to the middleware for session/code validation
-    forward_auth fwproxy-middleware:8000 {
-        uri /check{uri}
-        copy_headers Set-Cookie
+    # 1. Use a route block to ensure strict execution order
+    route {
+        # 2. Authorize via middleware
+        # We pass the full path so the middleware can check codes or cookies
+        forward_auth fwproxy-middleware:8000 {
+            uri /check{uri}
+            copy_headers Set-Cookie X-Is-Code
+        }
+
+        # 3. If the middleware signals a successful "code entry" (e.g. /test),
+        # we rewrite to root (/) so the backend serves the index page.
+        # This only happens if X-Is-Code was sent by the middleware.
+        @is_code header X-Is-Code true
+        rewrite @is_code /
+
+        # 4. Finally, proxy the authorized/rewritten request to the backend
+        reverse_proxy erkw:80
     }
-    
-    # 2. If the user accesses an entry code (e.g., /Anton, /test), 
-    # we rewrite the path to / so erkw serves the index page.
-    # Resources (e.g., /style.css, /images/logo.png) should NOT be rewritten.
-    @entry_code path_regexp ^/[a-zA-Z0-9]+/?$
-    rewrite @entry_code /
-    
-    # 3. Proxy authorized traffic to erkw
-    reverse_proxy erkw:80
     
     log {
         output stdout

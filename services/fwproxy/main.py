@@ -85,8 +85,14 @@ async def check_access(full_path: str, request: Request):
 
         # 3. Valid code! Increment visit count
         try:
-            await client.get(f"{SHLINK_URL}/{potential_code}", follow_redirects=False)
-            logger.info(f"Visit incremented for: {potential_code}")
+            # Tell Shlink which domain this visit is for
+            domain = request.headers.get("X-Forwarded-Host", "fw.orfel.de")
+            await client.get(
+                f"{SHLINK_URL}/{potential_code}", 
+                headers={"Host": domain},
+                follow_redirects=False
+            )
+            logger.info(f"Visit incremented for: {potential_code} on {domain}")
         except Exception as e:
             logger.error(f"Failed to increment visit: {e}")
 
