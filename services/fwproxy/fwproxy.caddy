@@ -1,6 +1,6 @@
 # Shlink Admin UI (Frontend)
 shlink.orfel.de {
-    reverse_proxy fwproxy-web-client:80
+    reverse_proxy fwproxy-web-client:8080
 }
 
 # Shlink API (Backend)
