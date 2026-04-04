@@ -624,12 +624,12 @@ main() {
     stop_all_services
     decrypt_envs
     create_volumes
-    run_service_init_hooks
     assemble_caddy_fragments
     pull_images
     start_infra
     create_postgres_dbs
     start_caddy
+    run_service_init_hooks
     start_remaining
     cleanup_docker
 
