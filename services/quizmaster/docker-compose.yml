@@ -2,6 +2,7 @@ services:
   quizmaster:
     image: nymanjens/quizmaster:latest
     container_name: quizmaster
+    command: ["bin/server"]
     restart: unless-stopped
     environment:
       - BIND=0.0.0.0

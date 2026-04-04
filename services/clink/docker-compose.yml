@@ -6,9 +6,6 @@ services:
     image: clink:latest
     container_name: clink
     restart: unless-stopped
-    environment:
-      - BIND=0.0.0.0
-      - HOST=0.0.0.0
     ports:
       - "127.0.0.1:5234:8080"
     volumes:
