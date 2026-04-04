@@ -1,0 +1,3 @@
+erkw.orfel.de {
+	reverse_proxy erkw:80
+}

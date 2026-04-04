@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+# erkw — service.init
+# Clones / updates the LFS Sachsen course archive from Gitea into the volume.
+# Called automatically by deploy_script.sh before the container starts.
+set -euo pipefail
+
+REPO_URL="https://git.orfel.de/Jannik/L363-Fortbildung-ABC-CBRN-Erkundung.git"
+CONTENT_DIR="/mnt/Jannik-Cloud-Volume-01/erkw/content"
+NGINX_CONF="/mnt/Jannik-Cloud-Volume-01/erkw/nginx.conf"
+
+echo "[erkw] Syncing course content from Gitea..."
+
+if [ -d "${CONTENT_DIR}/.git" ]; then
+    echo "[erkw] Repository already cloned — pulling latest changes..."
+    git -C "${CONTENT_DIR}" pull --ff-only
+else
+    echo "[erkw] Fresh clone of course repository..."
+    git clone "${REPO_URL}" "${CONTENT_DIR}"
+fi
+
+echo "[erkw] Content sync complete."
+
+# Write Nginx config (idempotent — safe to overwrite on every deploy)
+mkdir -p "$(dirname "${NGINX_CONF}")"
+cat > "${NGINX_CONF}" << 'NGINX'
+server {
+    listen 80;
+    root /usr/share/nginx/html;
+    index index.html;
+    charset utf-8;
+
+    # Correct MIME types — critical for Articulate Storyline .js bundles
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+
+    # Disable buffering for large JS files to prevent truncation
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    # Cache static assets aggressively (course files never change after deploy)
+    location ~* \.(js|css|png|jpg|jpeg|gif|svg|woff|woff2|ttf|mp3|mp4)$ {
+        expires 30d;
+        add_header Cache-Control "public, immutable";
+    }
+}
+NGINX
+
+echo "[erkw] Nginx config written."
