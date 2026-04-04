@@ -11,6 +11,8 @@ services:
       - HOST=0.0.0.0
     ports:
       - "127.0.0.1:5235:9000"
+    volumes:
+      - ./quiz-config.yml:/app/conf/quiz/quiz-config.yml
     deploy:
       resources:
         limits:

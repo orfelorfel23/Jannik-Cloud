@@ -1,0 +1,38 @@
+# This is a demo quiz config.
+# This file contains all fields that you might want to update when creating your own quiz.
+
+title: Demo quiz
+author: Jens Nyman # Change this to your name
+instructionsOnFirstSlide: Please, don't look up the answers online
+masterSecret: quiz # Remove this line to allow anyone to access the master controls
+language: en # This is the default. The other supported languages can be found in application.conf
+
+usageStatistics:
+    # Set this to true if you're OK with sending anonymous usage statistics to the developer.
+    #
+    # The developer politely asks you to keep this so that they get a sense of how much this is
+    # used.
+    #
+    # Unless you explicitly allow it below, the data sent to the developer will never contain
+    # anything that identifies you personally. For example: It'll contain the version, the language,
+    # and the number of players.
+    sendAnonymousUsageDataAtEndOfQuiz: true
+
+    # Uncomment these lines if you're fine with sending extra data to the developer of Quizmaster.
+    #includeAuthor: true
+    #includeQuizTitle: true
+
+# Optional - Define custom defaults
+defaults:
+  maxTimeSeconds: 120
+  pointsToGain: 1
+  multipleAnswers_pointsToGainPerAnswer: 1
+  multipleQuestions_pointsToGainPerQuestion: 1
+  orderItems_pointsToGainInTotal: 2
+
+rounds:
+  - name: Startup Check
+    questions:
+      - question: Did the server successfully boot?
+        answer: Yes
+
