@@ -1,0 +1,24 @@
+fw.orfel.de {
+    # Matches /Anton, /Berta, etc. (no trailing slash or multi-segments)
+    @short_code path_regexp code ^/([a-zA-Z0-9]+)$
+
+    handle @short_code {
+        forward_auth fwproxy-middleware:8000 {
+            uri /check/{re.code.1}
+        }
+        
+        # Map back to the root of the target service
+        rewrite * /
+        reverse_proxy erkw:80
+    }
+
+    # Fallback for assets or non-code paths
+    handle {
+        reverse_proxy erkw:80
+    }
+    
+    log {
+        output stdout
+    }
+}
+

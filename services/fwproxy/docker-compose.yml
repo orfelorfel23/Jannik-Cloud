@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  # Shlink Database
+  fwproxy-db:
+    image: mariadb:10.11
+    container_name: fwproxy-db
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: ${SHLINK_DB_PASSWORD:-shlink_db_pass}
+      MARIADB_DATABASE: shlink
+      MARIADB_USER: shlink
+      MARIADB_PASSWORD: ${SHLINK_DB_PASSWORD:-shlink_db_pass}
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/fwproxy/db_data:/var/lib/mysql
+    networks:
+      - jannik-cloud-net
+
+  # Shlink API Service
+  fwproxy-shlink:
+    image: shlinkio/shlink:stable
+    container_name: fwproxy-shlink
+    restart: unless-stopped
+    depends_on:
+      - fwproxy-db
+    environment:
+      - DB_DRIVER=mariadb
+      - DB_NAME=shlink
+      - DB_USER=shlink
+      - DB_PASSWORD=${SHLINK_DB_PASSWORD:-shlink_db_pass}
+      - DB_HOST=fwproxy-db
+      - DEFAULT_DOMAIN=fw.orfel.de
+      - IS_HTTPS_ENABLED=true
+      - INITIAL_API_KEY=${SHLINK_API_KEY}
+    networks:
+      - jannik-cloud-net
+
+  # Shlink Administrative UI
+  fwproxy-web-client:
+    image: shlinkio/shlink-web-client:stable
+    container_name: fwproxy-web-client
+    restart: unless-stopped
+    environment:
+      - SHLINK_SERVER_URL=http://fwproxy-shlink:8080
+      - SHLINK_SERVER_API_KEY=${SHLINK_API_KEY}
+    networks:
+      - jannik-cloud-net
+
+  # Custom Access Control Middleware
+  fwproxy-middleware:
+    build: .
+    container_name: fwproxy-middleware
+    restart: unless-stopped
+    environment:
+      - SHLINK_URL=http://fwproxy-shlink:8080
+      - SHLINK_API_KEY=${SHLINK_API_KEY}
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true
