@@ -4,6 +4,7 @@ import hashlib
 from fastapi import FastAPI, HTTPException, Request, Response
 import httpx
 import logging
+from datetime import datetime, timezone
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -20,108 +21,121 @@ if not SHLINK_API_KEY:
 
 client = httpx.AsyncClient()
 
-def sign_session():
-    # Simple HMAC signature for the session cookie
+def sign_session(code: str):
+    # Bind the session cookie to the specific short code
     signature = hmac.new(
         SESSION_SECRET.encode(),
-        "valid".encode(),
+        f"valid.{code}".encode(),
         hashlib.sha256
     ).hexdigest()
-    return f"valid.{signature}"
+    return f"valid.{code}.{signature}"
 
 def verify_session(cookie_value: str):
     if not cookie_value:
-        return False
+        return None
     try:
-        val, sig = cookie_value.split(".")
+        parts = cookie_value.split(".")
+        if len(parts) != 3:
+            return None
+        val, code, sig = parts
         expected_sig = hmac.new(
             SESSION_SECRET.encode(),
-            val.encode(),
+            f"{val}.{code}".encode(),
             hashlib.sha256
         ).hexdigest()
         is_valid = hmac.compare_digest(sig, expected_sig) and val == "valid"
-        if is_valid:
-            logger.debug("Session cookie verified successfully.")
-        else:
-            logger.warning("Session cookie signature mismatch or invalid value.")
-        return is_valid
+        return code if is_valid else None
     except Exception as e:
         logger.error(f"Error verifying session cookie: {e}")
-        return False
+        return None
 
 @app.get("/check{full_path:path}")
 async def check_access(full_path: str, request: Request):
-    # Strip leading slash and split the path
     path_parts = [p for p in full_path.split("/") if p]
-    
-    # CASE 1: Check session cookie first for resource access
     session_cookie = request.cookies.get("fwproxy_session")
-    if verify_session(session_cookie):
-        logger.info(f"Authorized via session cookie: {full_path}")
-        return Response(status_code=200)
+    session_code = verify_session(session_cookie)
+    
+    # 1. Identify which short-code we are checking
+    # Priority 1: The code in the URL path (e.g. /test/...)
+    # Priority 2: The code in the session cookie (for sub-resources like /style.css)
+    code = None
+    if path_parts:
+        code = path_parts[0]
+    elif session_code:
+        code = session_code
 
-    # CASE 2: No valid session, check if the first part of the path is a valid Shlink code
-    if not path_parts:
-        logger.warning("No code provided and no valid session.")
+    if not code:
+        logger.warning("No code found in path or session.")
         raise HTTPException(status_code=403, detail="Access Denied: Please use a valid link.")
 
-    potential_code = path_parts[0]
-    logger.info(f"Checking potential code: {potential_code}")
-    
-    # 1. Fetch info from Shlink REST API
+    # 2. Strict Shlink Status Check (Active, Expiry, Limits)
     try:
+        # We check the Shlink REST API on EVERY request for strict enforcement
         resp = await client.get(
-            f"{SHLINK_URL}/rest/v3/short-urls/{potential_code}",
+            f"{SHLINK_URL}/rest/v3/short-urls/{code}",
             headers={"X-Api-Key": SHLINK_API_KEY}
         )
     except Exception as e:
         logger.error(f"Error connecting to Shlink API: {e}")
         raise HTTPException(status_code=500, detail="Internal connection error")
 
-    if resp.status_code == 200:
-        data = resp.json()
-        meta = data.get("meta", {})
-        max_visits = meta.get("maxVisits")
-        current_visits = data.get("visitsSummary", {}).get("total", 0)
+    if resp.status_code != 200:
+        logger.warning(f"Invalid code or inactive link: {code}")
+        raise HTTPException(status_code=403, detail="Unauthorized: Link is invalid or inactive.")
 
-        # 2. Check visit limits
-        if max_visits is not None and current_visits >= max_visits:
-            logger.warning(f"Limit reached for {potential_code}: {current_visits}/{max_visits}")
-            raise HTTPException(status_code=403, detail="Visit limit reached")
-
-        # 3. Valid code! Increment visit count
+    data = resp.json()
+    meta = data.get("meta", {})
+    
+    # A. Check Expiry
+    valid_until_str = meta.get("validUntil")
+    if valid_until_str:
         try:
-            # Tell Shlink which domain this visit is for
+            # Parse Shlink's ISO date string
+            valid_until = datetime.fromisoformat(valid_until_str.replace("Z", "+00:00"))
+            if datetime.now(timezone.utc) > valid_until:
+                logger.warning(f"Link expired for {code}: {valid_until}")
+                raise HTTPException(status_code=403, detail="Link has expired.")
+        except ValueError as ve:
+            logger.error(f"Error parsing date {valid_until_str}: {ve}")
+
+    # B. Check Visit Limits
+    max_visits = meta.get("maxVisits")
+    current_visits = data.get("visitsSummary", {}).get("total", 0)
+    if max_visits is not None and current_visits >= max_visits:
+        logger.warning(f"Limit reached for {code}: {current_visits}/{max_visits}")
+        raise HTTPException(status_code=403, detail="Visit limit reached.")
+
+    # 3. Visit Counting & Handshake (Deduplicated via session)
+    # Only increment if the user DOES NOT have a valid cookie for THIS code.
+    if session_code != code:
+        try:
+            # Increment visit in Shlink
             domain = request.headers.get("X-Forwarded-Host", "fw.orfel.de")
             await client.get(
-                f"{SHLINK_URL}/{potential_code}", 
+                f"{SHLINK_URL}/{code}", 
                 headers={"Host": domain},
                 follow_redirects=False
             )
-            logger.info(f"Visit incremented for: {potential_code} on {domain}")
+            logger.info(f"Visit incremented for: {code} on {domain}")
         except Exception as e:
             logger.error(f"Failed to increment visit: {e}")
 
-        # 4. Grant access and set session cookie via a 302 redirect.
-        # This ensuring the browser definitely receives and stores the Set-Cookie,
-        # which Caddy's forward_auth usually discards on 2xx responses.
+        # Perform the 302 Handshake to set the new session cookie
         response = Response(status_code=302)
         response.headers["Location"] = full_path
-        
         response.set_cookie(
             key="fwproxy_session",
-            value=sign_session(),
+            value=sign_session(code),
             httponly=True,
             samesite="lax",
             path="/"
-            # Secure=True would be better but requires HTTPS in Caddy
         )
-        logger.info(f"Issuing session cookie and redirecting to: {full_path}")
+        logger.info(f"New session established for {code}. Redirecting to: {full_path}")
         return response
 
-    # CASE 3: Not a valid code and no valid session
-    logger.warning(f"Invalid code attempt or unauthorized resource access: {full_path}")
-    raise HTTPException(status_code=403, detail="Unauthorized")
+    # 4. Success Case: Valid Session & Passed Strict Checks
+    logger.debug(f"Authorized session for {code}: {full_path}")
+    return Response(status_code=200)
 
 @app.on_event("shutdown")
 async def shutdown_event():
