@@ -39,8 +39,14 @@ def verify_session(cookie_value: str):
             val.encode(),
             hashlib.sha256
         ).hexdigest()
-        return hmac.compare_digest(sig, expected_sig) and val == "valid"
-    except Exception:
+        is_valid = hmac.compare_digest(sig, expected_sig) and val == "valid"
+        if is_valid:
+            logger.debug("Session cookie verified successfully.")
+        else:
+            logger.warning("Session cookie signature mismatch or invalid value.")
+        return is_valid
+    except Exception as e:
+        logger.error(f"Error verifying session cookie: {e}")
         return False
 
 @app.get("/check{full_path:path}")

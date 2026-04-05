@@ -11,28 +11,28 @@ shlink-api.orfel.de {
 # Access-Limited Reverse Proxy
 fw.orfel.de {
     # 1. Force trailing slash on potential short codes (e.g. /test -> /test/)
-    # This ensures the browser resolves relative links (e.g. "image.png")
-    # against the code path (/test/image.png) instead of the root.
+    # Fixed: capturing the short code accurately before redirecting.
     @no_slash path_regexp code ^/([a-zA-Z0-9]+)$
-    redir @no_slash /{re.code.1}/
+    redir @no_slash {http.regexp.code.1}/ 308
     
     # 2. Use a route block to ensure strict execution order
     route {
         # 3. Authorize via middleware
         forward_auth fwproxy-middleware:8000 {
             uri /check{uri}
+            # Mandatory: Pass Cookies to the middleware so it can verify the session!
+            header_up Cookie {http.request.header.Cookie}
             copy_headers Set-Cookie
         }
 
         # 4. Prefix Stripping: Remove the short code from the backend path
-        # If path is /test/style.css -> strip "/test" -> sends "/style.css" to erkw.
         @has_code path_regexp code ^/([a-zA-Z0-9]+)(/.*)?$
         handle @has_code {
              uri strip_prefix /{re.code.1}
              reverse_proxy erkw:80
         }
         
-        # 5. Final Fallback for and root-level resources
+        # 5. Final Fallback for sub-resources
         reverse_proxy erkw:80
     }
     
