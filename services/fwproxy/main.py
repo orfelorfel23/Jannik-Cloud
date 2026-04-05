@@ -102,20 +102,21 @@ async def check_access(full_path: str, request: Request):
         except Exception as e:
             logger.error(f"Failed to increment visit: {e}")
 
-        # 4. Grant access and set session cookie
-        response = Response(status_code=200)
-        # We tell Caddy that this request is a 'code entry' so it can rewrite to root
-        # Only rewrite if the path is EXACTLY the code
-        if len(path_parts) == 1:
-            response.headers["X-Is-Code"] = "true"
+        # 4. Grant access and set session cookie via a 302 redirect.
+        # This ensuring the browser definitely receives and stores the Set-Cookie,
+        # which Caddy's forward_auth usually discards on 2xx responses.
+        response = Response(status_code=302)
+        response.headers["Location"] = full_path
         
         response.set_cookie(
             key="fwproxy_session",
             value=sign_session(),
             httponly=True,
-            samesite="lax"
+            samesite="lax",
+            path="/"
             # Secure=True would be better but requires HTTPS in Caddy
         )
+        logger.info(f"Issuing session cookie and redirecting to: {full_path}")
         return response
 
     # CASE 3: Not a valid code and no valid session
