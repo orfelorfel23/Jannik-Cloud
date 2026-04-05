@@ -204,6 +204,20 @@ setup_cron_job() {
 }
 
 ###############################################################################
+# 2d. Ensure system timezone is correct
+###############################################################################
+configure_timezone() {
+    local TARGET_TZ="Europe/Berlin"
+    log "Ensuring system timezone is ${TARGET_TZ}..."
+    if ! timedatectl status | grep -q "${TARGET_TZ}"; then
+        timedatectl set-timezone "${TARGET_TZ}"
+        log "System timezone set to ${TARGET_TZ}."
+    else
+        log "System timezone is already ${TARGET_TZ}."
+    fi
+}
+
+###############################################################################
 # 3. Handle AGE private key
 ###############################################################################
 handle_age_key() {
@@ -610,6 +624,7 @@ main() {
     configure_docker_daemon
     setup_fail2ban
     setup_swap
+    configure_timezone
     setup_cron_job
     handle_age_key
     update_repo

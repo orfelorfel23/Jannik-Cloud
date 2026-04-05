@@ -14,7 +14,8 @@ docker run --rm \
 set -e
 
 NTFY_URL='${NTFY_URL}'
-TIMESTAMP=\$(date '+%Y-%m-%d %H:%M:%S')
+export TZ='Europe/Berlin'
+TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
 
 curl -s -o /dev/null --retry 3 --retry-delay 2 --max-time 10 \\
   -H 'Title: Linus Rebuild startet' \\

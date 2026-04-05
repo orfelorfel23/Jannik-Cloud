@@ -18,7 +18,8 @@ set -e
 NTFY_URL='${NTFY_URL}'
 LOCK_FILE='${LOCK_FILE}'
 LOG_FILE='${LOG_FILE}'
-TIMESTAMP=\$(date '+%Y-%m-%d %H:%M:%S')
+export TZ='Europe/Berlin'
+TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
 
 # --- Notify: Push detected ---
 curl -s -o /dev/null --retry 3 --retry-delay 2 --max-time 10 \\
