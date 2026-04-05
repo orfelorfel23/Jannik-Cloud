@@ -10,13 +10,13 @@ shlink-api.orfel.de {
 
 # Access-Limited Reverse Proxy
 fw.orfel.de {
-    # 1. Force trailing slash on potential short codes (e.g. /test -> /test/)
-    # Fixed: capturing the short code accurately before redirecting.
-    @no_slash path_regexp code ^/([a-zA-Z0-9]+)$
-    redir @no_slash {http.regexp.code.1}/ 308
-    
     # 2. Use a route block to ensure strict execution order
     route {
+        # 1. Force trailing slash on potential short codes (e.g. /test -> /test/)
+        # This ensuring relative browser link resolution.
+        @no_slash path_regexp code ^/([a-zA-Z0-9]+)$
+        redir @no_slash /{re.code.1}/ 302
+        
         # 3. Authorize via middleware
         forward_auth fwproxy-middleware:8000 {
             uri /check{uri}
