@@ -41,8 +41,11 @@ services:
       - NETBIRD_AUTH_CLIENT_ID=netbird-dashboard
       - NETBIRD_AUTH_AUDIENCE=netbird-dashboard
       - NETBIRD_AUTH_DEVICE_AUTH_CLIENT_ID=netbird-dashboard
+      - AUTH_SUPPORTED_SCOPES=openid profile email
+      - NETBIRD_AUTH_SUPPORTED_SCOPES=openid profile email
       
       # Placeholders for other possible variables to prevent script errors
+
       - NETBIRD_GOOGLE_TAG_MANAGER_ID=GTM-000000
       - NETBIRD_DASHBOARD_URL=https://vpn.orfel.de
 
