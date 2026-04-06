@@ -18,12 +18,16 @@ vpn.orfel.de {
         reverse_proxy h2c://netbird-server:80
     }
 
-    # 3. API and WebSockets
+    # 3. API, WebSockets and OIDC discovery
+    handle /.well-known/* {
+        reverse_proxy h2c://netbird-server:80
+    }
+
     handle /api/* {
-        reverse_proxy netbird-server:80
+        reverse_proxy h2c://netbird-server:80
     }
     
     handle /ws-proxy/* {
-        reverse_proxy netbird-server:80
+        reverse_proxy h2c://netbird-server:80
     }
 }
