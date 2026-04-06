@@ -1,11 +1,10 @@
 vpn.orfel.de {
-    # 1. Dashboard (Standard HTTP/WebSocket)
-    handle / {
-        reverse_proxy netbird-dashboard:80
+    # 1. API and Management Routes
+    # We use handle_path to strip the /api prefix before forwarding to the backend
+    handle_path /api/* {
+        reverse_proxy h2c://netbird-server:80
     }
 
-    # 2. gRPC endpoints (Requires h2c for HTTP/2 Cleartext)
-    # The signal exchange and management services require HTTP/2
     handle /signalexchange.SignalExchange/* {
         reverse_proxy h2c://netbird-server:80
     }
@@ -18,16 +17,17 @@ vpn.orfel.de {
         reverse_proxy h2c://netbird-server:80
     }
 
-    # 3. API, WebSockets and OIDC discovery
     handle /.well-known/* {
         reverse_proxy h2c://netbird-server:80
     }
 
-    handle /api/* {
-        reverse_proxy h2c://netbird-server:80
-    }
-    
     handle /ws-proxy/* {
         reverse_proxy h2c://netbird-server:80
+    }
+
+    # 2. Local Dashboard (Catch-all)
+    # The Nginx inside the container will handle all subpaths (like /config.json, /static/*)
+    handle {
+        reverse_proxy netbird-dashboard:80
     }
 }

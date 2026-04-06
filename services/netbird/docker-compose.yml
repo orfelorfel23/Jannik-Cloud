@@ -23,7 +23,8 @@ services:
     container_name: netbird-dashboard
     restart: unless-stopped
     environment:
-      - NETBIRD_MGMT_API_ENDPOINT=https://${NETBIRD_DOMAIN}
+      - NETBIRD_MGMT_API_ENDPOINT=https://${NETBIRD_DOMAIN}/api
+
       - NETBIRD_MGMT_GRPC_API_ENDPOINT=https://${NETBIRD_DOMAIN}
       # Mandatory variables for the dashboard image to start
       - AUTH_AUTHORITY=https://${NETBIRD_DOMAIN}
