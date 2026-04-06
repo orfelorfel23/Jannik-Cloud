@@ -7,23 +7,23 @@ vpn.orfel.de {
     # 2. gRPC endpoints (Requires h2c for HTTP/2 Cleartext)
     # The signal exchange and management services require HTTP/2
     handle /signalexchange.SignalExchange/* {
-        reverse_proxy h2c://netbird-server:8081
+        reverse_proxy h2c://netbird-server:80
     }
 
     handle /management.ManagementService/* {
-        reverse_proxy h2c://netbird-server:8081
+        reverse_proxy h2c://netbird-server:80
     }
 
     handle /management.ProxyService/* {
-        reverse_proxy h2c://netbird-server:8081
+        reverse_proxy h2c://netbird-server:80
     }
 
     # 3. API and WebSockets
     handle /api/* {
-        reverse_proxy netbird-server:8081
+        reverse_proxy netbird-server:80
     }
     
     handle /ws-proxy/* {
-        reverse_proxy netbird-server:8081
+        reverse_proxy netbird-server:80
     }
 }

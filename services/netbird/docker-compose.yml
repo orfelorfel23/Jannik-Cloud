@@ -25,10 +25,12 @@ services:
     environment:
       - NETBIRD_MGMT_API_ENDPOINT=https://${NETBIRD_DOMAIN}
       - NETBIRD_MGMT_GRPC_API_ENDPOINT=https://${NETBIRD_DOMAIN}
-      - NETBIRD_AUTH_AUDIENCE=
-      - NETBIRD_AUTH_CLIENT_ID=
-      - NETBIRD_AUTH_DEVICE_AUTH_CLIENT_ID=
-      # For now, we use the local dashboard settings
+      - NETBIRD_AUTH_AUTHORITY=https://authentik.orfel.de/application/o/netbird/
+      - NETBIRD_AUTH_CLIENT_ID=${NETBIRD_AUTH_CLIENT_ID}
+      - NETBIRD_AUTH_AUDIENCE=${NETBIRD_AUTH_CLIENT_ID}
+      - NETBIRD_AUTH_DEVICE_AUTH_CLIENT_ID=${NETBIRD_AUTH_CLIENT_ID}
+      - AUTH_AUTHORITY=https://authentik.orfel.de/application/o/netbird/
+
     networks:
       - jannik-cloud-net
     deploy:
