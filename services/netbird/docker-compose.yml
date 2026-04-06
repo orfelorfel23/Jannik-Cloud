@@ -23,20 +23,28 @@ services:
     container_name: netbird-dashboard
     restart: unless-stopped
     environment:
-      # We use hardcoded URLs here to ensure the container initializes correctly
-      # even if docker-compose expansion fails.
+      # NETBIRD_MGMT_API_ENDPOINT is used by the frontend to talk to the backend.
+      # We set both variants to ensure the internal envsubst handles it.
       - NETBIRD_MGMT_API_ENDPOINT=https://vpn.orfel.de
-      - NETBIRD_MGMT_GRPC_API_ENDPOINT=https://vpn.orfel.de:443
+      - MGMT_API_ENDPOINT=https://vpn.orfel.de
       
-      # Mandatory variables for the dashboard image to start
-      # Pointing to the Mock OIDC we added to Caddy
+      - NETBIRD_MGMT_GRPC_API_ENDPOINT=https://vpn.orfel.de:443
+      - MGMT_GRPC_API_ENDPOINT=https://vpn.orfel.de:443
+      
+      # Mandatory variables for the dashboard image to start.
+      # These are also used for injection into the JS files.
       - AUTH_AUTHORITY=https://vpn.orfel.de
       - AUTH_CLIENT_ID=netbird-dashboard
       - AUTH_AUDIENCE=netbird-dashboard
+      
       - NETBIRD_AUTH_AUTHORITY=https://vpn.orfel.de
       - NETBIRD_AUTH_CLIENT_ID=netbird-dashboard
       - NETBIRD_AUTH_AUDIENCE=netbird-dashboard
       - NETBIRD_AUTH_DEVICE_AUTH_CLIENT_ID=netbird-dashboard
+      
+      # Placeholders for other possible variables to prevent script errors
+      - NETBIRD_GOOGLE_TAG_MANAGER_ID=GTM-000000
+      - NETBIRD_DASHBOARD_URL=https://vpn.orfel.de
 
     networks:
       - jannik-cloud-net
