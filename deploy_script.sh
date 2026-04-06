@@ -348,6 +348,8 @@ decrypt_envs() {
             age --decrypt -i "${AGE_PRIVATE_KEY}" -o "${env_file}" "${env_age}"
             # Strip Windows CRLF line endings that break Docker env var interpolation
             sed -i 's/\r$//' "${env_file}"
+            # Remove UTF-8 BOM if present
+            sed -i '1s/^\xEF\xBB\xBF//' "${env_file}"
             chmod 600 "${env_file}"
             log "  Decrypted: ${svc_name}/.env"
         fi
