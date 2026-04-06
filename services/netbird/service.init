@@ -16,10 +16,20 @@ if [[ ! -f "${ENV_FILE}" ]]; then
 fi
 
 # Load environment variables
-# Note: We use -r to avoid issues with backslashes
 set -a
 source "${ENV_FILE}"
 set +a
+
+# Generate Encryption Key if missing
+if [[ -z "${NETBIRD_ENCRYPTION_KEY:-}" ]]; then
+    echo "[NETBIRD-INIT] Generating NETBIRD_ENCRYPTION_KEY..."
+    NETBIRD_ENCRYPTION_KEY=$(openssl rand -base64 32)
+    echo "NETBIRD_ENCRYPTION_KEY=\"${NETBIRD_ENCRYPTION_KEY}\"" >> "${ENV_FILE}"
+    export NETBIRD_ENCRYPTION_KEY
+fi
+
+# Ensure idp directory exists in volume
+mkdir -p "${VOLUME_DIR}/idp"
 
 if [[ ! -f "${CONFIG_FILE}" ]]; then
     echo "[NETBIRD-INIT] Generating management.json from template..."
@@ -31,6 +41,7 @@ if [[ ! -f "${CONFIG_FILE}" ]]; then
         -e "s|\${DB_USER}|${DB_USER}|g" \
         -e "s|\${DB_PASSWORD}|${DB_PASSWORD}|g" \
         -e "s|\${NETBIRD_IP_RANGE}|${NETBIRD_IP_RANGE}|g" \
+        -e "s|\${NETBIRD_ENCRYPTION_KEY}|${NETBIRD_ENCRYPTION_KEY}|g" \
         "${TEMPLATE}" > "${CONFIG_FILE}"
     
     chmod 600 "${CONFIG_FILE}"
@@ -38,3 +49,4 @@ if [[ ! -f "${CONFIG_FILE}" ]]; then
 else
     echo "[NETBIRD-INIT] management.json already exists. Skipping."
 fi
+

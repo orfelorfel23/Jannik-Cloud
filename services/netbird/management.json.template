@@ -1,10 +1,15 @@
 {
   "DataDir": "/var/lib/netbird/",
+  "EncryptionKey": "${NETBIRD_ENCRYPTION_KEY}",
+  "EmbeddedIdP": {
+    "Enabled": true,
+    "DataDir": "/var/lib/netbird/idp"
+  },
   "HttpConfig": {
-    "AuthMode": "local",
-    "IdpIssuer": "",
+    "AuthMode": "oidc",
+    "IdpIssuer": "https://vpn.orfel.de/",
     "IdpSignKeyRefreshEnabled": true,
-    "AuthAudience": "",
+    "AuthAudience": "netbird-dashboard",
     "AuthKeys": null,
     "AuthRedirectAndPostLogoutURI": "https://vpn.orfel.de/"
   },
@@ -31,3 +36,4 @@
       "InternalRelayEnabled": true
   }
 }
+

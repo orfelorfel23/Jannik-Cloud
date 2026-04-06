@@ -1,39 +1,41 @@
 vpn.orfel.de {
-    # 1. Mock OIDC Discovery (Satisfies Dashboard initialization)
+    # 1. Identity Provider & API (Management Server)
+    # These endpoints are handled by the management server's embedded IdP and API
     handle /.well-known/openid-configuration {
-        header Content-Type application/json
-        respond `{"issuer":"https://vpn.orfel.de","authorization_endpoint":"https://vpn.orfel.de/authorize","token_endpoint":"https://vpn.orfel.de/token","userinfo_endpoint":"https://vpn.orfel.de/userinfo","jwks_uri":"https://vpn.orfel.de/.well-known/jwks.json","response_types_supported":["code","token","id_token"],"subject_types_supported":["public"],"id_token_signing_alg_values_supported":["RS256"],"scopes_supported":["openid","profile","email","offline_access"],"token_endpoint_auth_methods_supported":["client_secret_post","client_secret_basic"],"claims_supported":["sub","iss","auth_time","name","given_name","family_name","nickname","profile","picture","website","email","email_verified","locale","zoneinfo"]}`
-    }
-
-    # 2. Config JSON Routing
-    # Force a direct route to the dashboard's internal config
-    handle /config.json {
-        reverse_proxy netbird-dashboard:80
-    }
-
-    # 3. API and Management Routes
-    # Multiplexed H2C port 80
-    handle /signalexchange.SignalExchange/* {
         reverse_proxy h2c://netbird-server:80
     }
-
-    handle /management.ManagementService/* {
+    handle /.well-known/jwks.json {
         reverse_proxy h2c://netbird-server:80
     }
-
-    handle /management.ProxyService/* {
+    handle /authorize {
         reverse_proxy h2c://netbird-server:80
     }
-
+    handle /token {
+        reverse_proxy h2c://netbird-server:80
+    }
+    handle /userinfo {
+        reverse_proxy h2c://netbird-server:80
+    }
+    
+    # 2. Management & Signal gRPC/API
     handle /api/* {
         reverse_proxy h2c://netbird-server:80
     }
-
+    handle /signalexchange.SignalExchange/* {
+        reverse_proxy h2c://netbird-server:80
+    }
+    handle /management.ManagementService/* {
+        reverse_proxy h2c://netbird-server:80
+    }
+    handle /management.ProxyService/* {
+        reverse_proxy h2c://netbird-server:80
+    }
     handle /ws-proxy/* {
         reverse_proxy h2c://netbird-server:80
     }
 
-    # 4. Dashboard Catch-all
+    # 3. Dashboard (Catch-all)
+    # Serves the static assets and the config.json
     handle {
         reverse_proxy netbird-dashboard:80
     }

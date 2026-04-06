@@ -1,14 +1,12 @@
 services:
   netbird-server:
-    image: netbirdio/management:${NETBIRD_VERSION:-latest}
+    image: netbirdio/management:0.28.1
     container_name: netbird-server
     restart: unless-stopped
     environment:
       - NETBIRD_DOMAIN=${NETBIRD_DOMAIN}
-      # The management server uses the management.json for most config.
-      # We mount it in the volume.
     volumes:
-      - /mnt/Jannik-Cloud-Volume-01/netbird/management.json:/etc/netbird/management.json
+      - /mnt/Jannik-Cloud-Volume-01/netbird/management.json:/etc/netbird/management.json:ro
       - /mnt/Jannik-Cloud-Volume-01/netbird:/var/lib/netbird
     deploy:
       resources:
@@ -19,35 +17,29 @@ services:
       - jannik-cloud-net
 
   netbird-dashboard:
-    image: netbirdio/dashboard:latest
+    image: netbirdio/dashboard:0.28.1
     container_name: netbird-dashboard
     restart: unless-stopped
     environment:
-      # NETBIRD_MGMT_API_ENDPOINT is used by the frontend to talk to the backend.
-      # We set both variants to ensure the internal envsubst handles it.
+      # Use full domain to avoid interpolation issues in JS
       - NETBIRD_MGMT_API_ENDPOINT=https://vpn.orfel.de
-      - MGMT_API_ENDPOINT=https://vpn.orfel.de
-      
       - NETBIRD_MGMT_GRPC_API_ENDPOINT=https://vpn.orfel.de:443
-      - MGMT_GRPC_API_ENDPOINT=https://vpn.orfel.de:443
       
-      # Mandatory variables for the dashboard image to start.
-      # These are also used for injection into the JS files.
+      # Point to the management server as the Identity Provider (Embedded IdP)
       - AUTH_AUTHORITY=https://vpn.orfel.de
       - AUTH_CLIENT_ID=netbird-dashboard
       - AUTH_AUDIENCE=netbird-dashboard
+      - AUTH_SUPPORTED_SCOPES=openid profile email
       
+      # Legacy/Alternative names to ensure script replacement works
       - NETBIRD_AUTH_AUTHORITY=https://vpn.orfel.de
       - NETBIRD_AUTH_CLIENT_ID=netbird-dashboard
       - NETBIRD_AUTH_AUDIENCE=netbird-dashboard
       - NETBIRD_AUTH_DEVICE_AUTH_CLIENT_ID=netbird-dashboard
-      - AUTH_SUPPORTED_SCOPES=openid profile email
       - NETBIRD_AUTH_SUPPORTED_SCOPES=openid profile email
-      
-      # Placeholders for other possible variables to prevent script errors
 
-      - NETBIRD_GOOGLE_TAG_MANAGER_ID=GTM-000000
       - NETBIRD_DASHBOARD_URL=https://vpn.orfel.de
+      - NETBIRD_GOOGLE_TAG_MANAGER_ID=GTM-000000
 
     networks:
       - jannik-cloud-net
@@ -60,3 +52,4 @@ services:
 networks:
   jannik-cloud-net:
     external: true
+
