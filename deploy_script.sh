@@ -464,7 +464,7 @@ wait_for_postgres() {
 
 wait_for_gitea() {
     log "Waiting for Gitea to be reachable..."
-    local retries=30
+    local retries=60
     local count=0
     while ! curl -sf --max-time 3 "http://localhost:3000" &>/dev/null; do
         count=$((count + 1))

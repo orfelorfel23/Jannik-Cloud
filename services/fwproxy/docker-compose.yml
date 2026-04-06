@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # Shlink Database
   fwproxy-db:
