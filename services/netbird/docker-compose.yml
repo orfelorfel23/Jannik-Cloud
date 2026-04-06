@@ -1,0 +1,42 @@
+services:
+  netbird-server:
+    image: netbirdio/management:${NETBIRD_VERSION:-latest}
+    container_name: netbird-server
+    restart: unless-stopped
+    environment:
+      - NETBIRD_DOMAIN=${NETBIRD_DOMAIN}
+      # The management server uses the management.json for most config.
+      # We mount it in the volume.
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/netbird/management.json:/etc/netbird/management.json
+      - /mnt/Jannik-Cloud-Volume-01/netbird:/var/lib/netbird
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+    networks:
+      - jannik-cloud-net
+
+  netbird-dashboard:
+    image: netbirdio/dashboard:latest
+    container_name: netbird-dashboard
+    restart: unless-stopped
+    environment:
+      - NETBIRD_MGMT_API_ENDPOINT=https://${NETBIRD_DOMAIN}
+      - NETBIRD_MGMT_GRPC_API_ENDPOINT=https://${NETBIRD_DOMAIN}
+      - NETBIRD_AUTH_AUDIENCE=
+      - NETBIRD_AUTH_CLIENT_ID=
+      - NETBIRD_AUTH_DEVICE_AUTH_CLIENT_ID=
+      # For now, we use the local dashboard settings
+    networks:
+      - jannik-cloud-net
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 256M
+
+networks:
+  jannik-cloud-net:
+    external: true

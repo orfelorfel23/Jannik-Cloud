@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# NetBird - Service Init Hook
+# Purpose: Generate management.json from template if it doesn't exist.
+
+set -euo pipefail
+
+SERVICE_DIR="/opt/Jannik-Cloud/services/netbird"
+VOLUME_DIR="/mnt/Jannik-Cloud-Volume-01/netbird"
+ENV_FILE="${SERVICE_DIR}/.env"
+TEMPLATE="${SERVICE_DIR}/management.json.template"
+CONFIG_FILE="${VOLUME_DIR}/management.json"
+
+if [[ ! -f "${ENV_FILE}" ]]; then
+    echo "[NETBIRD-INIT] Error: .env file not found. Skipping config generation."
+    exit 0
+fi
+
+# Load environment variables
+# Note: We use -r to avoid issues with backslashes
+set -a
+source "${ENV_FILE}"
+set +a
+
+if [[ ! -f "${CONFIG_FILE}" ]]; then
+    echo "[NETBIRD-INIT] Generating management.json from template..."
+    
+    # Use sed to replace variables in template
+    # We use a non-standard delimiter '|' because values might contain slashes
+    sed \
+        -e "s|\${DB_NAME}|${DB_NAME}|g" \
+        -e "s|\${DB_USER}|${DB_USER}|g" \
+        -e "s|\${DB_PASSWORD}|${DB_PASSWORD}|g" \
+        -e "s|\${NETBIRD_IP_RANGE}|${NETBIRD_IP_RANGE}|g" \
+        "${TEMPLATE}" > "${CONFIG_FILE}"
+    
+    chmod 600 "${CONFIG_FILE}"
+    echo "[NETBIRD-INIT] Created: ${CONFIG_FILE}"
+else
+    echo "[NETBIRD-INIT] management.json already exists. Skipping."
+fi
