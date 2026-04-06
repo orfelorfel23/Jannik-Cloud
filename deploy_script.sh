@@ -468,7 +468,7 @@ wait_for_gitea() {
     log "Waiting for Gitea to be reachable..."
     local retries=60
     local count=0
-    while ! curl -sf --max-time 3 "http://localhost:3000" &>/dev/null; do
+    while ! curl -sf --max-time 3 "http://localhost:448" &>/dev/null; do
         count=$((count + 1))
         if [[ ${count} -ge ${retries} ]]; then
             warn "Gitea did not become reachable within ${retries} attempts — init hooks that clone from Gitea may fail."
