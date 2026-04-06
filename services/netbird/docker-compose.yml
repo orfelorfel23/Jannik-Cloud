@@ -25,11 +25,16 @@ services:
     environment:
       - NETBIRD_MGMT_API_ENDPOINT=https://${NETBIRD_DOMAIN}
       - NETBIRD_MGMT_GRPC_API_ENDPOINT=https://${NETBIRD_DOMAIN}
-      - NETBIRD_AUTH_AUTHORITY=https://authentik.orfel.de/application/o/netbird/
-      - NETBIRD_AUTH_CLIENT_ID=${NETBIRD_AUTH_CLIENT_ID}
-      - NETBIRD_AUTH_AUDIENCE=${NETBIRD_AUTH_CLIENT_ID}
-      - NETBIRD_AUTH_DEVICE_AUTH_CLIENT_ID=${NETBIRD_AUTH_CLIENT_ID}
-      - AUTH_AUTHORITY=https://authentik.orfel.de/application/o/netbird/
+      # Mandatory variables for the dashboard image to start
+      - AUTH_AUTHORITY=https://${NETBIRD_DOMAIN}
+      - AUTH_CLIENT_ID=netbird-client
+      - AUTH_AUDIENCE=netbird-client
+      - NETBIRD_AUTH_AUTHORITY=https://${NETBIRD_DOMAIN}
+      - NETBIRD_AUTH_CLIENT_ID=netbird-client
+      - NETBIRD_AUTH_AUDIENCE=netbird-client
+      - NETBIRD_AUTH_DEVICE_AUTH_CLIENT_ID=netbird-client
+
+
 
     networks:
       - jannik-cloud-net
