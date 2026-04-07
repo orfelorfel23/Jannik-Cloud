@@ -1,6 +1,6 @@
 services:
   netbird-server:
-    image: netbirdio/management:0.28.1
+    image: netbirdio/management:latest
     container_name: netbird-server
     restart: unless-stopped
     environment:
@@ -17,7 +17,7 @@ services:
       - jannik-cloud-net
 
   netbird-dashboard:
-    image: netbirdio/dashboard:0.28.1
+    image: netbirdio/dashboard:latest
     container_name: netbird-dashboard
     restart: unless-stopped
     environment:
