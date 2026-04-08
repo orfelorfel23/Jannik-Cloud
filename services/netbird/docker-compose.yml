@@ -3,6 +3,14 @@ services:
     image: netbirdio/management:latest
     container_name: netbird-server
     restart: unless-stopped
+    command:
+      - "management"
+      - "--port"
+      - "80"
+      - "--log-file"
+      - "console"
+      - "--log-level"
+      - "info"
     environment:
       - NETBIRD_DOMAIN=${NETBIRD_DOMAIN}
     volumes:
@@ -26,13 +34,13 @@ services:
       - NETBIRD_MGMT_GRPC_API_ENDPOINT=https://vpn.orfel.de:443
       
       # Point to the management server as the Identity Provider (Embedded IdP)
-      - AUTH_AUTHORITY=https://vpn.orfel.de
+      - AUTH_AUTHORITY=https://vpn.orfel.de/
       - AUTH_CLIENT_ID=netbird-dashboard
       - AUTH_AUDIENCE=netbird-dashboard
       - AUTH_SUPPORTED_SCOPES=openid profile email
       
       # Legacy/Alternative names to ensure script replacement works
-      - NETBIRD_AUTH_AUTHORITY=https://vpn.orfel.de
+      - NETBIRD_AUTH_AUTHORITY=https://vpn.orfel.de/
       - NETBIRD_AUTH_CLIENT_ID=netbird-dashboard
       - NETBIRD_AUTH_AUDIENCE=netbird-dashboard
       - NETBIRD_AUTH_DEVICE_AUTH_CLIENT_ID=netbird-dashboard
