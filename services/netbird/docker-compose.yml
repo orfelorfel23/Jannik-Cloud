@@ -37,7 +37,7 @@ services:
       - AUTH_CLIENT_ID=netbird-dashboard
       - AUTH_AUDIENCE=netbird-dashboard
       - AUTH_SUPPORTED_SCOPES=openid profile email
-      - USE_AUTH0="false"
+      - "USE_AUTH0=false"
       - AUTH_REDIRECT_URI=https://vpn.orfel.de/
       - AUTH_SILENT_REDIRECT_URI=https://vpn.orfel.de/
       - NETBIRD_TOKEN_SOURCE=accessToken
