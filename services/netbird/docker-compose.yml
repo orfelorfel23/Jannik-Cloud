@@ -4,7 +4,6 @@ services:
     container_name: netbird-server
     restart: unless-stopped
     command:
-      - "management"
       - "--port"
       - "80"
       - "--log-file"
