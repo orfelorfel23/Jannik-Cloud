@@ -13,7 +13,7 @@ services:
     environment:
       - NETBIRD_DOMAIN=${NETBIRD_DOMAIN}
     volumes:
-      - /mnt/Jannik-Cloud-Volume-01/netbird/management.json:/etc/netbird/management.json:ro
+      - /mnt/Jannik-Cloud-Volume-01/netbird/management.json:/etc/netbird/management.json
       - /mnt/Jannik-Cloud-Volume-01/netbird:/var/lib/netbird
     deploy:
       resources:
@@ -37,6 +37,10 @@ services:
       - AUTH_CLIENT_ID=netbird-dashboard
       - AUTH_AUDIENCE=netbird-dashboard
       - AUTH_SUPPORTED_SCOPES=openid profile email
+      - USE_AUTH0=false
+      - AUTH_REDIRECT_URI=https://vpn.orfel.de/
+      - AUTH_SILENT_REDIRECT_URI=https://vpn.orfel.de/
+      - NETBIRD_TOKEN_SOURCE=accessToken
       
       # Legacy/Alternative names to ensure script replacement works
       - NETBIRD_AUTH_AUTHORITY=https://vpn.orfel.de/
