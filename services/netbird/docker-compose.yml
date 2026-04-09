@@ -37,6 +37,11 @@ services:
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/netbird/management.json:/etc/netbird/management.json
       - /mnt/Jannik-Cloud-Volume-01/netbird/management:/var/lib/netbird
+    command: [
+      "--port", "33073",
+      "--log-file", "console",
+      "--log-level", "info"
+    ]
     environment:
       - NETBIRD_STORE_ENGINE_POSTGRES_DSN=postgres://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}?sslmode=disable
     networks:
