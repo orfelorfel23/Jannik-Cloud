@@ -1,41 +1,47 @@
 vpn.orfel.de {
     # 1. Identity Provider & API (Management Server)
-    # These endpoints are handled by the management server's embedded IdP and API
+    # These REST endpoints don't use gRPC, therefore strictly proxy to netbird-management via HTTP
     handle /.well-known/openid-configuration {
-        reverse_proxy netbird-server:33073
+        reverse_proxy netbird-management:33073
     }
     handle /.well-known/jwks.json {
-        reverse_proxy netbird-server:33073
+        reverse_proxy netbird-management:33073
     }
     handle /authorize {
-        reverse_proxy netbird-server:33073
+        reverse_proxy netbird-management:33073
     }
     handle /token {
-        reverse_proxy netbird-server:33073
+        reverse_proxy netbird-management:33073
     }
     handle /userinfo {
-        reverse_proxy netbird-server:33073
+        reverse_proxy netbird-management:33073
+    }
+    handle /api/* {
+        reverse_proxy netbird-management:33073
     }
     
-    # 2. Management & Signal gRPC/API
-    handle /api/* {
-        reverse_proxy netbird-server:33073
-    }
-    handle /signalexchange.SignalExchange/* {
-        reverse_proxy h2c://netbird-server:33073
-    }
+    # 2. Management gRPC
+    # Management gRPC endpoints MUST use h2c protocol matching
     handle /management.ManagementService/* {
-        reverse_proxy h2c://netbird-server:33073
+        reverse_proxy h2c://netbird-management:33073
     }
     handle /management.ProxyService/* {
-        reverse_proxy h2c://netbird-server:33073
-    }
-    handle /ws-proxy/* {
-        reverse_proxy netbird-server:33073
+        reverse_proxy h2c://netbird-management:33073
     }
 
-    # 3. Dashboard (Catch-all)
-    # Serves the static assets and the config.json
+    # 3. Signal gRPC
+    # Signal server runs on port 80 based on docker-compose command, MUST use h2c protocol matching
+    handle /signalexchange.SignalExchange/* {
+        reverse_proxy h2c://netbird-signal:80
+    }
+
+    # 4. WebSockets for legacy fallback
+    handle /ws-proxy/* {
+        reverse_proxy netbird-management:33073
+    }
+
+    # 5. Dashboard (Catch-all)
+    # Serves the static assets and the dynamically injected JS code
     handle {
         reverse_proxy netbird-dashboard:80
     }

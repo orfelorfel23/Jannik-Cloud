@@ -30,11 +30,10 @@
     "NetIPv4": "${NETBIRD_IP_RANGE}"
   },
   "SignalConfig": {
-    "ExternalAddress": "vpn.orfel.de:443"
+    "ExternalAddress": "https://vpn.orfel.de"
   },
   "RelayConfig": {
-      "RelayURI": "https://vpn.orfel.de/",
-      "InternalRelayEnabled": true
+      "RelayURI": "https://vpn.orfel.de:33080/",
+      "InternalRelayEnabled": false
   }
 }
-
