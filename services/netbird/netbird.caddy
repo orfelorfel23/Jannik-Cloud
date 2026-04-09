@@ -2,24 +2,24 @@ vpn.orfel.de {
     # 1. Identity Provider & API (Management Server)
     # These endpoints are handled by the management server's embedded IdP and API
     handle /.well-known/openid-configuration {
-        reverse_proxy h2c://netbird-server:80
+        reverse_proxy netbird-server:80
     }
     handle /.well-known/jwks.json {
-        reverse_proxy h2c://netbird-server:80
+        reverse_proxy netbird-server:80
     }
     handle /authorize {
-        reverse_proxy h2c://netbird-server:80
+        reverse_proxy netbird-server:80
     }
     handle /token {
-        reverse_proxy h2c://netbird-server:80
+        reverse_proxy netbird-server:80
     }
     handle /userinfo {
-        reverse_proxy h2c://netbird-server:80
+        reverse_proxy netbird-server:80
     }
     
     # 2. Management & Signal gRPC/API
     handle /api/* {
-        reverse_proxy h2c://netbird-server:80
+        reverse_proxy netbird-server:80
     }
     handle /signalexchange.SignalExchange/* {
         reverse_proxy h2c://netbird-server:80
@@ -31,7 +31,7 @@ vpn.orfel.de {
         reverse_proxy h2c://netbird-server:80
     }
     handle /ws-proxy/* {
-        reverse_proxy h2c://netbird-server:80
+        reverse_proxy netbird-server:80
     }
 
     # 3. Dashboard (Catch-all)
