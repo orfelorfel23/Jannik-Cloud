@@ -39,7 +39,7 @@ services:
       - AUTH_SUPPORTED_SCOPES=openid profile email
       - "USE_AUTH0=false"
       - AUTH_REDIRECT_URI=https://vpn.orfel.de/
-      - AUTH_SILENT_REDIRECT_URI=https://vpn.orfel.de/
+      - AUTH_SILENT_REDIRECT_URI=https://vpn.orfel.de/silent-callback
       - NETBIRD_TOKEN_SOURCE=accessToken
       
       # Legacy/Alternative names to ensure script replacement works
