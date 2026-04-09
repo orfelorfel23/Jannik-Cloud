@@ -1,6 +1,7 @@
 {
   "DataDir": "/var/lib/netbird/",
   "EncryptionKey": "${NETBIRD_ENCRYPTION_KEY}",
+  "DataStoreEncryptionKey": "${NETBIRD_ENCRYPTION_KEY}",
   "EmbeddedIdP": {
     "Enabled": true,
     "DataDir": "/var/lib/netbird/idp"

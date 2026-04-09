@@ -50,3 +50,9 @@ else
     echo "[NETBIRD-INIT] management.json already exists. Skipping."
 fi
 
+# Migration: Netbird 0.67+ requires DataStoreEncryptionKey. If it's missing in an existing config, inject it!
+if ! grep -q "DataStoreEncryptionKey" "${CONFIG_FILE}"; then
+    echo "[NETBIRD-INIT] Injecting missing DataStoreEncryptionKey into management.json..."
+    sed -i -e "s|\"EncryptionKey\": \"${NETBIRD_ENCRYPTION_KEY}\",|\"EncryptionKey\": \"${NETBIRD_ENCRYPTION_KEY}\",\n  \"DataStoreEncryptionKey\": \"${NETBIRD_ENCRYPTION_KEY}\",|g" "${CONFIG_FILE}"
+fi
+
