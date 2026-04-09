@@ -3,13 +3,6 @@ services:
     image: netbirdio/management:latest
     container_name: netbird-server
     restart: unless-stopped
-    command:
-      - "--port"
-      - "80"
-      - "--log-file"
-      - "console"
-      - "--log-level"
-      - "info"
     environment:
       - NETBIRD_DOMAIN=${NETBIRD_DOMAIN}
     volumes:
