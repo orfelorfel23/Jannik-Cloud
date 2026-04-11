@@ -1,48 +1,12 @@
 vpn.orfel.de {
-    # 1. Identity Provider & API (Management Server)
-    # These REST endpoints don't use gRPC, therefore strictly proxy to netbird-management via HTTP
-    handle /.well-known/openid-configuration {
-        reverse_proxy netbird-management:33073
-    }
-    handle /.well-known/jwks.json {
-        reverse_proxy netbird-management:33073
-    }
-    handle /authorize {
-        reverse_proxy netbird-management:33073
-    }
-    handle /token {
-        reverse_proxy netbird-management:33073
-    }
-    handle /userinfo {
-        reverse_proxy netbird-management:33073
-    }
-    handle /api/* {
-        reverse_proxy netbird-management:33073
-    }
-    
-    # 2. Management gRPC
-    # Management gRPC endpoints MUST use h2c protocol matching
-    handle /management.ManagementService/* {
-        reverse_proxy h2c://netbird-management:33073
-    }
-    handle /management.ProxyService/* {
-        reverse_proxy h2c://netbird-management:33073
-    }
+    # Native gRPC (needs HTTP/2 cleartext to backend)
+    @grpc header Content-Type application/grpc*
+    reverse_proxy @grpc h2c://netbird-server:80
 
-    # 3. Signal gRPC
-    # Signal server runs on port 80 based on docker-compose command, MUST use h2c protocol matching
-    handle /signalexchange.SignalExchange/* {
-        reverse_proxy h2c://netbird-signal:80
-    }
+    # Combined server paths (relay, WebSocket, API, OAuth2)
+    @backend path /relay* /ws-proxy/* /api/* /oauth2/*
+    reverse_proxy @backend netbird-server:80
 
-    # 4. WebSockets for legacy fallback
-    handle /ws-proxy/* {
-        reverse_proxy netbird-management:33073
-    }
-
-    # 5. Dashboard (Catch-all)
-    # Serves the static assets and the dynamically injected JS code
-    handle {
-        reverse_proxy netbird-dashboard:80
-    }
+    # Dashboard (everything else)
+    reverse_proxy /* netbird-dashboard:80
 }

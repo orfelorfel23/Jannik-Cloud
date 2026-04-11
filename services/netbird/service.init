@@ -1,15 +1,14 @@
 #!/usr/bin/env bash
 # NetBird - Service Init Hook
-# Purpose: Generate configs for Management and Coturn
+# Purpose: Generate config.yaml from template if it doesn't exist.
 
 set -euo pipefail
 
 SERVICE_DIR="/opt/Jannik-Cloud/services/netbird"
 VOLUME_DIR="/mnt/Jannik-Cloud-Volume-01/netbird"
 ENV_FILE="${SERVICE_DIR}/.env"
-TEMPLATE="${SERVICE_DIR}/management.json.template"
-MGMT_CONFIG="${VOLUME_DIR}/management.json"
-TURN_CONFIG="${VOLUME_DIR}/turnserver.conf"
+TEMPLATE="${SERVICE_DIR}/config.yaml.template"
+CONFIG_FILE="${VOLUME_DIR}/config.yaml"
 
 if [[ ! -f "${ENV_FILE}" ]]; then
     if [[ -f "${SERVICE_DIR}/generate-env.sh" ]]; then
@@ -20,56 +19,20 @@ if [[ ! -f "${ENV_FILE}" ]]; then
     fi
 fi
 
+# Load environment variables
 set -a
 source "${ENV_FILE}"
 set +a
 
-# Create robust folder structure for 5-container arch
-mkdir -p "${VOLUME_DIR}/management"
-mkdir -p "${VOLUME_DIR}/signal"
-mkdir -p "${VOLUME_DIR}/idp"
+# Create data directory
+mkdir -p "${VOLUME_DIR}/data"
 
-# 1. Generate management.json if missing
-if [[ ! -f "${MGMT_CONFIG}" ]]; then
-    echo "[NETBIRD-INIT] Generating management.json from template..."
-    sed \
-        -e "s|\${DB_NAME}|${DB_NAME}|g" \
-        -e "s|\${DB_USER}|${DB_USER}|g" \
-        -e "s|\${DB_PASSWORD}|${DB_PASSWORD}|g" \
-        -e "s|\${NETBIRD_IP_RANGE}|${NETBIRD_IP_RANGE}|g" \
-        -e "s|\${NETBIRD_ENCRYPTION_KEY}|${NETBIRD_ENCRYPTION_KEY}|g" \
-        "${TEMPLATE}" > "${MGMT_CONFIG}"
-    
-    chmod 600 "${MGMT_CONFIG}"
-    echo "[NETBIRD-INIT] Created: ${MGMT_CONFIG}"
+# Generate config.yaml if missing
+if [[ ! -f "${CONFIG_FILE}" ]]; then
+    echo "[NETBIRD-INIT] Generating config.yaml from template..."
+    envsubst < "${TEMPLATE}" > "${CONFIG_FILE}"
+    chmod 600 "${CONFIG_FILE}"
+    echo "[NETBIRD-INIT] Created: ${CONFIG_FILE}"
 else
-    echo "[NETBIRD-INIT] management.json already exists."
-fi
-
-# 2. Generate turnserver.conf if missing
-if [[ ! -f "${TURN_CONFIG}" ]]; then
-    echo "[NETBIRD-INIT] Generating turnserver.conf..."
-    cat > "${TURN_CONFIG}" <<EOF
-# Coturn Config for Netbird STUN/TURN
-listening-port=3478
-tls-listening-port=5349
-realm=${NETBIRD_DOMAIN}
-server-name=${NETBIRD_DOMAIN}
-
-# Use dynamic authentication based on the shared secret
-use-auth-secret
-static-auth-secret=${COTURN_SECRET}
-
-# Recommended settings for VPN traversal
-stale-nonce
-no-loopback-peers
-no-multicast-peers
-
-# Keep logging quiet
-log-file=stdout
-simple-log
-EOF
-    echo "[NETBIRD-INIT] Created: ${TURN_CONFIG}"
-else
-    echo "[NETBIRD-INIT] turnserver.conf already exists."
+    echo "[NETBIRD-INIT] config.yaml already exists."
 fi
