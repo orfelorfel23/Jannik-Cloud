@@ -10,6 +10,7 @@ server:
   logLevel: "info"
   logFile: "console"
   dataDir: "/var/lib/netbird/"
+  authSecret: "${NETBIRD_AUTH_SECRET}"
 
 # Database/Store settings
 store:

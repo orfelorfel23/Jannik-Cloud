@@ -18,6 +18,9 @@ NEEDS_POSTGRES=true
 DB_NAME=netbird
 DB_USER=netbird
 DB_PASSWORD=$(generate_password)
+
+# Server auth secret (used by embedded relay)
+NETBIRD_AUTH_SECRET=$(openssl rand -base64 32 | sed 's/=//g')
 EOF
 
 chmod 600 "${SCRIPT_DIR}/.env"
