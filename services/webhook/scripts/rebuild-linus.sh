@@ -43,6 +43,34 @@ curl -s -o /dev/null --retry 3 --retry-delay 2 --max-time 10 \\
   -H 'Tags: white_check_mark' \\
   -d 'Linus Website-Container wurde erfolgreich neu gebaut und gestartet.' \\
   \"\${NTFY_URL}\"
+
+# --- Spotify Plailist rebuild ---
+curl -s -o /dev/null --retry 3 --retry-delay 2 --max-time 10 \\
+  -H 'Title: Spotify Rebuild startet' \\
+  -H 'Priority: default' \\
+  -H 'Tags: hammer' \\
+  -d \"Spotify-Plailist Container wird neu gebaut...\" \\
+  \"\${NTFY_URL}\"
+
+cd /opt/Jannik-Cloud/services/spotify
+docker compose build --no-cache 2>&1 || {
+  curl -s -o /dev/null --retry 3 --retry-delay 2 --max-time 10 \\
+    -H 'Title: Spotify Rebuild FEHLGESCHLAGEN' \\
+    -H 'Priority: urgent' \\
+    -H 'Tags: x' \\
+    -d 'Spotify Container Build ist fehlgeschlagen. Prüfe die Server-Logs.' \\
+    \"\${NTFY_URL}\"
+  exit 1
+}
+
+docker compose up -d --remove-orphans --force-recreate 2>&1
+
+curl -s -o /dev/null --retry 3 --retry-delay 2 --max-time 10 \\
+  -H 'Title: Spotify Rebuild abgeschlossen' \\
+  -H 'Priority: default' \\
+  -H 'Tags: white_check_mark' \\
+  -d 'Spotify-Plailist Container wurde erfolgreich neu gebaut und gestartet.' \\
+  \"\${NTFY_URL}\"
 " 2>&1
 
-echo "[WEBHOOK] Linus rebuild complete."
+echo "[WEBHOOK] Linus + Spotify rebuild complete."
