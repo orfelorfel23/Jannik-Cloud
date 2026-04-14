@@ -1,0 +1,26 @@
+services:
+  spotify:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        REPO_URL: https://github.com/H4f3rk3ks/spotify-plailist.git
+        BRANCH: main
+    image: spotify:latest
+    container_name: spotify
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:1337:80"
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/spotify:/data
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 128M
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true

@@ -1,0 +1,3 @@
+spotify.orfel.de {
+	reverse_proxy spotify:80
+}
