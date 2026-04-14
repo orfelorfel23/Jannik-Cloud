@@ -8,7 +8,7 @@ ARG BRANCH=main
 
 WORKDIR /build
 RUN git clone --depth 1 --branch ${BRANCH} ${REPO_URL} .
-RUN npm ci
+RUN npm install
 RUN npm run build
 
 # Stage 2: Serve with Nginx
