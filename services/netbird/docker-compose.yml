@@ -13,10 +13,9 @@ services:
       - AUTH_CLIENT_ID=netbird-dashboard
       - AUTH_AUTHORITY=https://vpn.orfel.de/oauth2/
       - "USE_AUTH0=false"
-      - AUTH_SUPPORTED_SCOPES=openid profile email
+      - AUTH_SUPPORTED_SCOPES=openid profile email groups
       - AUTH_REDIRECT_URI=/nb-auth
       - AUTH_SILENT_REDIRECT_URI=/nb-silent-auth
-      - NETBIRD_TOKEN_SOURCE=idToken
     networks:
       - jannik-cloud-net
     deploy:
