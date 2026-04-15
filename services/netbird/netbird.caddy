@@ -7,6 +7,10 @@ vpn.orfel.de {
     @backend path /relay* /ws-proxy/* /api/* /oauth2/*
     reverse_proxy @backend netbird-server:80
 
+    # SPA callback routes — rewrite to / so dashboard serves index.html
+    @spa_routes path /nb-auth /nb-silent-auth /peers /setup /acls /routes /dns /activity /settings /users
+    rewrite @spa_routes /
+
     # Dashboard (everything else)
     reverse_proxy /* netbird-dashboard:80
 }
