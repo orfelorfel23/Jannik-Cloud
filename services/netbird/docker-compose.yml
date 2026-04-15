@@ -16,7 +16,7 @@ services:
       - AUTH_SUPPORTED_SCOPES=openid profile email
       - AUTH_REDIRECT_URI=/nb-auth
       - AUTH_SILENT_REDIRECT_URI=/nb-silent-auth
-      - NETBIRD_TOKEN_SOURCE=accessToken
+      - NETBIRD_TOKEN_SOURCE=idToken
     networks:
       - jannik-cloud-net
     deploy:

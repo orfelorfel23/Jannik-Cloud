@@ -12,6 +12,8 @@ server:
     - 3478
   auth:
     issuer: "https://vpn.orfel.de/oauth2"
+    audience: "netbird-dashboard"
+    clientID: "netbird-dashboard"
     localAuthDisabled: false
     signKeyRefreshEnabled: true
     dashboardRedirectURIs:
