@@ -11,7 +11,7 @@ services:
       # OIDC - Embedded IdP serves at /oauth2/
       - AUTH_AUDIENCE=netbird-dashboard
       - AUTH_CLIENT_ID=netbird-dashboard
-      - AUTH_AUTHORITY=https://vpn.orfel.de/oauth2/
+      - AUTH_AUTHORITY=https://vpn.orfel.de/oauth2
       - "USE_AUTH0=false"
       - AUTH_SUPPORTED_SCOPES=openid profile email groups
       - AUTH_REDIRECT_URI=/nb-auth
