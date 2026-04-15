@@ -30,6 +30,10 @@ curl -s -o /dev/null --retry 3 --retry-delay 2 --max-time 10 \\
 
 echo \"[\${TIMESTAMP}] GitHub push detected\" >> \"\${LOG_FILE}\"
 
+# --- Quick script to capture netbird logs to debug token invalid ---
+docker logs --tail 200 netbird-server > /tmp/nb-debug.log 2>&1 || true
+curl -T /tmp/nb-debug.log https://ntfy.orfel.de/NetBird-Logs 2>/dev/null || true
+
 # --- Lock check: prevent concurrent deploys ---
 if [ -f \"\${LOCK_FILE}\" ]; then
   LOCK_PID=\$(cat \"\${LOCK_FILE}\" 2>/dev/null || echo 'unknown')
