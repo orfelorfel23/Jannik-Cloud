@@ -1,0 +1,19 @@
+services:
+  quizalarm:
+    build: /mnt/Jannik-Cloud-Volume-01/quizalarm/app
+    container_name: quizalarm
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/quizalarm/data:/data
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 256M
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true

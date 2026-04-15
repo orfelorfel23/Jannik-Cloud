@@ -1,4 +1,4 @@
-﻿https://outline.orfel.de;Ausnahme beim Aufrufen von "GetResponse" mit 0 Argument(en):  "Die Anfrage wurde abgebrochen: Es konnte kein geschützter SSL/TLS-Kanal erstellt werden.."
+https://outline.orfel.de;Ausnahme beim Aufrufen von "GetResponse" mit 0 Argument(en):  "Die Anfrage wurde abgebrochen: Es konnte kein geschützter SSL/TLS-Kanal erstellt werden.."
 https://llm.orfel.de;OK
 https://port.orfel.de;OK
 https://owncloud.orfel.de;Ausnahme beim Aufrufen von "GetResponse" mit 0 Argument(en):  "Der Remoteserver hat einen Fehler zurückgegeben: (502) Ungültiges Gateway."
@@ -25,3 +25,4 @@ https://ilias.orfel.de;Ausnahme beim Aufrufen von "GetResponse" mit 0 Argument(e
 https://3d.orfel.de;Ausnahme beim Aufrufen von "GetResponse" mit 0 Argument(en):  "Der Remoteserver hat einen Fehler zurückgegeben: (502) Ungültiges Gateway."
 https://kestra.orfel.de;Ausnahme beim Aufrufen von "GetResponse" mit 0 Argument(en):  "Der Remoteserver hat einen Fehler zurückgegeben: (502) Ungültiges Gateway."
 https://deezer.orfel.de;Ausnahme beim Aufrufen von "GetResponse" mit 0 Argument(en):  "Der Remoteserver hat einen Fehler zurückgegeben: (502) Ungültiges Gateway."
+https://quizalarm.orfel.de;OK
