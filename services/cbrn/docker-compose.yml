@@ -1,0 +1,42 @@
+services:
+  cbrn-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        REPO_URL: https://github.com/orfelorfel23/Content-Vault.git
+        BRANCH: main
+        VITE_API_URL: https://api.cbrn.orfel.de
+    image: cbrn-frontend:latest
+    container_name: cbrn-frontend
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:2276:80"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 128M
+    networks:
+      - jannik-cloud-net
+
+  cbrn-backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: cbrn-backend:latest
+    container_name: cbrn-backend
+    restart: unless-stopped
+    env_file:
+      - .env
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 128M
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true

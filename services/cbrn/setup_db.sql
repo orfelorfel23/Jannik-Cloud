@@ -1,0 +1,3 @@
+CREATE DATABASE content_vault;
+CREATE USER content_vault WITH ENCRYPTED PASSWORD 'ZsXjeKvkw334A05SAayM';
+GRANT ALL PRIVILEGES ON DATABASE content_vault TO content_vault;

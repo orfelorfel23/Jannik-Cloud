@@ -52,5 +52,32 @@
       ]
     },
     "include-command-output-in-response": false
+  },
+  {
+    "id": "rebuild-cbrn",
+    "execute-command": "/bin/sh",
+    "command-working-directory": "/opt/Jannik-Cloud",
+    "pass-arguments-to-command": [
+      {
+        "source": "string",
+        "name": "/etc/webhook/scripts/rebuild-cbrn.sh"
+      }
+    ],
+    "response-message": "CBRN rebuild triggered.",
+    "trigger-rule": {
+      "and": [
+        {
+          "match": {
+            "type": "payload-hmac-sha256",
+            "secret": "{{getenv `WEBHOOK_SECRET`}}",
+            "parameter": {
+              "source": "header",
+              "name": "X-Hub-Signature-256"
+            }
+          }
+        }
+      ]
+    },
+    "include-command-output-in-response": false
   }
 ]

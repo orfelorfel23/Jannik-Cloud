@@ -1,0 +1,14 @@
+# Frontend View
+cbrn.orfel.de {
+    reverse_proxy 127.0.0.1:2276
+}
+
+# Frontend Admin
+admin.cbrn.orfel.de {
+    reverse_proxy 127.0.0.1:2276
+}
+
+# Backend API
+api.cbrn.orfel.de {
+    reverse_proxy cbrn-backend:3001
+}
