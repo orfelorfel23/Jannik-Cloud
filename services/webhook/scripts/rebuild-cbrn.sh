@@ -37,8 +37,9 @@ docker compose build --no-cache 2>&1 || {
 
 # Auto-Setup PostgreSQL mapping
 DB_PASS=\$(grep POSTGRES_DB_PASSWORD .env | cut -d= -f2 | tr -d '[:space:]')
-docker exec postgres psql -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = 'content_vault'" | grep -q 1 || docker exec postgres psql -U postgres -c "CREATE DATABASE content_vault;"
-docker exec postgres psql -U postgres -c "DO \\$\\$ BEGIN IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'content_vault') THEN CREATE ROLE content_vault WITH LOGIN ENCRYPTED PASSWORD '\${DB_PASS}'; END IF; END \\$\\$;"
+docker exec postgres psql -U postgres -tc "SELECT 1 FROM pg_roles WHERE rolname = 'content_vault'" | grep -q 1 || docker exec postgres psql -U postgres -c "CREATE ROLE content_vault WITH LOGIN PASSWORD '\${DB_PASS}';"
+docker exec postgres psql -U postgres -c "ALTER ROLE content_vault WITH PASSWORD '\${DB_PASS}';"
+docker exec postgres psql -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = 'content_vault'" | grep -q 1 || docker exec postgres psql -U postgres -c "CREATE DATABASE content_vault OWNER content_vault;"
 docker exec postgres psql -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE content_vault TO content_vault;"
 
 docker compose up -d --remove-orphans --force-recreate 2>&1
