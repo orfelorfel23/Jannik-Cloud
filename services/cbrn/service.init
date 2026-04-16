@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+cd "${SCRIPT_DIR}"
+
+if [ ! -f .env ]; then
+  echo "Generating initial environment file for CBRN..."
+  bash generate-env.sh
+fi
