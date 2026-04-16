@@ -15,7 +15,7 @@ set -e
 
 NTFY_URL='${NTFY_URL}'
 export TZ='Europe/Berlin'
-TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
+TIMESTAMP=\$(date '+%Y-%m-%d %H:%M:%S')
 
 curl -s -o /dev/null --retry 3 --retry-delay 2 --max-time 10 \\
   -H 'Title: Linus Rebuild startet' \\
