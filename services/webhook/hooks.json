@@ -15,20 +15,10 @@
         {
           "match": {
             "type": "payload-hmac-sha256",
-            "secret": "{{ getenv \"WEBHOOK_SECRET\" }}",
+            "secret": "{{getenv `WEBHOOK_SECRET`}}",
             "parameter": {
               "source": "header",
               "name": "X-Hub-Signature-256"
-            }
-          }
-        },
-        {
-          "match": {
-            "type": "value",
-            "value": "refs/heads/main",
-            "parameter": {
-              "source": "payload",
-              "name": "ref"
             }
           }
         }
@@ -52,20 +42,10 @@
         {
           "match": {
             "type": "payload-hmac-sha256",
-            "secret": "{{ getenv \"WEBHOOK_SECRET\" }}",
+            "secret": "{{getenv `WEBHOOK_SECRET`}}",
             "parameter": {
               "source": "header",
               "name": "X-Hub-Signature-256"
-            }
-          }
-        },
-        {
-          "match": {
-            "type": "value",
-            "value": "refs/heads/main",
-            "parameter": {
-              "source": "payload",
-              "name": "ref"
             }
           }
         }
@@ -89,30 +69,10 @@
         {
           "match": {
             "type": "payload-hmac-sha256",
-            "secret": "{{ getenv \"WEBHOOK_SECRET\" }}",
+            "secret": "{{getenv `WEBHOOK_SECRET`}}",
             "parameter": {
               "source": "header",
               "name": "X-Hub-Signature-256"
-            }
-          }
-        },
-        {
-          "match": {
-            "type": "value",
-            "value": "orfelorfel23/Content-Vault",
-            "parameter": {
-              "source": "payload",
-              "name": "repository.full_name"
-            }
-          }
-        },
-        {
-          "match": {
-            "type": "value",
-            "value": "refs/heads/main",
-            "parameter": {
-              "source": "payload",
-              "name": "ref"
             }
           }
         }
