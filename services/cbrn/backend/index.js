@@ -2,11 +2,15 @@ const express = require('express');
 const cors = require('cors');
 const { Pool } = require('pg');
 const jwt = require('jsonwebtoken');
+const { Readable } = require('node:stream');
 
 require('dotenv').config();
 
 const app = express();
 const port = process.env.PORT || 3001;
+
+// Trust reverse proxy (Caddy) for correct req.ip
+app.set('trust proxy', true);
 
 // Middleware
 app.use(cors({
@@ -35,6 +39,62 @@ function authenticateToken(req, res, next) {
     req.user = user;
     next();
   });
+}
+
+// ==========================================================================
+// Shared access validation helper
+// ==========================================================================
+// Validates username + path access, increments views_count, writes access log.
+// Returns { targetUrl, label, link, route } on success.
+// Throws { status, error } on validation failure.
+async function resolveAndConsumeAccess(username, path, ip) {
+  const linkRes = await pool.query('SELECT * FROM access_links WHERE username = $1', [username]);
+  if (linkRes.rows.length === 0) {
+    throw { status: 403, error: 'Benutzer nicht gefunden' };
+  }
+
+  const link = linkRes.rows[0];
+
+  if (!link.is_active) {
+    throw { status: 403, error: 'inactive' };
+  }
+
+  if (link.expires_at && new Date() > new Date(link.expires_at)) {
+    throw { status: 403, error: 'expired' };
+  }
+
+  if (link.max_views !== null && link.views_count >= link.max_views) {
+    throw { status: 403, error: 'limit_reached' };
+  }
+
+  // Increment views atomically
+  await pool.query('UPDATE access_links SET views_count = views_count + 1 WHERE id = $1', [link.id]);
+
+  // Find target route
+  const routeRes = await pool.query('SELECT * FROM content_routes WHERE link_id = $1 AND path = $2', [link.id, path]);
+
+  let targetUrl = '';
+  let label = '';
+  let route = null;
+
+  if (routeRes.rows.length > 0) {
+    route = routeRes.rows[0];
+    targetUrl = route.target_url;
+    label = route.label || link.label;
+  } else {
+    // Fallback to target_url_base
+    if (link.target_url_base) {
+      targetUrl = `${link.target_url_base}${path}`;
+      label = link.label;
+    } else {
+      throw { status: 404, error: 'not_found' };
+    }
+  }
+
+  // Log access
+  await pool.query('INSERT INTO access_logs (link_id, path, ip_address) VALUES ($1, $2, $3)', [link.id, path, ip]);
+
+  return { targetUrl, label, link, route };
 }
 
 // --- Auth Endpoints ---
@@ -174,59 +234,106 @@ app.get('/api/admin/links/:id/logs', authenticateToken, async (req, res) => {
 // --- Public Validate Endpoint ---
 app.post('/api/validate', async (req, res) => {
   const { username, path } = req.body;
-  
+  const ip = req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+
   try {
-    const linkRes = await pool.query('SELECT * FROM access_links WHERE username = $1', [username]);
-    if (linkRes.rows.length === 0) {
-      return res.status(403).json({ error: 'Benutzer nicht gefunden' });
-    }
-    
-    const link = linkRes.rows[0];
-    
-    if (!link.is_active) {
-      return res.status(403).json({ error: 'Zugang deaktiviert' });
-    }
-    
-    if (link.expires_at && new Date() > new Date(link.expires_at)) {
-      return res.status(403).json({ error: 'Zugang abgelaufen' });
-    }
-    
-    if (link.max_views !== null && link.views_count >= link.max_views) {
-      return res.status(403).json({ error: 'Maximale Aufrufe erreicht' });
-    }
-    
-    // Increment views immediately
-    await pool.query('UPDATE access_links SET views_count = views_count + 1 WHERE id = $1', [link.id]);
-    
-    // Find target route
-    const routeRes = await pool.query('SELECT * FROM content_routes WHERE link_id = $1 AND path = $2', [link.id, path]);
-    
-    let targetUrl = '';
-    let label = '';
-    if (routeRes.rows.length > 0) {
-      targetUrl = routeRes.rows[0].target_url;
-      label = routeRes.rows[0].label || link.label;
-    } else {
-      // Use fallback target base URL
-      if (link.target_url_base) {
-         targetUrl = `${link.target_url_base}${path}`;
-         label = link.label;
-      } else {
-         return res.status(404).json({ error: 'Pfad nicht gefunden' });
-      }
-    }
-    
-    // Log access
-    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-    await pool.query('INSERT INTO access_logs (link_id, path, ip_address) VALUES ($1, $2, $3)', [link.id, path, ip]);
-    
-    res.json({ target_url: targetUrl, label: label });
-    
+    const result = await resolveAndConsumeAccess(username, path, ip);
+    res.json({ target_url: result.targetUrl, label: result.label });
   } catch (err) {
+    if (err.status) {
+      return res.status(err.status).json({ error: err.error });
+    }
     console.error(err);
     res.status(500).json({ error: 'Server Fehler' });
   }
 });
+
+
+// ==========================================================================
+// Public Proxy Endpoint — streams upstream content with iframe-safe headers
+// ==========================================================================
+function sanitizeFilename(raw) {
+  const name = (raw || 'dokument').replace(/[^A-Za-z0-9._\- ]/g, '').trim().substring(0, 80);
+  return name || 'dokument';
+}
+
+app.get('/api/proxy/:username/*', async (req, res) => {
+  const { username } = req.params;
+  // Express puts the wildcard capture into req.params[0]
+  const contentPath = '/' + (req.params[0] || '');
+  const ip = req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+
+  // 1. Validate access (same logic as /api/validate)
+  let accessResult;
+  try {
+    accessResult = await resolveAndConsumeAccess(username, contentPath, ip);
+  } catch (err) {
+    if (err.status) {
+      return res.status(err.status).json({ error: err.error });
+    }
+    console.error(err);
+    return res.status(500).json({ error: 'Server Fehler' });
+  }
+
+  const { targetUrl, label } = accessResult;
+
+  // 2. Fetch upstream
+  let upstream;
+  try {
+    upstream = await fetch(targetUrl, { redirect: 'follow' });
+  } catch (err) {
+    console.error(`Proxy upstream network error for ${targetUrl}:`, err.message);
+    return res.status(502).json({ error: 'upstream_unreachable' });
+  }
+
+  if (!upstream.ok) {
+    console.error(`Proxy upstream HTTP ${upstream.status} for ${targetUrl}`);
+    return res.status(502).json({ error: 'upstream_error', status: upstream.status });
+  }
+
+  // 3. Optional PDF type check
+  const upstreamContentType = upstream.headers.get('content-type') || '';
+  const urlPath = targetUrl.split('?')[0].split('#')[0];
+  const expectsPdf = urlPath.toLowerCase().endsWith('.pdf');
+
+  if (expectsPdf && !upstreamContentType.includes('application/pdf')) {
+    return res.status(415).json({ error: 'not_a_pdf' });
+  }
+
+  // 4. Build safe filename
+  const safeFilename = sanitizeFilename(label) + (expectsPdf ? '.pdf' : '');
+
+  // 5. Set iframe-safe response headers (strip upstream X-Frame-Options etc.)
+  const contentType = expectsPdf ? 'application/pdf' : (upstreamContentType || 'application/octet-stream');
+  res.setHeader('Content-Type', contentType);
+  res.setHeader('Content-Disposition', `inline; filename="${safeFilename}"`);
+  res.setHeader('Cache-Control', 'private, no-store');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+
+  // Forward Content-Length if upstream provides it
+  const contentLength = upstream.headers.get('content-length');
+  if (contentLength) {
+    res.setHeader('Content-Length', contentLength);
+  }
+
+  // 6. Stream upstream body to client (no buffering)
+  try {
+    const nodeStream = Readable.fromWeb(upstream.body);
+    nodeStream.pipe(res);
+    nodeStream.on('error', (err) => {
+      console.error('Proxy stream error:', err.message);
+      if (!res.headersSent) {
+        res.status(502).json({ error: 'upstream_error' });
+      }
+    });
+  } catch (err) {
+    console.error('Proxy stream setup error:', err.message);
+    if (!res.headersSent) {
+      res.status(502).json({ error: 'upstream_error' });
+    }
+  }
+});
+
 
 // Ensure tables exist on boot
 pool.query(`
