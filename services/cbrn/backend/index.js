@@ -47,7 +47,7 @@ function authenticateToken(req, res, next) {
 // Validates username + path access, increments views_count, writes access log.
 // Returns { targetUrl, label, link, route } on success.
 // Throws { status, error } on validation failure.
-async function resolveAndConsumeAccess(username, path, ip) {
+async function resolveAndConsumeAccess(username, path, ip, { skipConsume = false } = {}) {
   const linkRes = await pool.query('SELECT * FROM access_links WHERE username = $1', [username]);
   if (linkRes.rows.length === 0) {
     throw { status: 403, error: 'Benutzer nicht gefunden' };
@@ -67,8 +67,10 @@ async function resolveAndConsumeAccess(username, path, ip) {
     throw { status: 403, error: 'limit_reached' };
   }
 
-  // Increment views atomically
-  await pool.query('UPDATE access_links SET views_count = views_count + 1 WHERE id = $1', [link.id]);
+  if (!skipConsume) {
+    // Increment views atomically
+    await pool.query('UPDATE access_links SET views_count = views_count + 1 WHERE id = $1', [link.id]);
+  }
 
   // Find target route
   const routeRes = await pool.query('SELECT * FROM content_routes WHERE link_id = $1 AND path = $2', [link.id, path]);
@@ -91,8 +93,10 @@ async function resolveAndConsumeAccess(username, path, ip) {
     }
   }
 
-  // Log access
-  await pool.query('INSERT INTO access_logs (link_id, path, ip_address) VALUES ($1, $2, $3)', [link.id, path, ip]);
+  if (!skipConsume) {
+    // Log access
+    await pool.query('INSERT INTO access_logs (link_id, path, ip_address) VALUES ($1, $2, $3)', [link.id, path, ip]);
+  }
 
   return { targetUrl, label, link, route };
 }
@@ -232,13 +236,20 @@ app.get('/api/admin/links/:id/logs', authenticateToken, async (req, res) => {
 
 
 // --- Public Validate Endpoint ---
+// Build the public API base URL for proxy links
+const API_BASE = process.env.VITE_API_URL || process.env.API_BASE_URL || 'https://api.cbrn.orfel.de';
+
 app.post('/api/validate', async (req, res) => {
   const { username, path } = req.body;
   const ip = req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress;
 
   try {
     const result = await resolveAndConsumeAccess(username, path, ip);
-    res.json({ target_url: result.targetUrl, label: result.label });
+    // Return proxy URL so the frontend embeds through our proxy,
+    // which strips X-Frame-Options / CSP headers from upstream.
+    const proxyPath = path.startsWith('/') ? path.substring(1) : path;
+    const proxyUrl = `${API_BASE}/api/proxy/${username}/${proxyPath}`;
+    res.json({ target_url: proxyUrl, label: result.label });
   } catch (err) {
     if (err.status) {
       return res.status(err.status).json({ error: err.error });
@@ -263,10 +274,10 @@ app.get('/api/proxy/:username/*', async (req, res) => {
   const contentPath = '/' + (req.params[0] || '');
   const ip = req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress;
 
-  // 1. Validate access (same logic as /api/validate)
+  // 1. Validate access (skip increment — /api/validate already counted)
   let accessResult;
   try {
-    accessResult = await resolveAndConsumeAccess(username, contentPath, ip);
+    accessResult = await resolveAndConsumeAccess(username, contentPath, ip, { skipConsume: true });
   } catch (err) {
     if (err.status) {
       return res.status(err.status).json({ error: err.error });
