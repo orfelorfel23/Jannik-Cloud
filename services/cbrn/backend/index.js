@@ -76,14 +76,32 @@ app.post('/api/admin/links', authenticateToken, async (req, res) => {
 
 app.put('/api/admin/links/:id', authenticateToken, async (req, res) => {
   const { id } = req.params;
-  const { username, label, target_url_base, max_views, expires_at, is_active } = req.body;
+  const fields = ['username', 'label', 'target_url_base', 'max_views', 'expires_at', 'is_active'];
+  const updates = [];
+  const values = [];
+
+  fields.forEach((field) => {
+    if (req.body[field] !== undefined) {
+      updates.push(`${field} = $${updates.length + 1}`);
+      // Handle special cases for nulls
+      let val = req.body[field];
+      if (val === "" && (field === 'max_views' || field === 'expires_at')) {
+        val = null;
+      }
+      values.push(val);
+    }
+  });
+
+  if (updates.length === 0) {
+    return res.status(400).json({ error: 'No fields to update' });
+  }
+
+  values.push(id);
+  const query = `UPDATE access_links SET ${updates.join(', ')} WHERE id = $${values.length} RETURNING *`;
+
   try {
-    const result = await pool.query(
-      `UPDATE access_links SET username = $1, label = $2, target_url_base = $3, max_views = $4, expires_at = $5, is_active = $6 
-       WHERE id = $7 RETURNING *`,
-      [username, label, target_url_base || '', max_views || null, expires_at || null, is_active, id]
-    );
-    if (result.rows.length === 0) return res.status(404).json({ error: 'Not found' });
+    const result = await pool.query(query, values);
+    if (result.rows.length === 0) return res.status(404).json({ error: 'Link nicht gefunden' });
     res.json(result.rows[0]);
   } catch (err) {
     console.error(err);
