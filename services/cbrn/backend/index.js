@@ -76,7 +76,7 @@ app.post('/api/admin/links', authenticateToken, async (req, res) => {
 
 app.put('/api/admin/links/:id', authenticateToken, async (req, res) => {
   const { id } = req.params;
-  const fields = ['username', 'label', 'target_url_base', 'max_views', 'expires_at', 'is_active'];
+  const fields = ['username', 'label', 'target_url_base', 'max_views', 'expires_at', 'is_active', 'views_count'];
   const updates = [];
   const values = [];
 
