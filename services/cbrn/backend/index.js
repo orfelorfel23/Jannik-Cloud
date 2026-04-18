@@ -344,18 +344,16 @@ app.get('/api/proxy/:username/*', async (req, res) => {
 
     // a) Rewrite absolute upstream URLs → proxy URLs
     if (upstreamOrigin) {
-      // Replace origin references (with and without trailing slash)
       html = html.replaceAll(upstreamOrigin + '/', proxyBase + '/');
       html = html.replaceAll(upstreamOrigin, proxyBase);
     }
 
-    // b) Inject <base> tag so that root-relative URLs (href="/foo")
-    //    resolve to the proxy path instead of the API domain root.
-    //    Insert right after <head> (or <head ...>).
-    const baseTag = `<base href="${proxyBase}/">`;
-    if (/<head(\s[^>]*)?>/.test(html)) {
-      html = html.replace(/<head(\s[^>]*)?>/, `$&\n${baseTag}`);
-    }
+    // b) Rewrite root-relative URLs in HTML attributes (href="/...", src="/...")
+    //    so they route through the proxy instead of hitting the API domain root.
+    //    Only rewrite inside src="..." and href="..." attributes.
+    //    Leave relative paths (./foo, bar/baz) untouched — they resolve correctly
+    //    relative to the current proxy URL path.
+    html = html.replace(/((?:src|href|action)\s*=\s*["'])\/(?!\/)/gi, `$1${proxyBase}/`);
 
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     return res.send(html);
