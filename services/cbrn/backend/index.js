@@ -268,6 +268,16 @@ function sanitizeFilename(raw) {
   return name || 'dokument';
 }
 
+// Extract origin (scheme + host) from a URL string
+function extractOrigin(url) {
+  try {
+    const u = new URL(url);
+    return u.origin; // e.g. "https://erkw.orfel.de"
+  } catch {
+    return null;
+  }
+}
+
 app.get('/api/proxy/:username/*', async (req, res) => {
   const { username } = req.params;
   // Express puts the wildcard capture into req.params[0]
@@ -302,24 +312,62 @@ app.get('/api/proxy/:username/*', async (req, res) => {
     return res.status(502).json({ error: 'upstream_error', status: upstream.status });
   }
 
-  // 3. Optional PDF type check
+  // 3. Determine content type
   const upstreamContentType = upstream.headers.get('content-type') || '';
   const urlPath = targetUrl.split('?')[0].split('#')[0];
   const expectsPdf = urlPath.toLowerCase().endsWith('.pdf');
+  const isHtml = upstreamContentType.includes('text/html');
 
   if (expectsPdf && !upstreamContentType.includes('application/pdf')) {
     return res.status(415).json({ error: 'not_a_pdf' });
   }
 
-  // 4. Build safe filename
-  const safeFilename = sanitizeFilename(label) + (expectsPdf ? '.pdf' : '');
+  // Common iframe-safe headers (strip upstream X-Frame-Options / CSP)
+  res.setHeader('Cache-Control', 'private, no-store');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
 
-  // 5. Set iframe-safe response headers (strip upstream X-Frame-Options etc.)
+  // -------------------------------------------------------------------
+  // HTML responses: buffer, rewrite URLs so in-page links route through
+  // our proxy instead of hitting the upstream directly.
+  // -------------------------------------------------------------------
+  if (isHtml) {
+    const upstreamOrigin = extractOrigin(targetUrl);
+    const proxyBase = `${API_BASE}/api/proxy/${username}`;
+
+    let html;
+    try {
+      html = await upstream.text();
+    } catch (err) {
+      console.error('Proxy HTML buffer error:', err.message);
+      return res.status(502).json({ error: 'upstream_error' });
+    }
+
+    // a) Rewrite absolute upstream URLs → proxy URLs
+    if (upstreamOrigin) {
+      // Replace origin references (with and without trailing slash)
+      html = html.replaceAll(upstreamOrigin + '/', proxyBase + '/');
+      html = html.replaceAll(upstreamOrigin, proxyBase);
+    }
+
+    // b) Inject <base> tag so that root-relative URLs (href="/foo")
+    //    resolve to the proxy path instead of the API domain root.
+    //    Insert right after <head> (or <head ...>).
+    const baseTag = `<base href="${proxyBase}/">`;
+    if (/<head(\s[^>]*)?>/.test(html)) {
+      html = html.replace(/<head(\s[^>]*)?>/, `$&\n${baseTag}`);
+    }
+
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    return res.send(html);
+  }
+
+  // -------------------------------------------------------------------
+  // Non-HTML (PDF, images, CSS, JS, etc.): stream directly
+  // -------------------------------------------------------------------
+  const safeFilename = sanitizeFilename(label) + (expectsPdf ? '.pdf' : '');
   const contentType = expectsPdf ? 'application/pdf' : (upstreamContentType || 'application/octet-stream');
   res.setHeader('Content-Type', contentType);
   res.setHeader('Content-Disposition', `inline; filename="${safeFilename}"`);
-  res.setHeader('Cache-Control', 'private, no-store');
-  res.setHeader('X-Content-Type-Options', 'nosniff');
 
   // Forward Content-Length if upstream provides it
   const contentLength = upstream.headers.get('content-length');
@@ -327,7 +375,7 @@ app.get('/api/proxy/:username/*', async (req, res) => {
     res.setHeader('Content-Length', contentLength);
   }
 
-  // 6. Stream upstream body to client (no buffering)
+  // Stream upstream body to client (no buffering)
   try {
     const nodeStream = Readable.fromWeb(upstream.body);
     nodeStream.pipe(res);
