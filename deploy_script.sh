@@ -323,6 +323,21 @@ cleanup_deactivated() {
 }
 
 ###############################################################################
+# 7b. Run pre-stop service backup hooks
+###############################################################################
+run_service_backup_hooks() {
+    log "Running service backup hooks (before stopping containers)..."
+    for svc_name in "${ACTIVE_SERVICES[@]}"; do
+        local backup_script="${SERVICES_DIR}/${svc_name}/service.backup"
+        if [[ -f "${backup_script}" ]]; then
+            log "  Running backup hook for ${svc_name}..."
+            chmod +x "${backup_script}" 2>/dev/null || true
+            bash "${backup_script}" || warn "  Backup hook for ${svc_name} failed. Continuing deploy anyway."
+        fi
+    done
+}
+
+###############################################################################
 # 8. Stop all running service containers
 ###############################################################################
 stop_all_services() {
@@ -637,6 +652,8 @@ main() {
     ensure_network
     discover_services
     cleanup_deactivated
+    
+    run_service_backup_hooks
 
     stop_all_services
     decrypt_envs

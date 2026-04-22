@@ -9,6 +9,8 @@ Self-hosted cloud infrastructure on Hetzner Ubuntu 24 LTS, managed via Docker Co
 - **Cache**: Shared Redis instance
 - **Secret Management**: AGE encryption for `.env` files
 - **Domain**: `*.orfel.de` (wildcard DNS)
+- **Backup System**: Automated pre-deployment backups for critical services via `service.backup` hooks.
+
 
 ## Services
 
@@ -107,7 +109,8 @@ The deploy script will:
 5. Create persistent volume directories
 6. Start infrastructure (PostgreSQL, Redis) first
 7. Auto-create databases for services that need PostgreSQL
-8. Start Caddy, then all remaining services
+8. Run `service.backup` hooks (e.g., Baserow)
+9. Start Caddy, then all remaining services
 
 ## Adding a New Service
 

@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# This script is automatically called by /opt/Jannik-Cloud/deploy_script.sh
+# before the containers are brought down for redeployment.
+
+BACKUP_DIR="${HOME}/baserow_backups"
+TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+DB_BACKUP_FILE="${BACKUP_DIR}/baserow_db_${TIMESTAMP}.sql"
+FILES_BACKUP_FILE="${BACKUP_DIR}/baserow_files_${TIMESTAMP}.tar.gz"
+
+echo "======================================"
+echo " Baserow Auto-Backup Hook "
+echo "======================================"
+
+mkdir -p "${BACKUP_DIR}"
+
+# 1. Backup PostgreSQL Database
+if docker ps --format '{{.Names}}' | grep -q "^postgres$"; then
+    echo "[1/2] Backing up PostgreSQL database 'baserow_db'..."
+    # pg_dump fails if the database doesn't exist yet (e.g. first run limit)
+    if docker exec postgres psql -U postgres -lqt | cut -d \| -f 1 | grep -qw baserow_db; then
+        docker exec postgres pg_dump -U postgres baserow_db > "${DB_BACKUP_FILE}"
+        echo "      -> DB saved to: ${DB_BACKUP_FILE}"
+    else
+        echo "      -> Database 'baserow_db' does not exist yet. Skipping DB backup."
+    fi
+else
+    echo "[1/2] PostgreSQL container is not running. Skipping DB backup."
+fi
+
+# 2. Backup Filesystem (Pictures/Uploads)
+echo "[2/2] Backing up uploaded files and pictures..."
+if [ -d "/mnt/Jannik-Cloud-Volume-01/baserow" ]; then
+    tar -czf "${FILES_BACKUP_FILE}" -C /mnt/Jannik-Cloud-Volume-01/baserow .
+    echo "      -> Files saved to: ${FILES_BACKUP_FILE}"
+else
+    echo "      -> WARNING: Volume directory /mnt/Jannik-Cloud-Volume-01/baserow doesn't exist. Skipping file backup."
+fi
+
+# 3. Clean up old backups (keep only the last 5)
+echo "[3/3] Cleaning up old backups..."
+ls -t "${BACKUP_DIR}"/baserow_db_*.sql 2>/dev/null | tail -n +6 | xargs rm -f || true
+ls -t "${BACKUP_DIR}"/baserow_files_*.tar.gz 2>/dev/null | tail -n +6 | xargs rm -f || true
+
+echo "======================================"
+echo " Backup completed successfully!"
+echo "======================================"
