@@ -1,0 +1,31 @@
+services:
+  backup:
+    build: .
+    container_name: backup
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      TZ: Europe/Berlin
+      BACKUP_CRON: "0 3 * * *"
+      RETENTION_DAYS: "30"
+      GDRIVE_REMOTE: "gdrive"
+      GDRIVE_PATH: "Jannik-Cloud-Backups"
+      NTFY_URL: "https://ntfy.orfel.de/Jannik-Cloud-Deploy-Trigger"
+      POSTGRES_HOST: "postgres"
+      POSTGRES_USER: "postgres"
+    volumes:
+      # All service data — read-only so backup can never corrupt anything
+      - /mnt/Jannik-Cloud-Volume-01:/mnt/data:ro
+      # Writable area for rclone config, staging, and logs
+      - /mnt/Jannik-Cloud-Volume-01/backup:/backup
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true

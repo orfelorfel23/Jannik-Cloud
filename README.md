@@ -19,6 +19,7 @@ Self-hosted cloud infrastructure on Hetzner Ubuntu 24 LTS, managed via Docker Co
 | Caddy | — | 80, 443 |
 | PostgreSQL | (internal) | 5432 |
 | Redis | (internal) | 6379 |
+| Backup | (internal) | — |
 | ArchiveBox | [archive.orfel.de](https://archive.orfel.de) | 884 |
 | Authentik | [auth.orfel.de](https://auth.orfel.de) | 2884 |
 | Baserow | [br.orfel.de](https://br.orfel.de) | 2273 |
@@ -43,7 +44,6 @@ Self-hosted cloud infrastructure on Hetzner Ubuntu 24 LTS, managed via Docker Co
 | OwnCloud (OCIS) | [owncloud.orfel.de](https://owncloud.orfel.de) | 696 |
 | Outline | [outline.orfel.de](https://outline.orfel.de) | 688 |
 | Portainer | [port.orfel.de](https://port.orfel.de) | 7678 |
-| Quizmaster | [quiz.orfel.de](https://quiz.orfel.de) | 8223 |
 | RustDesk Server | rust.orfel.de | 7878 |
 | SearXNG | [go.orfel.de](https://go.orfel.de) | 3463 |
 | Simple URL Shortener | [tiny.orfel.de](https://tiny.orfel.de) | 821 |

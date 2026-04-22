@@ -19,6 +19,7 @@ services:
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/mediawiki/images:/var/www/html/images
       - /mnt/Jannik-Cloud-Volume-01/mediawiki/config:/var/www/html/config
+      - /mnt/Jannik-Cloud-Volume-01/mediawiki/LocalSettings.php:/var/www/html/LocalSettings.php
     deploy:
       resources:
         limits:

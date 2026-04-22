@@ -1,3 +1,0 @@
-quiz.orfel.de {
-	reverse_proxy quizmaster:9000
-}

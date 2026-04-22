@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+###############################################################################
+# MediaWiki — service.init
+# Ensures LocalSettings.php exists on the host volume BEFORE Docker starts,
+# otherwise Docker creates it as an empty directory (breaking the mount).
+#
+# On the very first deploy, this creates a minimal placeholder.
+# After running the MediaWiki installer, the real file is written here
+# and persists across all future container recreations.
+###############################################################################
+set -euo pipefail
+
+VOLUME_BASE="/mnt/Jannik-Cloud-Volume-01"
+LS_FILE="${VOLUME_BASE}/mediawiki/LocalSettings.php"
+
+mkdir -p "${VOLUME_BASE}/mediawiki/images"
+mkdir -p "${VOLUME_BASE}/mediawiki/config"
+
+if [[ ! -f "${LS_FILE}" ]]; then
+    echo "[INIT] Creating placeholder LocalSettings.php for MediaWiki..."
+    echo "<?php /* Placeholder — run the MediaWiki installer to generate the real config. */" > "${LS_FILE}"
+    echo "[INIT] MediaWiki LocalSettings.php placeholder created."
+    echo "[INIT] After first start, visit https://wiki.orfel.de to run the installer."
+else
+    echo "[INIT] MediaWiki LocalSettings.php already exists. OK."
+fi
