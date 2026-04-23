@@ -58,18 +58,21 @@ log "--- Step 1/5: PostgreSQL dump ---"
 PG_DUMP_FILE="${STAGING}/db/pg_dumpall_${TIMESTAMP}.sql"
 export PGPASSWORD="${POSTGRES_PASSWORD}"
 
+PG_DUMP_ERR=$(mktemp)
 if pg_dumpall -h "${POSTGRES_HOST:-postgres}" -U "${POSTGRES_USER:-postgres}" \
-    > "${PG_DUMP_FILE}" 2>/dev/null; then
+    > "${PG_DUMP_FILE}" 2>"${PG_DUMP_ERR}"; then
     gzip -f "${PG_DUMP_FILE}"
     DUMP_SIZE=$(du -sh "${PG_DUMP_FILE}.gz" | cut -f1)
     log "PostgreSQL dump complete: ${DUMP_SIZE}"
 else
-    log "WARNING: PostgreSQL dump failed. Continuing with file backup..."
+    PG_ERR=$(cat "${PG_DUMP_ERR}" 2>/dev/null | head -5)
+    log "WARNING: PostgreSQL dump failed: ${PG_ERR}"
     notify "Backup: PG-Dump fehlgeschlagen" \
-        "PostgreSQL-Dump konnte nicht erstellt werden. Datei-Backup läuft weiter." \
+        "PostgreSQL-Dump fehlgeschlagen: ${PG_ERR}" \
         "high" "warning"
     rm -f "${PG_DUMP_FILE}"
 fi
+rm -f "${PG_DUMP_ERR}"
 
 ###############################################################################
 # 2. File permissions manifest (numeric UID/GID + mode)
