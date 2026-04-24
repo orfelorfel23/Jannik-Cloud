@@ -93,11 +93,19 @@ log "Permissions manifest saved."
 log "--- Step 3/5: Syncing service data to Google Drive ---"
 rclone sync "${DATA}" "${RCLONE_REMOTE}:${RCLONE_PATH}/data" \
     --config "${RCLONE_CONF}" \
-    --transfers 4 \
-    --checkers 8 \
+    --transfers 2 \
+    --checkers 4 \
+    --tpslimit 8 \
+    --tpslimit-burst 0 \
+    --retries 5 \
+    --retries-sleep 30s \
+    --low-level-retries 3 \
+    --skip-links \
     --exclude "backup/**" \
+    --exclude "**/node_modules/**" \
+    --exclude "**/.cache/**" \
     --log-level NOTICE \
-    --stats 30s
+    --stats 60s
 
 log "Service data sync complete."
 
@@ -107,6 +115,13 @@ log "Service data sync complete."
 log "--- Step 4/5: Uploading dumps and manifests ---"
 rclone copy "${STAGING}" "${RCLONE_REMOTE}:${RCLONE_PATH}/meta" \
     --config "${RCLONE_CONF}" \
+    --transfers 2 \
+    --checkers 4 \
+    --tpslimit 8 \
+    --tpslimit-burst 0 \
+    --retries 5 \
+    --retries-sleep 30s \
+    --low-level-retries 3 \
     --log-level NOTICE
 
 log "Dumps and manifests uploaded."
