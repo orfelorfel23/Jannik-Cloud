@@ -9,8 +9,8 @@ services:
       - NETBIRD_MGMT_API_ENDPOINT=https://vpn.orfel.de
       - NETBIRD_MGMT_GRPC_API_ENDPOINT=https://vpn.orfel.de
       # OIDC - Embedded IdP serves at /oauth2/
-      - AUTH_AUDIENCE=netbird-dashboard
-      - AUTH_CLIENT_ID=netbird-dashboard
+      - AUTH_AUDIENCE=netbird-client
+      - AUTH_CLIENT_ID=netbird-client
       - AUTH_AUTHORITY=https://vpn.orfel.de/oauth2
       - "USE_AUTH0=false"
       - AUTH_SUPPORTED_SCOPES=openid profile email groups
