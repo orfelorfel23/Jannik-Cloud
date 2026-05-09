@@ -9,8 +9,8 @@ services:
       - NETBIRD_MGMT_API_ENDPOINT=https://vpn.orfel.de
       - NETBIRD_MGMT_GRPC_API_ENDPOINT=https://vpn.orfel.de
       # OIDC - Embedded IdP serves at /oauth2/
-      - AUTH_AUDIENCE=netbird-client
-      - AUTH_CLIENT_ID=netbird-client
+      - AUTH_AUDIENCE=netbird-dashboard
+      - AUTH_CLIENT_ID=netbird-dashboard
       - AUTH_AUTHORITY=https://vpn.orfel.de/oauth2
       - "USE_AUTH0=false"
       - AUTH_SUPPORTED_SCOPES=openid profile email groups
@@ -37,7 +37,7 @@ services:
       - 3478:3478/udp
     environment:
       - NETBIRD_STORE_ENGINE_POSTGRES_DSN=postgres://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}?sslmode=disable
-      - FORCE_RESTART=1
+      - FORCE_RESTART=2
     networks:
       - jannik-cloud-net
     deploy:
