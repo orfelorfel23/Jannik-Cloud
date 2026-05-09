@@ -21,7 +21,6 @@ server:
       - "https://vpn.orfel.de/nb-silent-auth"
     cliRedirectURIs:
       - "http://localhost:53000/"
-  singleAccountModeDomain: "vpn.orfel.de"
   dnsDomain: "netbird.selfhosted"
   disableAnonymousMetrics: true
 
