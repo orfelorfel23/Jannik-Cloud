@@ -13,7 +13,7 @@ services:
       - AUTH_CLIENT_ID=netbird-dashboard
       - AUTH_AUTHORITY=https://vpn.orfel.de/oauth2
       - "USE_AUTH0=false"
-      - AUTH_SUPPORTED_SCOPES=openid profile email groups offline_access api
+      - AUTH_SUPPORTED_SCOPES=openid profile email groups
       - AUTH_REDIRECT_URI=/nb-auth
       - AUTH_SILENT_REDIRECT_URI=/nb-silent-auth
     networks:
@@ -32,7 +32,7 @@ services:
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/netbird/data:/var/lib/netbird
       - /mnt/Jannik-Cloud-Volume-01/netbird/config.yaml:/etc/netbird/config.yaml
-    command: ["--config", "/etc/netbird/config.yaml"]
+    command: [ "--config", "/etc/netbird/config.yaml" ]
     ports:
       - 3478:3478/udp
     environment:
@@ -45,7 +45,6 @@ services:
         limits:
           cpus: "0.5"
           memory: 512M
-
 networks:
   jannik-cloud-net:
     external: true
