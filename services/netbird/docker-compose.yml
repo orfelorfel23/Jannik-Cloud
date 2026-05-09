@@ -37,7 +37,7 @@ services:
       - 3478:3478/udp
     environment:
       - NETBIRD_STORE_ENGINE_POSTGRES_DSN=postgres://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}?sslmode=disable
-      - FORCE_RESTART=3
+      - FORCE_RESTART=4
     networks:
       - jannik-cloud-net
     deploy:
