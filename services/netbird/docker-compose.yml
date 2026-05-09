@@ -13,7 +13,7 @@ services:
       - AUTH_CLIENT_ID=netbird-dashboard
       - AUTH_AUTHORITY=https://vpn.orfel.de/oauth2
       - "USE_AUTH0=false"
-      - AUTH_SUPPORTED_SCOPES=openid profile email groups
+      - AUTH_SUPPORTED_SCOPES=openid profile email groups offline_access api
       - AUTH_REDIRECT_URI=/nb-auth
       - AUTH_SILENT_REDIRECT_URI=/nb-silent-auth
     networks:
@@ -37,6 +37,7 @@ services:
       - 3478:3478/udp
     environment:
       - NETBIRD_STORE_ENGINE_POSTGRES_DSN=postgres://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}?sslmode=disable
+      - FORCE_RESTART=1
     networks:
       - jannik-cloud-net
     deploy:

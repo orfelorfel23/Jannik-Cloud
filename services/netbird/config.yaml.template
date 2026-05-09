@@ -15,7 +15,7 @@ server:
     audience: "netbird-dashboard"
     clientID: "netbird-dashboard"
     localAuthDisabled: false
-    signKeyRefreshEnabled: true
+    signKeyRefreshEnabled: false
     dashboardRedirectURIs:
       - "https://vpn.orfel.de/nb-auth"
       - "https://vpn.orfel.de/nb-silent-auth"
