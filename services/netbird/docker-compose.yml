@@ -29,8 +29,6 @@ services:
     image: netbirdio/netbird-server:latest
     container_name: netbird-server
     restart: unless-stopped
-    external_links:
-      - caddy:vpn.orfel.de
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/netbird/data:/var/lib/netbird
       - /mnt/Jannik-Cloud-Volume-01/netbird/config.yaml:/etc/netbird/config.yaml
