@@ -27,8 +27,13 @@ set +a
 # Create data directory
 mkdir -p "${VOLUME_DIR}/data"
 
-# Always (re-)generate config.yaml from template to pick up changes
-echo "[NETBIRD-INIT] Generating config.yaml from template..."
-envsubst < "${TEMPLATE}" > "${CONFIG_FILE}"
-chmod 600 "${CONFIG_FILE}"
-echo "[NETBIRD-INIT] Created: ${CONFIG_FILE}"
+# Only generate config.yaml from template if it doesn't exist.
+# NetBird modifies this file at runtime to store the database encryption key and embedded IdP state.
+if [[ ! -f "${CONFIG_FILE}" ]]; then
+    echo "[NETBIRD-INIT] Generating config.yaml from template..."
+    envsubst < "${TEMPLATE}" > "${CONFIG_FILE}"
+    chmod 600 "${CONFIG_FILE}"
+    echo "[NETBIRD-INIT] Created: ${CONFIG_FILE}"
+else
+    echo "[NETBIRD-INIT] config.yaml already exists. Skipping template generation to preserve state."
+fi
