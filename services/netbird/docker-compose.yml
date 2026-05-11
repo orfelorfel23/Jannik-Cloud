@@ -38,6 +38,8 @@ services:
     environment:
       - NETBIRD_STORE_ENGINE_POSTGRES_DSN=postgres://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}?sslmode=disable
       - FORCE_RESTART=8
+    extra_hosts:
+      - "vpn.orfel.de:host-gateway"
     networks:
       - jannik-cloud-net
     deploy:
