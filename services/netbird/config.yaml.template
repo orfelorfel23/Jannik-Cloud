@@ -12,7 +12,7 @@ server:
     - 3478
   auth:
     issuer: "https://vpn.orfel.de/oauth2"
-    signKeyRefreshEnabled: true
+    signKeyRefreshEnabled: false
     dashboardRedirectURIs:
       - "https://vpn.orfel.de/nb-auth"
       - "https://vpn.orfel.de/nb-silent-auth"
