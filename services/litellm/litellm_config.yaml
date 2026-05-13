@@ -23,24 +23,24 @@ model_list:
 
   - model_name: gemini-1.5-pro
     litellm_params:
-      model: gemini/gemini-1.5-pro
+      model: gemini/gemini-1.5-pro-002   # -002 is the stable non-deprecated version
       api_key: os.environ/GEMINI_API_KEY
 
   # ── Minimax ──────────────────────────────────────────────────────────────────
-  # Minimax exposes an OpenAI-compatible endpoint
+  # Requires both MINIMAX_API_KEY and MINIMAX_GROUP_ID
   - model_name: minimax-text-01
     litellm_params:
-      model: openai/MiniMax-Text-01
-      api_base: https://api.minimax.chat/v1
+      model: minimax/MiniMax-Text-01
       api_key: os.environ/MINIMAX_API_KEY
+      api_base: https://api.minimax.io/v1
 
   - model_name: minimax-m1
     litellm_params:
-      model: openai/MiniMax-M1
-      api_base: https://api.minimax.chat/v1
+      model: minimax/MiniMax-M1
       api_key: os.environ/MINIMAX_API_KEY
+      api_base: https://api.minimax.io/v1
 
-  # ── Poe ──────────────────────────────────────────────────────────────
+  # ── Poe ──────────────────────────────────────────────────────────────────────
   # Key models listed here; LibreChat fetches the full list via fetch:true
   - model_name: poe-gpt-4o
     litellm_params:
@@ -58,7 +58,7 @@ model_list:
       api_key: os.environ/POE_API_KEY
 
 litellm_settings:
-  # Silently drop unsupported params (e.g. 'stream_options') instead of erroring
+  # Silently drop unsupported params instead of erroring
   drop_params: true
   # Enables request/response logging in LiteLLM DB
   store_model_in_db: true
