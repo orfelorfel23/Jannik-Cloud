@@ -1,0 +1,64 @@
+model_list:
+  # ── OpenAI ──────────────────────────────────────────────────────────────────
+  - model_name: gpt-4o
+    litellm_params:
+      model: openai/gpt-4o
+      api_key: os.environ/OPENAI_API_KEY
+
+  - model_name: gpt-4o-mini
+    litellm_params:
+      model: openai/gpt-4o-mini
+      api_key: os.environ/OPENAI_API_KEY
+
+  # ── Google Gemini ────────────────────────────────────────────────────────────
+  - model_name: gemini-2.0-flash
+    litellm_params:
+      model: gemini/gemini-2.0-flash
+      api_key: os.environ/GEMINI_API_KEY
+
+  - model_name: gemini-2.5-flash-preview
+    litellm_params:
+      model: gemini/gemini-2.5-flash-preview-04-17
+      api_key: os.environ/GEMINI_API_KEY
+
+  - model_name: gemini-1.5-pro
+    litellm_params:
+      model: gemini/gemini-1.5-pro
+      api_key: os.environ/GEMINI_API_KEY
+
+  # ── Minimax ──────────────────────────────────────────────────────────────────
+  # Minimax exposes an OpenAI-compatible endpoint
+  - model_name: minimax-text-01
+    litellm_params:
+      model: openai/MiniMax-Text-01
+      api_base: https://api.minimax.chat/v1
+      api_key: os.environ/MINIMAX_API_KEY
+
+  - model_name: minimax-m1
+    litellm_params:
+      model: openai/MiniMax-M1
+      api_base: https://api.minimax.chat/v1
+      api_key: os.environ/MINIMAX_API_KEY
+
+  # ── Poe ──────────────────────────────────────────────────────────────
+  # Key models listed here; LibreChat fetches the full list via fetch:true
+  - model_name: poe-gpt-4o
+    litellm_params:
+      model: poe/GPT-4o
+      api_key: os.environ/POE_API_KEY
+
+  - model_name: poe-claude-sonnet
+    litellm_params:
+      model: poe/Claude-Sonnet-4-5
+      api_key: os.environ/POE_API_KEY
+
+  - model_name: poe-gemini-2-flash
+    litellm_params:
+      model: poe/Gemini-2.0-Flash
+      api_key: os.environ/POE_API_KEY
+
+litellm_settings:
+  # Silently drop unsupported params (e.g. 'stream_options') instead of erroring
+  drop_params: true
+  # Enables request/response logging in LiteLLM DB
+  store_model_in_db: true

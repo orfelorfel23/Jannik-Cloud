@@ -1,0 +1,22 @@
+version: 1.1.5
+
+endpoints:
+  custom:
+    - name: "LiteLLM"
+      apiKey: "${LITELLM_API_KEY}"
+      baseURL: "http://litellm:4000/v1"
+      models:
+        default:
+          - "gpt-4o"
+          - "gpt-4o-mini"
+          - "gemini-2.0-flash"
+          - "gemini-2.5-flash-preview"
+          - "gemini-1.5-pro"
+          - "minimax-text-01"
+          - "minimax-m1"
+        fetch: true
+      titleConvo: true
+      titleModel: "current_model"
+      summarize: false
+      forcePrompt: false
+      modelDisplayLabel: "LiteLLM"

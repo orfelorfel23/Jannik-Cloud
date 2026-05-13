@@ -3,6 +3,7 @@ services:
     image: docker.litellm.ai/berriai/litellm:main-latest
     container_name: litellm
     restart: unless-stopped
+    command: ["--config", "/app/config.yaml", "--port", "4000"]
     ports:
       - "127.0.0.1:556:4000"
     environment:
@@ -11,8 +12,14 @@ services:
       LITELLM_SALT_KEY: ${SALT_KEY}
       UI_USERNAME: ${USERNAME}
       UI_PASSWORD: ${PASSWORD}
+      # Provider API keys — set in .env (encrypted with AGE, never committed)
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      MINIMAX_API_KEY: ${MINIMAX_API_KEY}
+      POE_API_KEY: ${POE_API_KEY}
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/litellm:/app/data
+      - /opt/Jannik-Cloud/services/litellm/litellm_config.yaml:/app/config.yaml:ro
     deploy:
       resources:
         limits:

@@ -18,7 +18,12 @@ SECRET_KEY=$(generate_hex 32)
 MASTER_KEY=sk-$(generate_hex 32)
 SALT_KEY=$(generate_hex 32)
 NEEDS_POSTGRES=true
-
+STORE_MODEL_IN_DB=true
+# ── Provider API keys — fill these in before re-encrypting ──────────────────
+OPENAI_API_KEY=PLACEHOLDER
+GEMINI_API_KEY=PLACEHOLDER
+MINIMAX_API_KEY=PLACEHOLDER
+POE_API_KEY=PLACEHOLDER
 EOF
 
 chmod 600 "${SCRIPT_DIR}/.env"
