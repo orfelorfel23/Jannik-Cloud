@@ -23,22 +23,16 @@ model_list:
 
   - model_name: gemini-1.5-pro
     litellm_params:
-      model: gemini/gemini-1.5-pro-002   # -002 is the stable non-deprecated version
+      model: gemini/gemini-1.5-pro-002
       api_key: os.environ/GEMINI_API_KEY
 
   # ── Minimax ──────────────────────────────────────────────────────────────────
-  # Requires both MINIMAX_API_KEY and MINIMAX_GROUP_ID
-  - model_name: minimax-text-01
+  # api.minimax.io is OpenAI-compatible — API key only, no Group ID needed
+  - model_name: minimax-m2.7
     litellm_params:
-      model: minimax/MiniMax-Text-01
-      api_key: os.environ/MINIMAX_API_KEY
+      model: openai/MiniMax-M2.7
       api_base: https://api.minimax.io/v1
-
-  - model_name: minimax-m1
-    litellm_params:
-      model: minimax/MiniMax-M1
       api_key: os.environ/MINIMAX_API_KEY
-      api_base: https://api.minimax.io/v1
 
   # ── Poe ──────────────────────────────────────────────────────────────────────
   # Key models listed here; LibreChat fetches the full list via fetch:true

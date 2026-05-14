@@ -16,7 +16,6 @@ services:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       GEMINI_API_KEY: ${GEMINI_API_KEY}
       MINIMAX_API_KEY: ${MINIMAX_API_KEY}
-      MINIMAX_GROUP_ID: ${MINIMAX_GROUP_ID}
       POE_API_KEY: ${POE_API_KEY}
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/litellm:/app/data
