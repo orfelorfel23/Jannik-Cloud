@@ -11,17 +11,17 @@ model_list:
   #     api_key: os.environ/OPENAI_API_KEY
 
   # ── Google Gemini (free tier) ────────────────────────────────────────────────
-  - model_name: gemini-2.5-pro-preview
+  - model_name: Gemini-2.5-Pro-Preview
     litellm_params:
       model: gemini/gemini-2.5-pro-preview-05-06
       api_key: os.environ/GEMINI_API_KEY
 
-  - model_name: gemini-2.5-flash-preview
+  - model_name: Gemini-2.5-Flash-preview
     litellm_params:
       model: gemini/gemini-2.5-flash-preview-04-17
       api_key: os.environ/GEMINI_API_KEY
 
-  - model_name: gemini-2.0-flash
+  - model_name: Gemini-2.0-Flash
     litellm_params:
       model: gemini/gemini-2.0-flash
       api_key: os.environ/GEMINI_API_KEY
@@ -31,18 +31,8 @@ model_list:
       model: gemini/gemini-2.0-flash-lite
       api_key: os.environ/GEMINI_API_KEY
 
-  - model_name: gemini-1.5-flash
-    litellm_params:
-      model: gemini/gemini-1.5-flash
-      api_key: os.environ/GEMINI_API_KEY
-
-  - model_name: gemini-1.5-flash-8b
-    litellm_params:
-      model: gemini/gemini-1.5-flash-8b
-      api_key: os.environ/GEMINI_API_KEY
-
   # ── Minimax (Token Plan Plus — api.minimax.io, API key only) ─────────────────
-  - model_name: minimax-m2.7
+  - model_name: Minimax-M2.7
     litellm_params:
       model: openai/MiniMax-M2.7
       api_base: https://api.minimax.io/v1
@@ -50,19 +40,44 @@ model_list:
 
   # ── Poe ──────────────────────────────────────────────────────────────────────
   # Key models listed here; LibreChat fetches the full list via fetch:true
-  - model_name: poe-gpt-4o
+  - model_name: Poe-Claude-Opus-4.7
     litellm_params:
-      model: poe/GPT-4o
+      model: poe/Claude-Opus-4.7
       api_key: os.environ/POE_API_KEY
 
-  - model_name: poe-claude-sonnet
+  - model_name: Poe-GPT-5.5-Pro
     litellm_params:
-      model: poe/Claude-Sonnet-4-5
+      model: poe/GPT-5.5-Pro
       api_key: os.environ/POE_API_KEY
 
-  - model_name: poe-gemini-2-flash
+  - model_name: Poe-Nano-Banana-2
     litellm_params:
-      model: poe/Gemini-2.0-Flash
+      model: poe/Nano-Banana-2
+      api_key: os.environ/POE_API_KEY
+
+  - model_name: Poe-Hailuo-02
+    litellm_params:
+      model: poe/Hailuo-02
+      api_key: os.environ/POE_API_KEY
+
+  - model_name: Poe-Veo-3.1
+    litellm_params:
+      model: poe/Veo-3.1
+      api_key: os.environ/POE_API_KEY
+
+  - model_name: Poe-Runway-Gen-4.5
+    litellm_params:
+      model: poe/Runway-Gen-4.5
+      api_key: os.environ/POE_API_KEY
+
+  - model_name: Poe-Grok-Imagine-Video
+    litellm_params:
+      model: poe/Grok-Imagine-Video
+      api_key: os.environ/POE_API_KEY
+
+  - model_name: Poe-Seedance-2.0
+    litellm_params:
+      model: poe/Seedance-2.0
       api_key: os.environ/POE_API_KEY
 
 litellm_settings:
