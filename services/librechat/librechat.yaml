@@ -7,13 +7,16 @@ endpoints:
       baseURL: "http://litellm:4000/v1"
       models:
         default:
-          - "gpt-4o"
-          - "gpt-4o-mini"
-          - "gemini-2.0-flash"
+          - "gemini-2.5-pro-preview"
           - "gemini-2.5-flash-preview"
-          - "gemini-1.5-pro"
-          - "minimax-text-01"
-          - "minimax-m1"
+          - "gemini-2.0-flash"
+          - "gemini-2.0-flash-lite"
+          - "gemini-1.5-flash"
+          - "gemini-1.5-flash-8b"
+          - "minimax-m2.7"
+          - "poe-gpt-4o"
+          - "poe-claude-sonnet"
+          - "poe-gemini-2-flash"
         fetch: true
       titleConvo: true
       titleModel: "current_model"

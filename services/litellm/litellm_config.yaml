@@ -1,19 +1,19 @@
 model_list:
-  # ── OpenAI ──────────────────────────────────────────────────────────────────
-  - model_name: gpt-4o
-    litellm_params:
-      model: openai/gpt-4o
-      api_key: os.environ/OPENAI_API_KEY
+  # ── OpenAI (commented out — uncomment when you have an API key) ──────────────
+  # - model_name: gpt-4o
+  #   litellm_params:
+  #     model: openai/gpt-4o
+  #     api_key: os.environ/OPENAI_API_KEY
+  #
+  # - model_name: gpt-4o-mini
+  #   litellm_params:
+  #     model: openai/gpt-4o-mini
+  #     api_key: os.environ/OPENAI_API_KEY
 
-  - model_name: gpt-4o-mini
+  # ── Google Gemini (free tier) ────────────────────────────────────────────────
+  - model_name: gemini-2.5-pro-preview
     litellm_params:
-      model: openai/gpt-4o-mini
-      api_key: os.environ/OPENAI_API_KEY
-
-  # ── Google Gemini ────────────────────────────────────────────────────────────
-  - model_name: gemini-2.0-flash
-    litellm_params:
-      model: gemini/gemini-2.0-flash
+      model: gemini/gemini-2.5-pro-preview-05-06
       api_key: os.environ/GEMINI_API_KEY
 
   - model_name: gemini-2.5-flash-preview
@@ -21,13 +21,27 @@ model_list:
       model: gemini/gemini-2.5-flash-preview-04-17
       api_key: os.environ/GEMINI_API_KEY
 
-  - model_name: gemini-1.5-pro
+  - model_name: gemini-2.0-flash
     litellm_params:
-      model: gemini/gemini-1.5-pro-002
+      model: gemini/gemini-2.0-flash
       api_key: os.environ/GEMINI_API_KEY
 
-  # ── Minimax ──────────────────────────────────────────────────────────────────
-  # api.minimax.io is OpenAI-compatible — API key only, no Group ID needed
+  - model_name: gemini-2.0-flash-lite
+    litellm_params:
+      model: gemini/gemini-2.0-flash-lite
+      api_key: os.environ/GEMINI_API_KEY
+
+  - model_name: gemini-1.5-flash
+    litellm_params:
+      model: gemini/gemini-1.5-flash
+      api_key: os.environ/GEMINI_API_KEY
+
+  - model_name: gemini-1.5-flash-8b
+    litellm_params:
+      model: gemini/gemini-1.5-flash-8b
+      api_key: os.environ/GEMINI_API_KEY
+
+  # ── Minimax (Token Plan Plus — api.minimax.io, API key only) ─────────────────
   - model_name: minimax-m2.7
     litellm_params:
       model: openai/MiniMax-M2.7
