@@ -9,8 +9,8 @@ services:
       - "22000:22000/udp"
       - "21027:21027/udp"
     environment:
-      - PUID=1000
-      - PGID=1000
+      - PUID=0
+      - PGID=0
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/syncthing/config:/var/syncthing/config
       - /mnt/Jannik-Cloud-Volume-01/navidrome/music:/var/syncthing/Music
