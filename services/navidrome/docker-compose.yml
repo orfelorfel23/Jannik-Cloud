@@ -1,6 +1,6 @@
 services:
   navidrome:
-    image: deluan/navidrome:latest
+    image: lscr.io/linuxserver/navidrome:latest
     container_name: navidrome
     restart: unless-stopped
     ports:
