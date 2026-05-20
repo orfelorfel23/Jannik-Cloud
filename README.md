@@ -38,6 +38,7 @@ Self-hosted cloud infrastructure on Hetzner Ubuntu 24 LTS, managed via Docker Co
 | LiteLLM | [llm.orfel.de](https://llm.orfel.de) | 556 |
 | MediaWiki | [wiki.orfel.de](https://wiki.orfel.de) | 9454 |
 | N8N | [n8n.orfel.de](https://n8n.orfel.de) | 686 |
+| Navidrome | [music.orfel.de](https://music.orfel.de) | 7664 |
 | Nein | [nein.orfel.de](https://nein.orfel.de) | 8113 |
 | Nextcloud | [nextcloud.orfel.de](https://nextcloud.orfel.de) | 6398 |
 | NTFY | [ntfy.orfel.de](https://ntfy.orfel.de) | 6939 |
@@ -50,6 +51,7 @@ Self-hosted cloud infrastructure on Hetzner Ubuntu 24 LTS, managed via Docker Co
 | Slash | [slash.orfel.de](https://slash.orfel.de) | 511 |
 | Spoolman | [3d.orfel.de](https://3d.orfel.de) | 33 |
 | Stirling PDF | [pdf.orfel.de](https://pdf.orfel.de) | 733 |
+| Syncthing | [sync.orfel.de](https://sync.orfel.de) | 7962 |
 | Vaultwarden | [pw.orfel.de](https://pw.orfel.de) | 7277 |
 | Webhook | [webhook.orfel.de](https://webhook.orfel.de) | 9500 |
 | Zipline | [short.orfel.de](https://short.orfel.de) | 947 |

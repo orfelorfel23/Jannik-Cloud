@@ -1,0 +1,3 @@
+sync.orfel.de {
+	reverse_proxy syncthing:8384
+}

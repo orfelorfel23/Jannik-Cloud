@@ -1,0 +1,27 @@
+services:
+  syncthing:
+    image: syncthing/syncthing:latest
+    container_name: syncthing
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:7962:8384"
+      - "22000:22000/tcp"
+      - "22000:22000/udp"
+      - "21027:21027/udp"
+    environment:
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/syncthing/config:/var/syncthing/config
+      - /mnt/Jannik-Cloud-Volume-01/navidrome/music:/var/syncthing/Music
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true

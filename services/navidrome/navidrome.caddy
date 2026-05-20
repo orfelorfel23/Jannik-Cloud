@@ -1,0 +1,3 @@
+songs.orfel.de, song.orfel.de, suno.orfel.de, music.orfel.de, musik.orfel.de {
+	reverse_proxy navidrome:4533
+}

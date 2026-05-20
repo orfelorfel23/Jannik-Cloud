@@ -1,0 +1,27 @@
+services:
+  navidrome:
+    image: deluan/navidrome:latest
+    container_name: navidrome
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:7664:4533"
+    environment:
+      ND_SCANSCHEDULE: 1h
+      ND_LOGLEVEL: info
+      ND_SESSIONTIMEOUT: 24h
+      ND_MUSICFOLDER: /music
+      ND_DATAFOLDER: /data
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/navidrome/data:/data
+      - /mnt/Jannik-Cloud-Volume-01/navidrome/music:/music
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true
