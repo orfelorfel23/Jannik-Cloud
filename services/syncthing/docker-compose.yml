@@ -12,7 +12,7 @@ services:
       - PUID=0
       - PGID=0
     volumes:
-      - /mnt/Jannik-Cloud-Volume-01/syncthing/config:/var/syncthing/config
+      - /mnt/Jannik-Cloud-Volume-01/syncthing/config:/config
       - /mnt/Jannik-Cloud-Volume-01/navidrome/music:/var/syncthing/Music
     deploy:
       resources:
