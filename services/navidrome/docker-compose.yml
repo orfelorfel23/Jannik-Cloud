@@ -12,6 +12,7 @@ services:
       ND_SESSIONTIMEOUT: 24h
       ND_MUSICFOLDER: /music
       ND_DATAFOLDER: /data
+      ND_ENABLESHARING: "true"
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/navidrome/data:/data
       - /mnt/Jannik-Cloud-Volume-01/navidrome/music:/music
