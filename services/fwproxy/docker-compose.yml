@@ -30,6 +30,11 @@ services:
       - DEFAULT_DOMAIN=fw.orfel.de
       - IS_HTTPS_ENABLED=true
       - INITIAL_API_KEY=${SHLINK_API_KEY}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/rest/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     networks:
       - jannik-cloud-net
 

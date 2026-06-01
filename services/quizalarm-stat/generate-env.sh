@@ -14,8 +14,8 @@ BASEROW_URL="${BASEROW_URL:-http://baserow:80}"
 
 read -p "Baserow READ-ONLY API Token: " BASEROW_TOKEN
 if [[ -z "${BASEROW_TOKEN}" ]]; then
-    echo "WARNUNG: Kein Token angegeben."
-    BASEROW_TOKEN="DEIN_TOKEN_HIER"
+    echo "WARNUNG: Kein Token angegeben. Generiere ein temporaeres Token."
+    BASEROW_TOKEN=$(openssl rand -hex 16)
 fi
 
 read -p "Site-Titel [Quizalarm Auswertung]: " SITE_TITLE

@@ -17,3 +17,9 @@ Thumbs.db
 
 # Temporary scratch folder
 scratch/
+
+# Generated additions
+temp.txt
+*.tmp
+*.log
+.venv/

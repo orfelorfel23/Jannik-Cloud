@@ -22,6 +22,9 @@ services:
       GITEA__security__SECRET_KEY: ${SECRET_KEY}
       GITEA__security__INTERNAL_TOKEN: ${INTERNAL_TOKEN}
       GITEA__mailer__ENABLED: "false"
+      GITEA__repository__upload__FILE_MAX_SIZE: 1024
+      GITEA__attachment__MAX_SIZE: 1024
+      GITEA__lfs__MAX_FILE_SIZE: 0
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/gitea:/data
       - /etc/timezone:/etc/timezone:ro
