@@ -7,6 +7,7 @@ services:
         REPO_URL: https://git.orfel.de/Jannik/MelodyMuse.git
         BRANCH: main
     image: melodymuse:latest
+    pull_policy: build
     container_name: melodymuse
     restart: unless-stopped
     ports:
