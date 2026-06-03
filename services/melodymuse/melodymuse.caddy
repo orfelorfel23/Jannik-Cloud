@@ -1,0 +1,3 @@
+mm.orfel.de {
+	reverse_proxy melodymuse:6873
+}

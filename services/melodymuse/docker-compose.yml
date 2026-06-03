@@ -1,0 +1,31 @@
+services:
+  melodymuse:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        REPO_URL: https://git.orfel.de/Jannik/MelodyMuse.git
+        BRANCH: main
+    image: melodymuse:latest
+    container_name: melodymuse
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:6873:6873"
+    environment:
+      PORT: 6873
+      LLM_ENDPOINT: ${LLM_ENDPOINT}
+      LLM_API_KEY: ${LLM_API_KEY}
+      LLM_MODEL: ${LLM_MODEL:-MiniMax-M3}
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/melodymuse:/data
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true
