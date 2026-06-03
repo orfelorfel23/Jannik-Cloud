@@ -2,7 +2,7 @@ services:
   melodymuse:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: build.Dockerfile
       args:
         REPO_URL: https://git.orfel.de/Jannik/MelodyMuse.git
         BRANCH: main

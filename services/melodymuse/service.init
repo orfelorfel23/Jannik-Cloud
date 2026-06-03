@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+echo "Waiting for git.orfel.de to be reachable through Caddy..."
+until curl -sf --max-time 3 "https://git.orfel.de" &>/dev/null; do
+    echo "  Waiting..."
+    sleep 2
+done
+
+echo "Building MelodyMuse now that Gitea is up..."
+cd "${SCRIPT_DIR}"
+docker compose build
