@@ -8,7 +8,7 @@ ARG BRANCH=main
 
 WORKDIR /build
 # Cache bust to ensure the latest commit (with new hooks) is pulled
-ARG CACHE_BUST=2026-06-04T12:54:00Z
+ARG CACHE_BUST=2026-06-04T12:57:00Z
 RUN echo "Busting cache: $CACHE_BUST"
 RUN git clone --depth 1 --branch ${BRANCH} ${REPO_URL} .
 RUN npm ci
