@@ -17,6 +17,7 @@ services:
       LLM_ENDPOINT: ${LLM_ENDPOINT}
       LLM_API_KEY: ${LLM_API_KEY}
       LLM_MODEL: ${LLM_MODEL:-MiniMax-M3}
+      VIDEO_AI_LINKS: ${VIDEO_AI_LINKS:-}
       DATA_DIR: /data
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/melodymuse:/data
