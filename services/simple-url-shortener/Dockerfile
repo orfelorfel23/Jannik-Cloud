@@ -1,7 +1,7 @@
 FROM php:8.2-apache
 
 # Install dependencies for Git and SQLite
-RUN apt-get update && apt-get install -y git unzip libsqlite3-dev \
+RUN apt-get update && apt-get install -y --no-install-recommends git unzip libsqlite3-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions required (PDO SQLite)
