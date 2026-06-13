@@ -25,5 +25,9 @@ COPY --from=builder /build/dist ./dist
 COPY --from=builder /build/server ./server
 COPY --from=builder /build/server.mjs ./
 
+# Rechte an den built-in 'node' User (UID 1000) übergeben und User wechseln
+RUN chown -R node:node /app
+USER node
+
 EXPOSE 3000
 CMD ["node", "server.mjs"]

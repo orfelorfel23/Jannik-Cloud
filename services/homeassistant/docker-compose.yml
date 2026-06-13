@@ -3,7 +3,13 @@ services:
     image: ghcr.io/home-assistant/home-assistant:latest
     container_name: homeassistant
     restart: unless-stopped
-    privileged: true
+    # USB-Dongles (z.B. Zigbee/Z-Wave) müssen nun explizit gemappt werden:
+    # devices:
+    #   - /dev/ttyUSB0:/dev/ttyUSB0
+    # Für bestimmte Features (z.B. Bluetooth) könnten Caps nötig sein:
+    # cap_add:
+    #   - NET_ADMIN
+    #   - NET_RAW
     ports:
       - "127.0.0.1:4663:8123"
     environment:
