@@ -5,10 +5,10 @@ services:
     container_name: fwproxy-db
     restart: unless-stopped
     environment:
-      MARIADB_ROOT_PASSWORD: ${SHLINK_DB_PASSWORD:-shlink_db_pass}
+      MARIADB_ROOT_PASSWORD: ${SHLINK_DB_PASSWORD}
       MARIADB_DATABASE: shlink
       MARIADB_USER: shlink
-      MARIADB_PASSWORD: ${SHLINK_DB_PASSWORD:-shlink_db_pass}
+      MARIADB_PASSWORD: ${SHLINK_DB_PASSWORD}
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/fwproxy/db_data:/var/lib/mysql
     networks:
@@ -25,7 +25,7 @@ services:
       - DB_DRIVER=mariadb
       - DB_NAME=shlink
       - DB_USER=shlink
-      - DB_PASSWORD=${SHLINK_DB_PASSWORD:-shlink_db_pass}
+      - DB_PASSWORD=${SHLINK_DB_PASSWORD}
       - DB_HOST=fwproxy-db
       - DEFAULT_DOMAIN=fw.orfel.de
       - IS_HTTPS_ENABLED=true
