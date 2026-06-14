@@ -1,0 +1,39 @@
+services:
+  mc-survival-wiki-db:
+    image: postgres:15
+    container_name: mc_survival_wiki_db
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      POSTGRES_USER: wiki_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: mc_wiki
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/mc-survival-wiki/db:/var/lib/postgresql/data
+    networks:
+      - mc-survival-wiki-net
+
+  mc-survival-wiki-web:
+    build: /mnt/Jannik-Cloud-Volume-01/mc-survival-wiki/app
+    container_name: mc_survival_wiki_web
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: "postgresql://wiki_user:${DB_PASSWORD}@mc-survival-wiki-db:5432/mc_wiki?schema=public"
+    ports:
+      - "127.0.0.1:6294:3000"
+    depends_on:
+      - mc-survival-wiki-db
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1024M
+    networks:
+      - mc-survival-wiki-net
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true
+  mc-survival-wiki-net:

@@ -1,0 +1,3 @@
+mc-survival-wiki.orfel.de, mc-wiki.orfel.de {
+	reverse_proxy mc_survival_wiki_web:3000
+}
