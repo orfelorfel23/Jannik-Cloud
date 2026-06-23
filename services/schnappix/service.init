@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -e
+
+APP_DIR="/mnt/Jannik-Cloud-Volume-01/schnappix/app"
+GIT_REPO_URL="https://git.orfel.de/Jannik/Schnappix-Web.git"
+
+if [[ ! -d "${APP_DIR}/.git" ]]; then
+    echo "Cloning Schnappix-Web repository..."
+    mkdir -p "${APP_DIR}"
+    git clone "${GIT_REPO_URL}" "${APP_DIR}"
+else
+    echo "Updating Schnappix-Web repository..."
+    cd "${APP_DIR}"
+    git fetch origin
+    git reset --hard origin/main
+fi
+
+# Ensure files have correct permissions for nginx (usually runs as 101:101 in alpine or root can read)
+chown -R 101:101 "${APP_DIR}" 2>/dev/null || true

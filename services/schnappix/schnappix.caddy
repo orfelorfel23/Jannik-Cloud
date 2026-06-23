@@ -1,0 +1,3 @@
+schnappix.orfel.de {
+	reverse_proxy schnappix_web:80
+}

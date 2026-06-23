@@ -1,0 +1,18 @@
+services:
+  schnappix_web:
+    image: nginx:alpine
+    container_name: schnappix_web
+    restart: unless-stopped
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/schnappix/app:/usr/share/nginx/html:ro
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 128M
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true
