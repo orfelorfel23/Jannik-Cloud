@@ -4,6 +4,9 @@ set -e
 APP_DIR="/mnt/Jannik-Cloud-Volume-01/schnappix/app"
 GIT_REPO_URL="https://git.orfel.de/Jannik/Schnappix-Web.git"
 
+# Prevent dubious ownership errors when updating the repo
+git config --global --add safe.directory "${APP_DIR}"
+
 if [[ ! -d "${APP_DIR}/.git" ]]; then
     echo "Cloning Schnappix-Web repository..."
     mkdir -p "${APP_DIR}"
