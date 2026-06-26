@@ -1,0 +1,3 @@
+jga.orfel.de {
+    reverse_proxy jga:80
+}

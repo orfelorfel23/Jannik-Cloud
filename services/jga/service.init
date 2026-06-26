@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+# jga — service.init
+# Clones / updates the JGA 2026 repository from Gitea into the volume.
+# Called automatically by deploy_script.sh after Gitea has been started.
+set -euo pipefail
+
+REPO_URL="https://git.orfel.de/Orfel-HermesAI-Bot/JGA-2026.git"
+CONTENT_DIR="/mnt/Jannik-Cloud-Volume-01/jga/content"
+NGINX_CONF="/mnt/Jannik-Cloud-Volume-01/jga/nginx.conf"
+
+echo "[jga] Syncing content from Gitea..."
+
+# Retry loop — Gitea may need a few extra seconds after starting
+MAX_RETRIES=10
+COUNT=0
+until git ls-remote "${REPO_URL}" &>/dev/null; do
+    COUNT=$((COUNT + 1))
+    if [[ ${COUNT} -ge ${MAX_RETRIES} ]]; then
+        echo "[jga] ERROR: Cannot reach Gitea after ${MAX_RETRIES} attempts. Aborting."
+        exit 1
+    fi
+    echo "[jga] Gitea not yet reachable, retrying in 5s... (${COUNT}/${MAX_RETRIES})"
+    sleep 5
+done
+
+if [ -d "${CONTENT_DIR}/.git" ]; then
+    echo "[jga] Repository already cloned — pulling latest changes..."
+    git -C "${CONTENT_DIR}" pull --ff-only
+else
+    echo "[jga] Fresh clone of repository..."
+    git clone "${REPO_URL}" "${CONTENT_DIR}"
+fi
+
+echo "[jga] Content sync complete."
+
+# Write Nginx config (idempotent — safe to overwrite on every deploy)
+mkdir -p "$(dirname "${NGINX_CONF}")"
+cat > "${NGINX_CONF}" << 'NGINX'
+server {
+    listen 80;
+    root /usr/share/nginx/html;
+    index index.html;
+    charset utf-8;
+
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    # Cache static assets
+    location ~* \.(js|css|png|jpg|jpeg|gif|svg|woff|woff2|ttf|mp3|mp4)$ {
+        expires 30d;
+        add_header Cache-Control "public, immutable";
+    }
+}
+NGINX
+
+echo "[jga] Nginx config written."
