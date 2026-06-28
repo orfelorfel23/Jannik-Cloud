@@ -10,6 +10,11 @@ services:
       POSTGRES_DB: mc_wiki
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/mc-survival-wiki/db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wiki_user -d mc_wiki"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - mc-survival-wiki-net
 
@@ -23,7 +28,14 @@ services:
     ports:
       - "127.0.0.1:6294:3000"
     depends_on:
-      - mc-survival-wiki-db
+      mc-survival-wiki-db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --spider http://localhost:3000/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
     deploy:
       resources:
         limits:
