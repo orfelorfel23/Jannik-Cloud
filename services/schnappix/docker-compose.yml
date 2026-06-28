@@ -3,6 +3,11 @@ services:
     image: nginx:alpine
     container_name: schnappix_web
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/schnappix/app:/usr/share/nginx/html:ro
     deploy:
