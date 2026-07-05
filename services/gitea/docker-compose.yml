@@ -23,6 +23,7 @@ services:
       GITEA__security__INTERNAL_TOKEN: ${INTERNAL_TOKEN}
       GITEA__mailer__ENABLED: "false"
       GITEA__service__DISABLE_REGISTRATION: "true"
+      GITEA__service__DISABLE_REGISTRATION_LOCKOUT: "true"
       GITEA__repository__upload__FILE_MAX_SIZE: 1024
       GITEA__attachment__MAX_SIZE: 1024
       GITEA__lfs__MAX_FILE_SIZE: 0
