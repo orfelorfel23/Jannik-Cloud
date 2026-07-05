@@ -1,0 +1,3 @@
+dub.orfel.de {
+	reverse_proxy dub:3000
+}
