@@ -40,4 +40,4 @@ COPY --from=builder /app /app
 
 EXPOSE 3000
 
-CMD ["pnpm", "--filter", "web", "start"]
+CMD npx prisma db push --schema=./apps/web/prisma/schema.prisma --accept-data-loss && pnpm --filter web start
