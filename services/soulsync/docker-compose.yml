@@ -1,0 +1,26 @@
+services:
+  soulsync:
+    image: ghcr.io/nezreka/soulsync:latest
+    container_name: soulsync
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:7685:8008"
+    volumes:
+      - soulsync_database:/app/data
+      - /mnt/Jannik-Cloud-Volume-01/soulsync/config:/app/config
+      - /mnt/Jannik-Cloud-Volume-01/soulsync/logs:/app/logs
+      - /mnt/Jannik-Cloud-Volume-01/soulsync/downloads:/app/downloads
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1G
+    networks:
+      - jannik-cloud-net
+
+volumes:
+  soulsync_database:
+
+networks:
+  jannik-cloud-net:
+    external: true
