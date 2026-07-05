@@ -3,6 +3,7 @@ services:
     image: php:8-apache
     container_name: schnappix_web
     restart: unless-stopped
+    env_file: .env
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost/ || exit 1"]
       interval: 30s
