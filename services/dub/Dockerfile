@@ -40,4 +40,4 @@ COPY --from=builder /app /app
 
 EXPOSE 3000
 
-CMD cd apps/web && pnpm exec prisma db push --schema=./prisma/schema --accept-data-loss && ls -la .next && pnpm start
+CMD cd apps/web && pnpm exec prisma db push --schema=./prisma/schema --accept-data-loss && ( [ -f .next/BUILD_ID ] || pnpm build ) && pnpm start
