@@ -1,0 +1,47 @@
+services:
+  dub:
+    build:
+      context: ./source
+      dockerfile: Dockerfile
+    container_name: dub
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:382:3000"
+    env_file: .env
+    depends_on:
+      - db
+      - redis
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1G
+    networks:
+      - jannik-cloud-net
+
+  db:
+    image: mysql:8.0
+    container_name: dub_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: dub
+      MYSQL_USER: dub
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/dub/db:/var/lib/mysql
+    networks:
+      - jannik-cloud-net
+
+  redis:
+    image: redis:alpine
+    container_name: dub_redis
+    restart: unless-stopped
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/dub/redis:/data
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true
