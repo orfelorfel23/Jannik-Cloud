@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+cd "$(dirname "$0")"
+
+if [ ! -d "source" ]; then
+  echo "Cloning Dub repository..."
+  git clone --depth 1 https://github.com/dubinc/dub.git source
+else
+  echo "Updating Dub repository..."
+  cd source && git pull && cd ..
+fi
+
+echo "Copying custom Dockerfile to source directory..."
+cp Dockerfile source/Dockerfile
