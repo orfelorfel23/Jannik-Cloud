@@ -26,7 +26,7 @@ RUN echo "module.exports.eslint = { ignoreDuringBuilds: true };" >> apps/web/nex
 RUN echo "module.exports.typescript = { ignoreBuildErrors: true };" >> apps/web/next.config.js
 RUN echo "if (module.exports.experimental) { module.exports.experimental.workerThreads = false; module.exports.experimental.memoryBasedWorkersCount = true; } else { module.exports.experimental = { workerThreads: false, memoryBasedWorkersCount: true }; }" >> apps/web/next.config.js
 
-RUN pnpm build
+RUN cd apps/web && pnpm prisma:generate && npx next build
 
 # Runner stage
 FROM node:18-alpine AS runner
