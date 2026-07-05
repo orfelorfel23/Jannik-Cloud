@@ -1,0 +1,3 @@
+soulsync.orfel.de {
+	reverse_proxy soulsync:8008
+}
