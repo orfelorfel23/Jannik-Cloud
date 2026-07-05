@@ -6,11 +6,17 @@ ENV_FILE="${SCRIPT_DIR}/.env"
 AGE_PUBLIC_KEY_FILE="${SCRIPT_DIR}/../../keys/age-public-key.txt"
 ENV_AGE_FILE="${SCRIPT_DIR}/.env.age"
 
+gen_password() {
+    openssl rand -base64 24 | tr -d '/+=' | head -c 24
+}
+
 echo "=== Schnappix — Umgebungsvariablen generieren ==="
 echo ""
 
-read -p "Admin-Passwort für die Fotobox (leer lassen für 'admin'): " ADMIN_PASSWORD
-ADMIN_PASSWORD="${ADMIN_PASSWORD:-admin}"
+ADMIN_PASSWORD=$(gen_password)
+echo "Admin-Passwort generiert: ${ADMIN_PASSWORD}"
+echo "(Bitte notieren!)"
+echo ""
 
 cat > "${ENV_FILE}" <<EOF
 ADMIN_PASSWORD=${ADMIN_PASSWORD}
