@@ -16,6 +16,9 @@ RUN touch .env
 
 # Auto-fill all empty variables in apps/web/.env with a dummy value to prevent SDK crashes during build
 RUN node -e "const fs=require('fs');const lines=fs.readFileSync('apps/web/.env','utf-8').split('\n');const out=lines.map(l=>{const idx=l.indexOf('=');if(idx===-1)return l;const key=l.slice(0,idx);const val=l.slice(idx+1).trim();if(!val)return key+(key.includes('URL')||key.includes('ENDPOINT')?'=https://dummy.com':'=dummy_for_build');return l;});fs.writeFileSync('apps/web/.env',out.join('\n'));"
+
+# Patch SSG functions to prevent Prisma DB connection errors during Docker build
+RUN node -e "const fs = require('fs'); const f1 = 'apps/web/lib/fetchers/get-program-slugs.ts'; let c1 = fs.readFileSync(f1, 'utf8'); c1 = c1.replace(/prisma\.program\.findMany/g, '(async () => [])'); fs.writeFileSync(f1, c1); const f2 = 'apps/web/ui/program-marketplace/pages/marketplace-program-page.tsx'; let c2 = fs.readFileSync(f2, 'utf8'); c2 = c2.replace(/prisma\.program\.findMany/g, '(async () => [])'); fs.writeFileSync(f2, c2);"
 RUN pnpm install
 
 # Generate Prisma client
