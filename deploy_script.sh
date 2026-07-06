@@ -427,7 +427,7 @@ pull_images() {
         cd "${svc_dir}"
         if [[ -f "${svc_dir}/Dockerfile" ]]; then
             log "  Building ${svc_name} (has Dockerfile)..."
-            timeout 900 docker compose build --no-cache --progress=plain > build.log 2>&1 || {
+            timeout 1800 docker compose build --no-cache --progress=plain > build.log 2>&1 || {
                 warn "  Build failed/timed out for ${svc_name}. Check ${svc_dir}/build.log"
                 exit 1
             }
