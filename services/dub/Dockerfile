@@ -24,9 +24,10 @@ RUN cd apps/web && pnpm prisma:generate
 # Patch next.config.js to reduce memory usage during build and ignore linter errors
 RUN echo "module.exports.eslint = { ignoreDuringBuilds: true };" >> apps/web/next.config.js
 RUN echo "module.exports.typescript = { ignoreBuildErrors: true };" >> apps/web/next.config.js
-RUN echo "if (module.exports.experimental) { module.exports.experimental.workerThreads = false; module.exports.experimental.cpus = 1; module.exports.experimental.memoryBasedWorkersCount = false; } else { module.exports.experimental = { workerThreads: false, cpus: 1, memoryBasedWorkersCount: false }; }" >> apps/web/next.config.js
+RUN echo "if (module.exports.experimental) { module.exports.experimental.optimizePackageImports = []; module.exports.experimental.workerThreads = false; module.exports.experimental.cpus = 1; module.exports.experimental.memoryBasedWorkersCount = false; } else { module.exports.experimental = { optimizePackageImports: [], workerThreads: false, cpus: 1, memoryBasedWorkersCount: false }; }" >> apps/web/next.config.js
 
-ENV NODE_OPTIONS="--max_old_space_size=4096"
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_OPTIONS="--max_old_space_size=6144"
 RUN pnpm build
 RUN test -f apps/web/.next/BUILD_ID || { echo "Build failed! BUILD_ID not found."; exit 1; }
 
