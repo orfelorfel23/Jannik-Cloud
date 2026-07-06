@@ -35,20 +35,8 @@ ENV NODE_OPTIONS="--max_old_space_size=6144"
 RUN pnpm build
 RUN test -f apps/web/.next/BUILD_ID || { echo "Build failed! BUILD_ID not found."; exit 1; }
 
-# Runner stage
-FROM node:18-alpine AS runner
-WORKDIR /app
-
-# Add runtime dependencies
-RUN apk add --no-cache openssl libc6-compat
-RUN corepack enable pnpm
-
-ENV NODE_ENV production
-ENV NEXT_TELEMETRY_DISABLED 1
-ENV PORT 3000
-
-# Copy the built app
-COPY --from=builder /app /app
+ENV NODE_ENV=production
+ENV PORT=3000
 
 EXPOSE 3000
 
