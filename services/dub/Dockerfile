@@ -13,6 +13,11 @@ COPY . .
 # Ensure .env files exist so dotenv-flow and prisma:generate don't crash
 RUN cp apps/web/.env.example apps/web/.env || true
 RUN touch .env
+RUN echo "PLAIN_API_KEY=dummy_key_for_build" >> apps/web/.env
+RUN echo "QSTASH_TOKEN=dummy_token_for_build" >> apps/web/.env
+RUN echo "AXIOM_TOKEN=dummy_token_for_build" >> apps/web/.env
+RUN echo "UPSTASH_REDIS_REST_URL=https://dummy.upstash.io" >> apps/web/.env
+RUN echo "UPSTASH_REDIS_REST_TOKEN=dummy_token" >> apps/web/.env
 
 # Install dependencies
 RUN pnpm install
