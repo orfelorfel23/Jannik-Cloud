@@ -27,7 +27,7 @@ RUN echo "module.exports.typescript = { ignoreBuildErrors: true };" >> apps/web/
 RUN echo "if (module.exports.experimental) { module.exports.experimental.workerThreads = false; module.exports.experimental.memoryBasedWorkersCount = true; } else { module.exports.experimental = { workerThreads: false, memoryBasedWorkersCount: true }; }" >> apps/web/next.config.js
 
 RUN pnpm build
-RUN ls -la apps/web/.next
+RUN find /app -name "BUILD_ID"
 
 # Runner stage
 FROM node:18-alpine AS runner
