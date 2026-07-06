@@ -33,6 +33,21 @@ services:
     networks:
       - jannik-cloud-net
 
+  ps-proxy:
+    image: ghcr.io/mattrobenolt/ps-http-sim:latest
+    container_name: dub_ps_proxy
+    restart: unless-stopped
+    command:
+      [
+        "-listen-port=3900",
+        "-mysql-dbname=dub",
+        "-mysql-addr=db",
+      ]
+    depends_on:
+      - db
+    networks:
+      - jannik-cloud-net
+
   redis:
     image: redis:alpine
     container_name: dub_redis
