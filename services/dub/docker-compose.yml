@@ -1,8 +1,8 @@
 services:
   dub:
     build:
-      context: ./source
-      dockerfile: ../Dockerfile
+      context: .
+      dockerfile: Dockerfile
     container_name: dub
     restart: unless-stopped
     ports:
