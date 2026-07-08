@@ -18,6 +18,10 @@ RUN node -e "const fs=require('fs');const envMap=new Map();const example=fs.read
 
 # Patch SSG functions to prevent Prisma DB connection errors during Docker build
 RUN node -e "const fs = require('fs'); const f1 = 'apps/web/lib/fetchers/get-program-slugs.ts'; let c1 = fs.readFileSync(f1, 'utf8'); c1 = c1.replace(/prisma\.program\.findMany/g, '(async () => [])'); fs.writeFileSync(f1, c1); const f2 = 'apps/web/ui/program-marketplace/pages/marketplace-program-page.tsx'; let c2 = fs.readFileSync(f2, 'utf8'); c2 = c2.replace(/prisma\.program\.findMany/g, '(async () => [])'); fs.writeFileSync(f2, c2);"
+
+# Patch constants to respect self-hosted NEXT_PUBLIC_APP_URL
+RUN node -e "const fs = require('fs'); const f = 'packages/utils/src/constants/main.ts'; let c = fs.readFileSync(f, 'utf8'); c = c.replace(/\"localhost\",/g, '\"localhost\", process.env.NEXT_PUBLIC_APP_URL ? process.env.NEXT_PUBLIC_APP_URL.replace(/^https?:\\\/\\\//, \"\") : \"\",'); c = c.replace(/process\.env\.NEXT_PUBLIC_VERCEL_ENV === \"production\"[\s\S]*?: (process\.env\.NEXT_PUBLIC_NGROK_URL \|\| )?\"http:\/\/(api\.|partners\.)?localhost:8888\";/g, 'process.env.NEXT_PUBLIC_APP_URL || \"http://localhost:8888\";'); fs.writeFileSync(f, c);"
+
 RUN pnpm install
 
 # Generate Prisma client
