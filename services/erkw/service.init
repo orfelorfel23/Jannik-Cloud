@@ -34,11 +34,25 @@ fi
 
 echo "[erkw] Content sync complete."
 
-# Generate default .htpasswd if it doesn't exist (user: test, pass: test)
-if [ ! -f "${HTPASSWD_FILE}" ]; then
-    echo "[erkw] Creating default .htpasswd file for Modul 6 (user: test, pass: test)..."
-    echo 'test:$apr1$e1O.3M4y$qEwP79rM9hZq3B9T.mZ.U0' > "${HTPASSWD_FILE}"
+# Load .env if it exists to get credentials for Modul 6
+ENV_FILE="$(dirname "$0")/.env"
+if [ -f "${ENV_FILE}" ]; then
+    # export variables to make them available
+    set -a
+    source "${ENV_FILE}"
+    set +a
 fi
+
+MODUL6_USER="${ERKW_MODUL6_USER:-test}"
+MODUL6_PASS="${ERKW_MODUL6_PASS:-test}"
+
+echo "[erkw] Generating .htpasswd file for Modul 6 (user: ${MODUL6_USER})..."
+if command -v openssl >/dev/null 2>&1; then
+    HASH=$(openssl passwd -apr1 "${MODUL6_PASS}")
+else
+    HASH=$(docker run --rm nginx:alpine openssl passwd -apr1 "${MODUL6_PASS}" | tr -d '\r')
+fi
+echo "${MODUL6_USER}:${HASH}" > "${HTPASSWD_FILE}"
 
 # Write Nginx config (idempotent — safe to overwrite on every deploy)
 mkdir -p "$(dirname "${NGINX_CONF}")"
