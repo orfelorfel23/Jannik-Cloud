@@ -6,6 +6,7 @@ services:
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/erkw/content:/usr/share/nginx/html:ro
       - /mnt/Jannik-Cloud-Volume-01/erkw/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - /mnt/Jannik-Cloud-Volume-01/erkw/.htpasswd:/etc/nginx/.htpasswd:ro
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost"]
       interval: 30s
