@@ -8,6 +8,11 @@ services:
     ports:
       - "127.0.0.1:382:3000"
     env_file: .env
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     depends_on:
       - db
       - redis
