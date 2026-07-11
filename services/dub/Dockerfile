@@ -43,4 +43,8 @@ ENV PORT=3000
 
 EXPOSE 3000
 
+# Rechte an den built-in 'node' User (UID 1000) übergeben und User wechseln
+RUN chown -R node:node /app
+USER node
+
 CMD cd apps/web && pnpm exec prisma db push --schema=./prisma/schema --accept-data-loss && pnpm start
