@@ -9,6 +9,7 @@ generate_password() { openssl rand -base64 48 | tr -dc 'A-Za-z0-9' | head -c 32;
 
 cat > "${SCRIPT_DIR}/.env" <<EOF
 DB_PASSWORD=$(generate_password)
+AUTH_SECRET=$(generate_password)
 EOF
 
 chmod 600 "${SCRIPT_DIR}/.env"
