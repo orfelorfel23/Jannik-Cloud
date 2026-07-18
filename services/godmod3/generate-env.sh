@@ -11,7 +11,7 @@ EOF
 chmod 600 "${SCRIPT_DIR}/.env"
 
 cat > "${SCRIPT_DIR}/godmod3.caddy" <<'EOF'
-godmod3.orfel.de {
+god.orfel.de {
 	reverse_proxy godmod3-web:80
 }
 EOF
