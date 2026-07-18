@@ -18,7 +18,7 @@ services:
 
   web:
     build:
-      context: https://github.com/elder-plinius/G0DM0D3.git#main
+      context: .
       dockerfile: Dockerfile.web
     container_name: godmod3-web
     restart: unless-stopped
