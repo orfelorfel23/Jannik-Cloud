@@ -1,0 +1,37 @@
+services:
+  api:
+    build:
+      context: https://github.com/elder-plinius/G0DM0D3.git#main
+      dockerfile: Dockerfile
+    container_name: godmod3-api
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - PORT=7860
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7860/v1/health"]
+      interval: 30s
+      timeout: 5s
+      start_period: 10s
+    networks:
+      - godmod3-net
+
+  web:
+    build:
+      context: https://github.com/elder-plinius/G0DM0D3.git#main
+      dockerfile: Dockerfile.web
+    container_name: godmod3-web
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:463:80"
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      - godmod3-net
+      - jannik-cloud-net
+
+networks:
+  godmod3-net:
+  jannik-cloud-net:
+    external: true

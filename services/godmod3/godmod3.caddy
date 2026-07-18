@@ -1,0 +1,3 @@
+godmod3.orfel.de {
+	reverse_proxy godmod3-web:80
+}
