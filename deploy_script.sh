@@ -348,7 +348,7 @@ enable_maintenance_mode() {
     fi
     
     local all_domains
-    all_domains=$(grep -hEo "([a-zA-Z0-9.-]+\.[a-zA-Z0-9.-]+)" "${CADDY_FRAGMENTS_DIR}"/*.caddy 2>/dev/null | grep -E "\.[a-z]+$" | sort -u | tr '\n' ',' | sed 's/,$//')
+    all_domains=$(grep -hEo "([a-zA-Z0-9.-]+\.orfel\.de|orfel\.de)" "${CADDY_FRAGMENTS_DIR}"/*.caddy 2>/dev/null | sort -u | tr '\n' ',' | sed 's/,$//')
     
     if [[ -z "${all_domains}" ]]; then
         log "  No domains found for maintenance mode."
@@ -368,7 +368,7 @@ EOF
     sed -i "s/DOMAINS_PLACEHOLDER/${all_domains}/g" "${CADDY_FRAGMENTS_DIR}/maintenance.caddy"
     
     log "  Reloading Caddy with maintenance config..."
-    docker exec caddy caddy reload --config /etc/caddy/Caddyfile 2>/dev/null || true
+    docker exec caddy caddy reload --config /etc/caddy/Caddyfile || true
     sleep 2
 }
 
