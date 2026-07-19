@@ -266,9 +266,21 @@ update_repo() {
         log "Repository cloned successfully."
     else
         cd "${REPO_DIR}"
+        local old_commit
+        old_commit=$(git rev-parse HEAD 2>/dev/null || echo "none")
+        
         git fetch origin
         git reset --hard origin/main || git reset --hard origin/master || true
+        
+        local new_commit
+        new_commit=$(git rev-parse HEAD 2>/dev/null || echo "none")
+        
         log "Repository updated via git pull."
+        
+        if [[ "${old_commit}" != "${new_commit}" ]]; then
+            log "Script updated from Git! Restarting script to apply changes..."
+            exec bash "$0" "$@"
+        fi
     fi
 
     # Restore executable permissions (git reset may strip them)
