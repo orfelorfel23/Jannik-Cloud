@@ -348,7 +348,7 @@ enable_maintenance_mode() {
     fi
     
     local all_domains
-    all_domains=$(grep -hEo "([a-zA-Z0-9.-]+\.orfel\.de|orfel\.de)" "${CADDY_FRAGMENTS_DIR}"/*.caddy 2>/dev/null | sort -u | tr '\n' ',' | sed 's/,$//')
+    all_domains=$(grep -hEo "([a-zA-Z0-9.-]+\.orfel\.de|orfel\.de)" "${CADDY_FRAGMENTS_DIR}"/*.caddy 2>/dev/null | sort -u | tr '\n' ' ' | sed 's/ $//')
     
     if [[ -z "${all_domains}" ]]; then
         log "  No domains found for maintenance mode."
