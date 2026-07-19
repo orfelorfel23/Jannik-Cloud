@@ -338,11 +338,46 @@ run_service_backup_hooks() {
 }
 
 ###############################################################################
-# 8. Stop all running service containers
+# 8. Enable Maintenance Mode & Stop all running service containers
 ###############################################################################
+enable_maintenance_mode() {
+    log "Enabling maintenance mode on all active subdomains..."
+    if ! docker ps --format '{{.Names}}' | grep -q "^caddy$"; then
+        log "  Caddy is not running. Maintenance mode cannot be activated."
+        return
+    fi
+    
+    local all_domains
+    all_domains=$(grep -hEo "([a-zA-Z0-9.-]+\.orfel\.de|orfel\.de)" "${CADDY_FRAGMENTS_DIR}"/*.caddy 2>/dev/null | sort -u | tr '\n' ' ' | sed 's/ $//')
+    
+    if [[ -z "${all_domains}" ]]; then
+        log "  No domains found for maintenance mode."
+        return
+    fi
+    
+    # Clear existing fragments (they will be restored by assemble_caddy_fragments later)
+    rm -f "${CADDY_FRAGMENTS_DIR}"/*.caddy 2>/dev/null || true
+    
+    # Create maintenance fragment
+    cat << 'EOF' > "${CADDY_FRAGMENTS_DIR}/maintenance.caddy"
+DOMAINS_PLACEHOLDER {
+    header Content-Type text/html
+    respond "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><title>Wartungsarbeiten</title><style>body{background:#1a202c;color:#e2e8f0;font-family:system-ui,-apple-system,sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0}.box{text-align:center;padding:2rem;background:#2d3748;border-radius:1rem;box-shadow:0 10px 15px -3px rgba(0,0,0,0.1)}h1{margin-top:0;color:#63b3ed}</style></head><body><div class=\"box\"><h1>Wartungsarbeiten</h1><p>Das System wird gerade aktualisiert.<br>Die Seite ist in wenigen Minuten wieder erreichbar.<br>Bitte in ca. 10 Minuten nochmals versuchen.</p></div></body></html>" 503
+}
+EOF
+    sed -i "s/DOMAINS_PLACEHOLDER/${all_domains}/g" "${CADDY_FRAGMENTS_DIR}/maintenance.caddy"
+    
+    log "  Reloading Caddy with maintenance config..."
+    docker exec caddy caddy reload --config /etc/caddy/Caddyfile || true
+    sleep 2
+}
+
 stop_all_services() {
     log "Stopping all currently running service containers..."
-    for svc_name in "${ACTIVE_SERVICES[@]}"; doDie Seite ist
+    for svc_name in "${ACTIVE_SERVICES[@]}"; do
+        if [[ "${svc_name}" == "caddy" ]]; then
+            continue
+        fi
         local svc_dir="${SERVICES_DIR}/${svc_name}"
         cd "${svc_dir}"
         docker compose down --remove-orphans 2>/dev/null || true
@@ -568,6 +603,9 @@ start_caddy() {
         log "Starting Caddy..."
         cd "${SERVICES_DIR}/caddy"
         docker compose up -d --remove-orphans
+        log "  Reloading Caddy config to disable maintenance mode..."
+        sleep 2
+        docker exec caddy caddy reload --config /etc/caddy/Caddyfile 2>/dev/null || true
     fi
 }
 
@@ -658,6 +696,7 @@ main() {
     
     run_service_backup_hooks
 
+    enable_maintenance_mode
     stop_all_services
     decrypt_envs
     create_volumes
