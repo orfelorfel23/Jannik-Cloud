@@ -11,9 +11,9 @@ services:
     container_name: viz
     restart: unless-stopped
     ports:
-      - "127.0.0.1:849:849"
+      - "127.0.0.1:849:3000"
     environment:
-      PORT: 849
+      PORT: 3000
       DATA_DIR: /data
       NODE_ENV: production
     volumes:
