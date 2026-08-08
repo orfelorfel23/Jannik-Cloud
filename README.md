@@ -55,6 +55,7 @@ Self-hosted cloud infrastructure on Hetzner Ubuntu 24 LTS, managed via Docker Co
 | Stirling PDF | [pdf.orfel.de](https://pdf.orfel.de) | 733 |
 | Syncthing | [sync.orfel.de](https://sync.orfel.de) | 7962 |
 | Vaultwarden | [pw.orfel.de](https://pw.orfel.de) | 7277 |
+| Viz | [viz.orfel.de](https://viz.orfel.de) | 849 |
 | Webhook | [webhook.orfel.de](https://webhook.orfel.de) | 9500 |
 | Zipline | [short.orfel.de](https://short.orfel.de) | 947 |
 

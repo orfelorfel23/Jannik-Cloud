@@ -1,0 +1,31 @@
+services:
+  viz:
+    build:
+      context: .
+      dockerfile: build.Dockerfile
+      args:
+        REPO_URL: https://git.orfel.de/Jannik/Viz.git
+        BRANCH: main
+    image: viz:latest
+    pull_policy: build
+    container_name: viz
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:849:849"
+    environment:
+      PORT: 849
+      DATA_DIR: /data
+      NODE_ENV: production
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/viz:/data
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 2048M
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true
