@@ -345,12 +345,12 @@ enable_maintenance_mode() {
     log "Enabling maintenance mode on all active subdomains..."
     
     local all_domains
-    # Extract domains from all service caddy definitions
-    all_domains=$(grep -hEo "([a-zA-Z0-9.-]+\.orfel\.de|orfel\.de)" "${SERVICES_DIR}"/*/*.caddy 2>/dev/null | sort -u | tr '\n' ' ' | sed 's/ $//')
+    # Extract domains from all service caddy definitions (excluding internal infra like git.orfel.de needed for builds/syncs)
+    all_domains=$(grep -hEo "([a-zA-Z0-9.-]+\.orfel\.de|orfel\.de)" "${SERVICES_DIR}"/*/*.caddy 2>/dev/null | grep -v -E "^git\.orfel\.de$" | sort -u | tr '\n' ' ' | sed 's/ $//')
     
     # Fallback to CADDY_FRAGMENTS_DIR if needed
     if [[ -z "${all_domains}" ]]; then
-        all_domains=$(grep -hEo "([a-zA-Z0-9.-]+\.orfel\.de|orfel\.de)" "${CADDY_FRAGMENTS_DIR}"/*.caddy 2>/dev/null | sort -u | tr '\n' ' ' | sed 's/ $//')
+        all_domains=$(grep -hEo "([a-zA-Z0-9.-]+\.orfel\.de|orfel\.de)" "${CADDY_FRAGMENTS_DIR}"/*.caddy 2>/dev/null | grep -v -E "^git\.orfel\.de$" | sort -u | tr '\n' ' ' | sed 's/ $//')
     fi
     
     if [[ -z "${all_domains}" ]]; then
@@ -524,6 +524,15 @@ start_infra() {
         cd "${SERVICES_DIR}/gitea"
         docker compose up -d --remove-orphans
         wait_for_gitea
+
+        # Activate Gitea Caddy reverse proxy immediately (so init hooks & builds can clone via HTTPS)
+        if [[ -f "${SERVICES_DIR}/gitea/gitea.caddy" ]]; then
+            cp "${SERVICES_DIR}/gitea/gitea.caddy" "${CADDY_FRAGMENTS_DIR}/"
+            if docker ps --format '{{.Names}}' | grep -q "^caddy$"; then
+                log "  Enabling Caddy reverse proxy for git.orfel.de..."
+                docker exec caddy caddy reload --config /etc/caddy/Caddyfile 2>/dev/null || true
+            fi
+        fi
     fi
 
 }
