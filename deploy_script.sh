@@ -343,20 +343,23 @@ run_service_backup_hooks() {
 ###############################################################################
 enable_maintenance_mode() {
     log "Enabling maintenance mode on all active subdomains..."
-    if ! docker ps --format '{{.Names}}' | grep -q "^caddy$"; then
-        log "  Caddy is not running. Maintenance mode cannot be activated."
-        return
-    fi
     
     local all_domains
-    all_domains=$(grep -hEo "([a-zA-Z0-9.-]+\.orfel\.de|orfel\.de)" "${CADDY_FRAGMENTS_DIR}"/*.caddy 2>/dev/null | sort -u | tr '\n' ' ' | sed 's/ $//')
+    # Extract domains from all service caddy definitions
+    all_domains=$(grep -hEo "([a-zA-Z0-9.-]+\.orfel\.de|orfel\.de)" "${SERVICES_DIR}"/*/*.caddy 2>/dev/null | sort -u | tr '\n' ' ' | sed 's/ $//')
+    
+    # Fallback to CADDY_FRAGMENTS_DIR if needed
+    if [[ -z "${all_domains}" ]]; then
+        all_domains=$(grep -hEo "([a-zA-Z0-9.-]+\.orfel\.de|orfel\.de)" "${CADDY_FRAGMENTS_DIR}"/*.caddy 2>/dev/null | sort -u | tr '\n' ' ' | sed 's/ $//')
+    fi
     
     if [[ -z "${all_domains}" ]]; then
-        log "  No domains found for maintenance mode."
+        warn "  No domains found for maintenance mode. Skipping."
         return
     fi
     
-    # Clear existing fragments (they will be restored by assemble_caddy_fragments later)
+    mkdir -p "${CADDY_FRAGMENTS_DIR}"
+    # Clear existing fragments (they will be restored by assemble_caddy_fragments at the end of deployment)
     rm -f "${CADDY_FRAGMENTS_DIR}"/*.caddy 2>/dev/null || true
     
     # Create maintenance fragment
@@ -366,11 +369,18 @@ DOMAINS_PLACEHOLDER {
     respond "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><title>Wartungsarbeiten</title><style>body{background:#1a202c;color:#e2e8f0;font-family:system-ui,-apple-system,sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0}.box{text-align:center;padding:2rem;background:#2d3748;border-radius:1rem;box-shadow:0 10px 15px -3px rgba(0,0,0,0.1)}h1{margin-top:0;color:#63b3ed}</style></head><body><div class=\"box\"><h1>Wartungsarbeiten</h1><p>Das System wird gerade aktualisiert.<br>Die Seite ist in wenigen Minuten wieder erreichbar.<br>Bitte in ca. 10 Minuten nochmals versuchen.</p></div></body></html>" 503
 }
 EOF
-    sed -i "s/DOMAINS_PLACEHOLDER/${all_domains}/g" "${CADDY_FRAGMENTS_DIR}/maintenance.caddy"
+    sed -i "s|DOMAINS_PLACEHOLDER|${all_domains}|g" "${CADDY_FRAGMENTS_DIR}/maintenance.caddy"
     
-    log "  Reloading Caddy with maintenance config..."
-    docker exec caddy caddy reload --config /etc/caddy/Caddyfile || true
-    sleep 2
+    # Ensure Caddy is running and reloaded with maintenance config
+    if docker ps --format '{{.Names}}' | grep -q "^caddy$"; then
+        log "  Reloading Caddy with maintenance config..."
+        docker exec caddy caddy reload --config /etc/caddy/Caddyfile 2>/dev/null || true
+    elif [[ " ${ACTIVE_SERVICES[*]} " =~ " caddy " ]]; then
+        log "  Starting Caddy in maintenance mode..."
+        cd "${SERVICES_DIR}/caddy"
+        docker compose up -d --remove-orphans 2>/dev/null || true
+    fi
+    sleep 1
 }
 
 stop_all_services() {
@@ -612,16 +622,20 @@ create_postgres_dbs() {
 }
 
 ###############################################################################
-# 15. Start Caddy, then remaining services
+# 15. Start remaining services & switch Caddy to production
 ###############################################################################
-start_caddy() {
+disable_maintenance_mode() {
+    log "Switching Caddy from maintenance mode to production..."
+    assemble_caddy_fragments
+    
     if [[ " ${ACTIVE_SERVICES[*]} " =~ " caddy " ]]; then
-        log "Starting Caddy..."
         cd "${SERVICES_DIR}/caddy"
         docker compose up -d --remove-orphans
-        log "  Reloading Caddy config to disable maintenance mode..."
+        log "  Waiting 2s for backend services to initialize before reloading Caddy..."
         sleep 2
+        log "  Reloading Caddy with production config..."
         docker exec caddy caddy reload --config /etc/caddy/Caddyfile 2>/dev/null || true
+        log "Maintenance mode disabled. All services are live!"
     fi
 }
 
@@ -717,13 +731,12 @@ main() {
     decrypt_envs
     create_volumes
     generate_dashboards
-    assemble_caddy_fragments
     pull_images
     start_infra
     create_postgres_dbs
-    start_caddy
     run_service_init_hooks
     start_remaining
+    disable_maintenance_mode
     cleanup_docker
 
     # --- Notify success ---
