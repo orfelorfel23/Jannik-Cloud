@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jannik-Cloud Hub</title>
+  <meta name="description" content="Zentrale Übersicht und Einstiegsportal für alle selbstgehosteten Dienste der Jannik-Cloud.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="glow-bg"></div>
+
+  <header class="header">
+    <div class="container header-container">
+      <div class="brand">
+        <div class="brand-icon">
+          <i class="fa-solid fa-cloud-bolt"></i>
+        </div>
+        <div>
+          <h1 class="brand-title">Jannik-Cloud</h1>
+          <p class="brand-subtitle">Service Hub & Dashboard</p>
+        </div>
+      </div>
+
+      <div class="stats-bar">
+        <div class="stat-badge">
+          <span class="stat-dot pulse"></span>
+          <span id="stat-active-count">0</span> Dienste aktiv
+        </div>
+        <a href="https://ntfy.orfel.de/Jannik-Cloud-Deploy-Trigger" target="_blank" rel="noopener" class="header-link" title="Ntfy Deploy Feed">
+          <i class="fa-solid fa-bell"></i>
+          <span>Deploy Feed</span>
+        </a>
+        <a href="https://git.orfel.de" target="_blank" rel="noopener" class="header-link" title="Gitea">
+          <i class="fa-solid fa-code-branch"></i>
+          <span>Git</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container main-content">
+    <!-- Search & Filter Section -->
+    <section class="controls-section">
+      <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+        <input 
+          type="text" 
+          id="search-input" 
+          placeholder="Dienst oder Subdomain suchen... (Drücke '/' zum Suchen)" 
+          autocomplete="off"
+          spellcheck="false"
+        >
+        <button id="clear-search" class="clear-btn" aria-label="Suche löschen" style="display: none;">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+        <kbd class="search-kbd">/</kbd>
+      </div>
+
+      <div class="category-filters" id="category-filters">
+        <button class="filter-chip active" data-category="all">
+          <i class="fa-solid fa-layer-group"></i> Alle
+        </button>
+        <!-- Filter chips will be dynamically populated -->
+      </div>
+    </section>
+
+    <!-- Services Grid Container -->
+    <div id="services-container" class="services-container">
+      <div class="loading-state">
+        <i class="fa-solid fa-circle-notch fa-spin"></i>
+        <p>Dienste werden geladen...</p>
+      </div>
+    </div>
+
+    <!-- Empty search result state -->
+    <div id="empty-state" class="empty-state" style="display: none;">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <h3>Keine Dienste gefunden</h3>
+      <p>Versuche einen anderen Suchbegriff oder setze die Filter zurück.</p>
+      <button id="reset-filter-btn" class="btn-reset">Filter zurücksetzen</button>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-container">
+      <p>Jannik-Cloud • Hetzner Ubuntu 24 LTS • Automatisch generiert via <code>deploy_script.sh</code></p>
+      <div class="footer-links">
+        <a href="https://homepage.orfel.de" target="_blank" rel="noopener">Homepage-Ansicht</a>
+        <span>•</span>
+        <a href="https://github.com/orfelorfel23/Jannik-Cloud" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

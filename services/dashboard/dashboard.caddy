@@ -1,0 +1,3 @@
+dash.orfel.de, hub.orfel.de {
+	reverse_proxy dashboard:80
+}

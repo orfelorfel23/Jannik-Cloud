@@ -1,0 +1,14 @@
+---
+- greeting:
+    text_size: xl
+    text: "Willkommen in der Jannik-Cloud"
+
+- resources:
+    cpu: true
+    memory: true
+    disk: /
+    expanded: true
+
+- search:
+    provider: duckduckgo
+    target: _blank

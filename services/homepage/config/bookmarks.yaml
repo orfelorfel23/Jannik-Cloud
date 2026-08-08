@@ -1,0 +1,8 @@
+---
+- Jannik-Cloud:
+    - GitHub Repo:
+        - icon: github.png
+          href: https://github.com/orfelorfel23/Jannik-Cloud
+    - Ntfy Channel:
+        - icon: ntfy.png
+          href: https://ntfy.orfel.de/Jannik-Cloud-Deploy-Trigger

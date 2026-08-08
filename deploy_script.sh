@@ -273,6 +273,7 @@ update_repo() {
 
     # Restore executable permissions (git reset may strip them)
     chmod 700 "${REPO_DIR}/deploy_script.sh" "${REPO_DIR}/decrypt-secrets.sh" 2>/dev/null || true
+    chmod 700 "${REPO_DIR}/scripts/"*.py 2>/dev/null || true
     find "${SERVICES_DIR}" -name "generate-env.sh" -exec chmod 700 {} \; 2>/dev/null || true
     find "${SERVICES_DIR}" -name "*.sh" -exec chmod 700 {} \; 2>/dev/null || true
 }
@@ -431,6 +432,21 @@ run_service_init_hooks() {
             bash "${init_script}"
         fi
     done
+}
+
+###############################################################################
+# 10c. Generate Dynamic Dashboard & Homepage configurations
+###############################################################################
+generate_dashboards() {
+    log "Generating dynamic dashboard and homepage configurations..."
+    local gen_script="${REPO_DIR}/scripts/generate_dashboards.py"
+    if [[ -f "${gen_script}" ]]; then
+        if command -v python3 &>/dev/null; then
+            python3 "${gen_script}" "${REPO_DIR}" || warn "Dashboard generation failed. Continuing deploy anyway."
+        else
+            warn "python3 not found. Skipping dashboard generation."
+        fi
+    fi
 }
 
 ###############################################################################
@@ -700,6 +716,7 @@ main() {
     stop_all_services
     decrypt_envs
     create_volumes
+    generate_dashboards
     assemble_caddy_fragments
     pull_images
     start_infra

@@ -20,6 +20,8 @@ Self-hosted cloud infrastructure on Hetzner Ubuntu 24 LTS, managed via Docker Co
 | PostgreSQL | (internal) | 5432 |
 | Redis | (internal) | 6379 |
 | Backup | (internal) | — |
+| Dashboard / Hub | [dash.orfel.de](https://dash.orfel.de), [hub.orfel.de](https://hub.orfel.de) | 3006 |
+| Homepage | [homepage.orfel.de](https://homepage.orfel.de) | 3005 |
 | ArchiveBox | [archive.orfel.de](https://archive.orfel.de) | 884 |
 | Authentik | [auth.orfel.de](https://auth.orfel.de) | 2884 |
 | Baserow | [br.orfel.de](https://br.orfel.de) | 2273 |

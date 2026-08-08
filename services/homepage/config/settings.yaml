@@ -1,0 +1,37 @@
+---
+title: Jannik-Cloud
+favicon: https://cdn-icons-png.flaticon.com/512/873/873138.png
+theme: dark
+color: slate
+headerStyle: clean
+layout:
+  Cloud & Speicher:
+    style: row
+    columns: 4
+  Sicherheit & Auth:
+    style: row
+    columns: 4
+  KI & Wissen:
+    style: row
+    columns: 4
+  DevOps & Server:
+    style: row
+    columns: 4
+  Medien & Audio:
+    style: row
+    columns: 4
+  Smart Home & 3D:
+    style: row
+    columns: 4
+  Tools & Produktivität:
+    style: row
+    columns: 4
+  Einsatz & CBRN:
+    style: row
+    columns: 4
+  Community & Apps:
+    style: row
+    columns: 4
+  Weitere Dienste:
+    style: row
+    columns: 4
