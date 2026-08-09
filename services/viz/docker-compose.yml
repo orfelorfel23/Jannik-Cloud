@@ -21,8 +21,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "2.0"
-          memory: 2048M
+          cpus: "4.0"
+          memory: 4096M
     networks:
       - jannik-cloud-net
 
