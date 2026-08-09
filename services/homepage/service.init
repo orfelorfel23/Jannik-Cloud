@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+###############################################################################
+# Homepage Service Init
+###############################################################################
+
+CONFIG_VOL="/mnt/Jannik-Cloud-Volume-01/homepage/config"
+mkdir -p "${CONFIG_VOL}"
+
+# Copy all config files (excluding the auto-generated services.yaml) to the persistent volume
+echo "Syncing homepage config to volume..."
+if command -v rsync &>/dev/null; then
+    rsync -av --exclude="services.yaml" config/ "${CONFIG_VOL}/"
+else
+    # Fallback if rsync is missing
+    cp -r config/bookmarks.yaml "${CONFIG_VOL}/" 2>/dev/null || true
+    cp -r config/docker.yaml "${CONFIG_VOL}/" 2>/dev/null || true
+    cp -r config/settings.yaml "${CONFIG_VOL}/" 2>/dev/null || true
+    cp -r config/widgets.yaml "${CONFIG_VOL}/" 2>/dev/null || true
+    if [[ -d config/images ]]; then
+        cp -r config/images "${CONFIG_VOL}/" 2>/dev/null || true
+    fi
+fi

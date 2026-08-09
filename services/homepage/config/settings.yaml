@@ -1,6 +1,6 @@
 ---
 title: Jannik-Cloud
-favicon: https://cdn-icons-png.flaticon.com/512/873/873138.png
+favicon: /images/favicon.svg
 theme: dark
 color: slate
 headerStyle: clean
