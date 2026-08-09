@@ -5,7 +5,7 @@ RUN apk add --no-cache git ffmpeg bash curl
 
 ARG REPO_URL=https://git.orfel.de/Jannik/Viz.git
 ARG BRANCH=main
-ARG CACHE_BUST=1786309440,48114,28807,35401-08-09T13:35:00Z
+ARG CACHE_BUST=2026-08-09T22:45:00Z
 
 WORKDIR /app
 
