@@ -329,11 +329,12 @@ cleanup_deactivated() {
 run_service_backup_hooks() {
     log "Running service backup hooks (before stopping containers)..."
     for svc_name in "${ACTIVE_SERVICES[@]}"; do
-        local backup_script="${SERVICES_DIR}/${svc_name}/service.backup"
+        local svc_dir="${SERVICES_DIR}/${svc_name}"
+        local backup_script="${svc_dir}/service.backup"
         if [[ -f "${backup_script}" ]]; then
             log "  Running backup hook for ${svc_name}..."
             chmod +x "${backup_script}" 2>/dev/null || true
-            bash "${backup_script}" || warn "  Backup hook for ${svc_name} failed. Continuing deploy anyway."
+            ( cd "${svc_dir}" && bash "${backup_script}" ) || warn "  Backup hook for ${svc_name} failed. Continuing deploy anyway."
         fi
     done
 }
@@ -435,11 +436,12 @@ create_volumes() {
 run_service_init_hooks() {
     log "Running service init hooks..."
     for svc_name in "${ACTIVE_SERVICES[@]}"; do
-        local init_script="${SERVICES_DIR}/${svc_name}/service.init"
+        local svc_dir="${SERVICES_DIR}/${svc_name}"
+        local init_script="${svc_dir}/service.init"
         if [[ -f "${init_script}" ]]; then
             log "  Running init hook for ${svc_name}..."
             chmod +x "${init_script}" 2>/dev/null || true
-            bash "${init_script}"
+            ( cd "${svc_dir}" && bash "${init_script}" )
         fi
     done
 }
