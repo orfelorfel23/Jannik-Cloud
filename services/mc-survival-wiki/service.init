@@ -30,8 +30,8 @@ fi
 
 mkdir -p "${DATA_DIR}"
 
-echo "[mc-survival-wiki] Building Docker image..."
+echo "[mc-survival-wiki] Pulling pre-compiled Docker image from GHCR..."
 cd /opt/Jannik-Cloud/services/mc-survival-wiki
-docker compose build --no-cache
+docker compose pull
 
 echo "[mc-survival-wiki] Init complete."

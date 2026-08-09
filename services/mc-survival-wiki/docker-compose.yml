@@ -19,7 +19,7 @@ services:
       - mc-survival-wiki-net
 
   mc-survival-wiki-web:
-    build: /mnt/Jannik-Cloud-Volume-01/mc-survival-wiki/app
+    image: ghcr.io/orfelorfel23/mc-survivalprojekt-wiki:latest
     container_name: mc_survival_wiki_web
     restart: unless-stopped
     env_file: .env
