@@ -351,16 +351,14 @@ def main():
     generate_homepage_yaml(services, hp_local)
 
     server_hp_vol = Path("/mnt/Jannik-Cloud-Volume-01/homepage/config/services.yaml")
-    if server_hp_vol.parent.is_dir():
-        generate_homepage_yaml(services, server_hp_vol)
+    generate_homepage_yaml(services, server_hp_vol)
 
     # 2. Custom Dashboard data path (both local repo www & persistent server volume)
     dash_local = repo_root / "services" / "dashboard" / "www" / "data.json"
     generate_custom_dashboard_data(services, dash_local)
 
     server_dash_vol = Path("/mnt/Jannik-Cloud-Volume-01/dashboard/data.json")
-    if server_dash_vol.parent.is_dir():
-        generate_custom_dashboard_data(services, server_dash_vol)
+    generate_custom_dashboard_data(services, server_dash_vol)
 
     print("[GEN] Dashboard generation complete!")
 
