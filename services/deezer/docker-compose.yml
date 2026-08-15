@@ -8,7 +8,7 @@ services:
     environment:
       DEEZER_COOKIE_ARL: ${DEEZER_ARL}
     volumes:
-      - /mnt/Jannik-Cloud-Volume-01/deezer/downloads:/mnt/deezer-downloader
+      - /mnt/Jannik-Cloud-Volume-01/deezer/downloads:/mnt/deezer-downloader/songs
       - /mnt/Jannik-Cloud-Volume-01/deezer/config:/config
     deploy:
       resources:
