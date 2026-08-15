@@ -20,7 +20,7 @@ chmod 600 "${SCRIPT_DIR}/.env"
 
 cat > "${SCRIPT_DIR}/deezer.caddy" <<'EOF'
 deezer.orfel.de {
-	reverse_proxy deezer:6123
+	reverse_proxy deezer:5000
 }
 EOF
 
