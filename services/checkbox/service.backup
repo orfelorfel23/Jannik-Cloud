@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+set -e
+
+echo "[Backup] Starte MS SQL Backup Routine..."
+
+# Lade Umgebungsvariablen aus der aktuellen .env Datei im Verzeichnis
+source "$(dirname "$0")/.env"
+
+VOLUME_BASE="/mnt/Jannik-Cloud-Volume-01/checkbox"
+DATA_DIR="${VOLUME_BASE}/data"
+BACKUP_DIR="${VOLUME_BASE}/backups"
+
+mkdir -p "${BACKUP_DIR}"
+
+# Dateinamen generieren
+DATE=$(date +%Y-%m-%d_%H-%M-%S)
+CONTAINER_FILE="/var/opt/mssql/${MSSQL_DB_NAME}_${DATE}.bak"
+TEMP_HOST_FILE="${DATA_DIR}/${MSSQL_DB_NAME}_${DATE}.bak"
+FINAL_HOST_FILE="${BACKUP_DIR}/${MSSQL_DB_NAME}_${DATE}.bak"
+
+echo "[Backup] Erstelle komprimiertes MS SQL Backup für Datenbank: ${MSSQL_DB_NAME}..."
+
+# Führe SQLCMD im Container aus, um das Backup zu erstellen
+# Wir verwenden WITH COMPRESSION für maximale Platzersparnis (oft >80%)
+docker exec checkbox_mssql /opt/mssql-tools18/bin/sqlcmd \
+    -S localhost \
+    -U sa \
+    -P "${MSSQL_SA_PASSWORD}" \
+    -C \
+    -Q "BACKUP DATABASE [${MSSQL_DB_NAME}] TO DISK = N'${CONTAINER_FILE}' WITH COMPRESSION, INIT, STATS = 10"
+
+# Das Backup wurde nun im Container unter /var/opt/mssql angelegt.
+# Da dies auf /mnt/.../data gemappt ist, liegt die Datei nun auf dem Host.
+# Wir verschieben sie in den sauberen Backup-Ordner.
+if [[ -f "${TEMP_HOST_FILE}" ]]; then
+    mv "${TEMP_HOST_FILE}" "${FINAL_HOST_FILE}"
+    echo "[Backup] Erfolgreich gespeichert: ${FINAL_HOST_FILE}"
+else
+    echo "[Backup] FEHLER: Backup-Datei wurde nach dem Ausführen nicht gefunden (${TEMP_HOST_FILE})"
+    exit 1
+fi
+
+# Lösche alte Backups (behalte nur 7 Tage)
+echo "[Backup] Bereinige alte Backups (älter als 7 Tage)..."
+find "${BACKUP_DIR}" -name "*.bak" -type f -mtime +7 -delete
+
+echo "[Backup] Routine erfolgreich abgeschlossen."
