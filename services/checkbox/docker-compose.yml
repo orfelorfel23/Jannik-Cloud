@@ -1,0 +1,24 @@
+services:
+  checkbox-db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: checkbox_mssql
+    restart: unless-stopped
+    ports:
+      - "7224:1433"
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=${MSSQL_SA_PASSWORD}
+      - MSSQL_PID=Express
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/checkbox/data:/var/opt/mssql
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 2048M
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true
