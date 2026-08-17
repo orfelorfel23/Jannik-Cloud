@@ -11,11 +11,7 @@ services:
       - MSSQL_PID=Express
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/checkbox/data:/var/opt/mssql
-    deploy:
-      resources:
-        limits:
-          cpus: "1.0"
-          memory: 2048M
+
     networks:
       - jannik-cloud-net
 
