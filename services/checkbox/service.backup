@@ -27,6 +27,7 @@ docker exec checkbox_mssql /opt/mssql-tools18/bin/sqlcmd \
     -U sa \
     -P "${MSSQL_SA_PASSWORD}" \
     -C \
+    -b \
     -Q "BACKUP DATABASE [${MSSQL_DB_NAME}] TO DISK = N'${CONTAINER_FILE}' WITH COMPRESSION, INIT, STATS = 10"
 
 # Das Backup wurde nun im Container unter /var/opt/mssql angelegt.
