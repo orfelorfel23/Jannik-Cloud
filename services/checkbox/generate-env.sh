@@ -13,6 +13,9 @@ generate_password() {
 
 cat > "${SCRIPT_DIR}/.env" <<EOF
 # Checkbox — MS SQL Server Express
+MSSQL_ADDRESS=checkbox.orfel.de,7224
+MSSQL_DB_NAME=Niederneuschoenberg
+MSSQL_USER=sa
 MSSQL_SA_PASSWORD=$(generate_password)
 EOF
 
