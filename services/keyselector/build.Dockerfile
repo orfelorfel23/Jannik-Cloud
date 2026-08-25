@@ -4,9 +4,10 @@ RUN apk add --no-cache git
 
 ARG REPO_URL=https://git.orfel.de/Jannik/KeySelector.git
 ARG BRANCH=main
-ARG CACHE_BUST=1
+ARG CACHE_BUST=2026-08-26T01:05:00Z
 
 WORKDIR /app
+RUN echo "Busting cache: $CACHE_BUST"
 RUN git clone --depth 1 --branch ${BRANCH} ${REPO_URL} .
 
 WORKDIR /app/server
