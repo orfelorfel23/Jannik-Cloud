@@ -1,6 +1,6 @@
 FROM node:20-alpine
 
-RUN apk add --no-cache git
+RUN apk add --no-cache git chromaprint ffmpeg
 
 ARG REPO_URL=https://git.orfel.de/Jannik/KeySelector.git
 ARG BRANCH=main
