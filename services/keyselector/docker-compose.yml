@@ -17,6 +17,7 @@ services:
       ACOUSTID_API_KEY: ${ACOUSTID_API_KEY}
       GETSONGBPM_API_KEY: ${GETSONGBPM_API_KEY}
       LASTFM_API_KEY: ${LASTFM_API_KEY}
+      LASTFM_SHARED_SECRET: ${LASTFM_SHARED_SECRET}
       NTFY_URL: ${NTFY_URL}
       DATABASE_URL: postgresql://keyselector:${DB_PW}@postgres:5432/keyselector
       REDIS_URL: redis://redis:6379
