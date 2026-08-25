@@ -1,0 +1,4 @@
+keyselector.orfel.de, keysel.orfel.de, ks.orfel.de {
+  reverse_proxy keyselector:3000
+  encode gzip
+}
