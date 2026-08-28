@@ -1,0 +1,18 @@
+services:
+  tokenwatch:
+    image: ghcr.io/${GITHUB_REPOSITORY:-orfelorfel23/tokenwatch}:latest
+    container_name: tokenwatch
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3500:3000"
+    env_file:
+      - .env
+    environment:
+      # TokenWatch liest DATABASE_URL und NTFY_URL aus der .env
+      NODE_ENV: production
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true
