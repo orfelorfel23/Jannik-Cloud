@@ -361,8 +361,8 @@ enable_maintenance_mode() {
     fi
     
     mkdir -p "${CADDY_FRAGMENTS_DIR}"
-    # Clear existing fragments (they will be restored by assemble_caddy_fragments at the end of deployment)
-    rm -f "${CADDY_FRAGMENTS_DIR}"/*.caddy 2>/dev/null || true
+    # Clear existing fragments except gitea.caddy (needs to stay online for pulling images)
+    find "${CADDY_FRAGMENTS_DIR}" -name '*.caddy' ! -name 'gitea.caddy' -type f -delete 2>/dev/null || true
     
     # Create maintenance fragment
     cat << 'EOF' > "${CADDY_FRAGMENTS_DIR}/maintenance.caddy"
@@ -388,16 +388,16 @@ EOF
 }
 
 stop_all_services() {
-    log "Stopping all currently running service containers..."
+    log "Stopping all currently running service containers (excluding infra)..."
     for svc_name in "${ACTIVE_SERVICES[@]}"; do
-        if [[ "${svc_name}" == "caddy" ]]; then
+        if [[ " ${INFRA_SERVICES[*]} " =~ " ${svc_name} " ]]; then
             continue
         fi
         local svc_dir="${SERVICES_DIR}/${svc_name}"
         cd "${svc_dir}"
         docker compose down --remove-orphans 2>/dev/null || true
     done
-    log "All services stopped."
+    log "All remaining services stopped."
 }
 
 ###############################################################################
