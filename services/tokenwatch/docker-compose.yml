@@ -1,6 +1,6 @@
 services:
   tokenwatch:
-    image: ghcr.io/${GITHUB_REPOSITORY:-orfelorfel23/tokenwatch}:latest
+    image: git.orfel.de/jannik/tokenwatch:latest
     container_name: tokenwatch
     restart: unless-stopped
     ports:
