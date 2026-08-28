@@ -25,6 +25,7 @@ INFRA_SERVICES=("postgres" "redis" "gitea" "caddy")
 # ntfy push notifications
 NTFY_URL="https://ntfy.orfel.de/Jannik-Cloud-Deploy-Trigger"
 DEPLOY_START_TIME=""
+SKIPPED_SERVICES=()
 
 ###############################################################################
 # Helpers
@@ -494,7 +495,7 @@ pull_images() {
             log "  Building ${svc_name} (has Dockerfile)..."
             timeout 1800 docker compose build --no-cache --progress=plain > build.log 2>&1 || {
                 err "Build failed/timed out for ${svc_name}. Check ${svc_dir}/build.log"
-                notify "Deployment Warnung" "Build für ${svc_name} fehlgeschlagen. Wird übersprungen." "high" "warning"
+                SKIPPED_SERVICES+=("${svc_name} (Build failed)")
                 continue
             }
         else
@@ -684,7 +685,7 @@ start_remaining() {
         cd "${SERVICES_DIR}/${svc_name}"
         if ! docker compose up -d --remove-orphans; then
             err "Failed to start service: ${svc_name}. Skipping to next service."
-            notify "Deployment Warnung" "Dienst ${svc_name} konnte nicht gestartet werden. Übersprungen." "high" "warning"
+            SKIPPED_SERVICES+=("${svc_name} (Start failed)")
             continue
         fi
     done
@@ -759,9 +760,15 @@ main() {
 
     # --- Notify success ---
     local elapsed=$(( $(date +%s) - DEPLOY_START_TIME ))
-    notify "Deployment abgeschlossen" \
-        "Deployment erfolgreich in $((elapsed / 60))m $((elapsed % 60))s abgeschlossen. ${#ACTIVE_SERVICES[@]} Dienste gestartet." \
-        "default" "white_check_mark,tada"
+    if [[ ${#SKIPPED_SERVICES[@]} -gt 0 ]]; then
+        notify "Deployment mit Fehlern" \
+            "Deployment in $((elapsed / 60))m $((elapsed % 60))s abgeschlossen. ACHTUNG: Folgende Dienste wurden wegen Fehlern übersprungen: ${SKIPPED_SERVICES[*]}" \
+            "high" "warning"
+    else
+        notify "Deployment abgeschlossen" \
+            "Deployment erfolgreich in $((elapsed / 60))m $((elapsed % 60))s abgeschlossen. ${#ACTIVE_SERVICES[@]} Dienste gestartet." \
+            "default" "white_check_mark,tada"
+    fi
 
     trap - ERR
 
