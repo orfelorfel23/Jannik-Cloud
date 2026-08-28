@@ -15,18 +15,14 @@ cat > "${SCRIPT_DIR}/.env" <<EOF
 DB_USER=${DB_USER}
 DB_PASSWORD=${DB_PASSWORD}
 DB_NAME=${DB_NAME}
-DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}?sslmode=disable
+DB_HOST=postgres
 
 NTFY_URL=https://ntfy.orfel.de/Token-Watch
 EOF
 
 chmod 600 "${SCRIPT_DIR}/.env"
 
-cat > "${SCRIPT_DIR}/tokenwatch.caddy" <<'EOF'
-tokenwatch.orfel.de {
-	reverse_proxy 127.0.0.1:3500
-}
-EOF
+
 
 if [[ -f "${AGE_PUB_KEY}" ]]; then
     age -r "$(cat "${AGE_PUB_KEY}")" -o "${SCRIPT_DIR}/.env.age" "${SCRIPT_DIR}/.env"
