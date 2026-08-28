@@ -493,8 +493,9 @@ pull_images() {
         if [[ -f "${svc_dir}/Dockerfile" ]]; then
             log "  Building ${svc_name} (has Dockerfile)..."
             timeout 1800 docker compose build --no-cache --progress=plain > build.log 2>&1 || {
-                warn "  Build failed/timed out for ${svc_name}. Check ${svc_dir}/build.log"
-                exit 1
+                err "Build failed/timed out for ${svc_name}. Check ${svc_dir}/build.log"
+                notify "Deployment Warnung" "Build für ${svc_name} fehlgeschlagen. Wird übersprungen." "high" "warning"
+                continue
             }
         else
             log "  Pulling ${svc_name}..."
@@ -681,7 +682,11 @@ start_remaining() {
         fi
 
         cd "${SERVICES_DIR}/${svc_name}"
-        docker compose up -d --remove-orphans
+        if ! docker compose up -d --remove-orphans; then
+            err "Failed to start service: ${svc_name}. Skipping to next service."
+            notify "Deployment Warnung" "Dienst ${svc_name} konnte nicht gestartet werden. Übersprungen." "high" "warning"
+            continue
+        fi
     done
 }
 
