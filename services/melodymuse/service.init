@@ -8,6 +8,6 @@ until curl -sf --max-time 3 "https://git.orfel.de" &>/dev/null; do
     sleep 2
 done
 
-echo "Building MelodyMuse now that Gitea is up..."
+echo "Pulling MelodyMuse image now that Gitea is up..."
 cd "${SCRIPT_DIR}"
-docker compose build
+docker compose pull

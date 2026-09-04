@@ -1,13 +1,7 @@
 services:
   melodymuse:
-    build:
-      context: .
-      dockerfile: build.Dockerfile
-      args:
-        REPO_URL: https://git.orfel.de/Jannik/MelodyMuse.git
-        BRANCH: main
-    image: melodymuse:latest
-    pull_policy: build
+    image: git.orfel.de/jannik/melodymuse:latest
+    pull_policy: always
     container_name: melodymuse
     restart: unless-stopped
     ports:
