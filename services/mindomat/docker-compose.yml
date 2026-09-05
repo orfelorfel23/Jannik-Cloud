@@ -15,6 +15,10 @@ services:
       # Notes-API Auth (aus .env)
       NOTES_API_TOKEN: ${NOTES_API_TOKEN:-}
       NOTES_API_ALLOWED_ORIGINS: ${NOTES_API_ALLOWED_ORIGINS:-}
+      # LLM (Minimax/MiniMax) — wird in den Tool-Standard-Namen gemappt
+      MINIMAX_API_KEY: ${LLM_API_KEY:-}
+      MINIMAX_API_URL: ${LLM_ENDPOINT:-}
+      MINIMAX_MODEL: ${LLM_MODEL:-}
     volumes:
       # Vault (Notizen, Wiki, Konfig, Logs)
       - /mnt/Jannik-Cloud-Volume-01/mindomat-vault:/vault
