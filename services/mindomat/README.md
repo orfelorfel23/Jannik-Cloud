@@ -1,110 +1,119 @@
 # Mind-o-Mat Service
 
-Lokales Second-Brain-System mit Cloud-Sync. Webapp + QMD-Suche + Notes-API.
+Lokales Second-Brain-System mit Cloud-Sync. Webapp + QMD-Suche + Notes-API in einem Image.
 
 ## Subdomain
 
 - **https://mindomat.orfel.de** — Webapp (Graph, Cluster-Karte, Radial, Editor)
+- **QMD**: intern im Container, Port 8181, von Webapp über `localhost:8181` angesprochen
 
 ## Architektur
 
 ```
 Internet → Caddy (HTTPS, *.orfel.de)
-                ↓
-        mindomat-webapp:5173
-        ├── statische Frontend-Dateien (dist/)
-        └── /api/* → mindomat-tool:3000 (Notes-API)
+                ↓ mindomat.orfel.de
+        mindomat-app:5173 (intern)
+        ├── Webapp (Vite + React + Cytoscape + Tiptap)
+        ├── Notes-API-Proxy + HMAC-Auth
+        └── qmd:8181 (im selben Container, MCP/HTTP-Server fuer die Suche)
                           ↓
-                   /vault-Volume (mindomat-vault)
+                   /mnt/Jannik-Cloud-Volume-01/mindomat-vault (Notizen)
                           ↓
-                   mindomat-qmd:8181 (MCP/HTTP)
-                          ↓ (read-only Mount)
-                   /vault-Volume
+        /mnt/Jannik-Cloud-Volume-01/mindomat-qmd (Embeddings)
 ```
 
-## Komponenten
+## Auto-Deploy via Jannik-Cloud `deploy_script.sh`
 
-| Service | Zweck | Port | Image |
-|---|---|---|---|
-| `webapp` | Vite-React-Frontend + Notes-API-Proxy + Auth | 5173 | lokal gebaut |
-| `qmd` | Lokale Hybridsuche (BM25 + Vektor + Re-Ranking) | 8181 | lokal gebaut |
+Das `service.init`-Skript wird automatisch aufgerufen, wenn der Service das erste Mal aktiviert wird:
 
-Beachte: Der Tool-Container (das eigentliche `mindomat index`/`ingest`/`sync`) läuft NICHT als dauerhafter Service. Stattdessen wird er manuell per SSH aufgerufen, wenn ein Ingest nötig ist.
+1. **Vault** wird angelegt in `/mnt/Jannik-Cloud-Volume-01/mindomat-vault/`
+2. **12 Standardordner** + `Konfig.md` werden erstellt
+3. **git init** falls noetig
+4. **QMD-Collections** werden dokumentiert (manueller Schritt im Container)
+5. **service.enabled**-Marker bleibt gesetzt
 
-## Volumes
+Das `service.backup`-Skript wird vor jedem Container-Stop aufgerufen:
+- **Vault-Backup** als tar.gz in `~/mindomat_backups/`
+- **QMD-Embeddings-Backup** als tar.gz
+- Cleanup der letzten 5 Backups
 
-- `/mnt/Jannik-Cloud-Volume-01/mindomat-vault` — Vault (Notizen)
-- `/mnt/Jannik-Cloud-Volume-01/mindomat-qmd` — QMD-Cache + Embeddings
-
-## First-Time Setup
+## First-Time Setup auf VPS
 
 ```bash
-# 1. Vault-Init (einmalig)
-sudo bash /opt/Jannik-Cloud/services/mindomat/init-vault.sh
+# 1. Service aktivieren (einmalig, manuell auf dem VPS)
+touch /opt/Jannik-Cloud/services/mindomat/service.enabled
 
-# 2. .env generieren (mit AGE-Verschluesselung)
+# 2. Vault initialisieren
+sudo bash /opt/Jannik-Cloud/services/mindomat/service.init
+
+# 3. .env generieren (mit AGE-Verschluesselung)
 cd /opt/Jannik-Cloud/services/mindomat
 bash generate-env.sh
-# .env wurde erzeugt + .env.age generiert
+# .env und .env.age werden erzeugt
 # .env.age committen, .env lokal behalten
 
-# 3. Webapp + QMD bauen + starten
-sudo bash /opt/Jannik-Cloud/deploy_script.sh
-```
-
-## QMD-Collections einrichten (einmalig nach Start)
-
-```bash
-# QMD-Container-Shell
-docker compose exec qmd sh
-
-# Im Container:
+# 4. QMD-Collections einrichten (einmalig nach Container-Start)
+docker compose exec mindomat-app sh
 qmd collection add /vault/00_Inbox --name inbox
 qmd collection add /vault/01_Daily --name daily
 qmd collection add /vault/10_Wiki --name wiki
 qmd collection add /vault/20_Projekte --name projekte
 qmd embed
+exit
+
+# 5. Deploy
+sudo bash /opt/Jannik-Cloud/deploy_script.sh
 ```
-
-## Notes-API Auth (optional, fuer Produktion)
-
-Wenn `NOTES_API_TOKEN` in `.env` gesetzt ist, verlangt die Notes-API einen Bearer-Token.
-
-**Token generieren** (lokal):
-
-```bash
-NOTES_API_TOKEN=$(grep NOTES_API_TOKEN .env | cut -d= -f2)
-node scripts/token-gen.mjs
-# Output: <timestamp>.<hmac-hex>
-```
-
-Im Token steckt der gleiche `NOTES_API_TOKEN` aus der `.env` (HMAC-Secret). Die Webapp nutzt es für Schreibzugriffe, Lesen ist offen.
 
 ## Manuelle Befehle (vom VPS aus)
 
 ```bash
-# Vault-Index neu erstellen
-docker compose run --rm webapp node ../node_modules/.bin/mindomat index --vault /vault
+# In den Container einsteigen
+docker compose exec mindomat-app sh
 
-# Ingest: eine Notiz verarbeiten
-docker compose run --rm webapp node ../node_modules/.bin/mindomat ingest --vault /vault --mock
+# Im Container:
+# Vault indexieren
+node /opt/mindomat/tool/bin/mindomat.mjs index --vault /vault
+
+# Notiz ingestieren (mit --mock fuer Tests)
+node /opt/mindomat/tool/bin/mindomat.mjs ingest --vault /vault --mock
 
 # Sync zu gitea
-docker compose run --rm webapp node ../node_modules/.bin/mindomat sync --vault /vault
+node /opt/mindomat/tool/bin/mindomat.mjs sync --vault /vault
 
-# Watch-Mode: lauscht auf neue Inbox-Notizen
-docker compose run --rm webapp node ../node_modules/.bin/mindomat ingest --vault /vault --watch
+# Watch-Mode fuer automatischen Ingest
+node /opt/mindomat/tool/bin/mindomat.mjs ingest --vault /vault --watch
 ```
+
+## Volumes
+
+- `/mnt/Jannik-Cloud-Volume-01/mindomat-vault` — Vault (Notizen, Wiki, Konfig)
+- `/mnt/Jannik-Cloud-Volume-01/mindomat-qmd` — QMD-Embeddings
 
 ## Backups
 
-Vault-Daten liegen in `/mnt/Jannik-Cloud-Volume-01/mindomat-vault/`. Sie sind:
+Auto-Backup via `service.backup` (vor jedem Deploy):
 
-1. **Git-history** in gitea (`https://git.orfel.de/Jannik/Mind-o-Mat-Vault`) — automatisch via `mindomat sync`
-2. **Lokales Volume** auf dem VPS
-3. **Pre-Deployment-Backup** via `service.backup` (in `deploy_script.sh`)
+```bash
+ls -la ~/mindomat_backups/
+# mindomat_vault_20260905_120000.tar.gz
+# mindomat_qmd_20260905_120000.tar.gz
+```
 
-Siehe Jannik-Cloud-`docs/BACKUP.md` fuer die uebergeordnete Backup-Strategie.
+Plus: jeder `mindomat sync` pusht den Vault automatisch zu gitea (Git-History).
+
+Plus: Jannik-Cloud-uebergeordnete Backup-Strategie (siehe Jannik-Cloud `docs/BACKUP.md`).
+
+## Tech-Stack
+
+- **Webapp:** Vite + React + TypeScript + Cytoscape + Tiptap
+- **QMD:** `@tobilu/qmd` (BM25 + Vektor + LLM-Re-Ranking, ~2 GB Modelle)
+- **Server:** Express + http-proxy-middleware
+- **Auth:** HMAC-SHA256 Bearer-Token (optional)
+- **Reverse-Proxy:** Caddy (extern, automatische HTTPS)
+- **Secrets:** AGE-verschluesselt in `.env.age`
+- **Init-Hook:** `service.init` (Vault-Setup)
+- **Backup-Hook:** `service.backup` (Vault + QMD-Backup)
 
 ## Deaktivieren / Reaktivieren
 
@@ -126,14 +135,4 @@ git pull
 sudo bash deploy_script.sh
 ```
 
-Webapp-Image wird automatisch neu gebaut (Multi-Stage-Build in `webapp/Dockerfile`).
-QMD-Image wird neu gebaut.
-
-## Tech-Stack
-
-- **Webapp:** Vite + React + TypeScript + Cytoscape + Tiptap (Tabelle `services/mindomat/webapp/`)
-- **QMD:** `@tobilu/qmd` (~2 GB GGUF-Modelle lokal)
-- **Server:** Express + http-proxy-middleware fuer API-Proxy
-- **Auth:** HMAC-SHA256 Bearer-Token (optional)
-- **Reverse-Proxy:** Caddy (extern, automatische HTTPS)
-- **Secrets:** AGE-verschluesselt in `.env.age`
+Image wird automatisch neu gebaut (Multi-Stage-Build in `Dockerfile`).

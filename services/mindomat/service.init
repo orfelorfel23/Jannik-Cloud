@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+# Mind-o-Mat Service-Init (einmalig beim ersten Deploy)
+# Wird von deploy_script.sh aufgerufen, NACHDEM Gitea gestartet ist
+# und BEVOR die Services hochgefahren werden
+
+set -euo pipefail
+
+SVC_DIR="$(cd "$(dirname "$0")" && pwd)"
+VAULT_DIR="/mnt/Jannik-Cloud-Volume-01/mindomat-vault"
+TOOL_BIN="${SVC_DIR}/mindomat-app"
+DASHBOARDS_SCRIPT="$(cd "${SVC_DIR}/../.." && pwd)/scripts/generate_dashboards.py"
+
+echo "==========================================="
+echo " Mind-o-Mat Service Init"
+echo "==========================================="
+
+# 1. Vault-Verzeichnis anlegen (falls nicht da)
+if [[ ! -d "${VAULT_DIR}" ]]; then
+    echo "[1/4] Initialisiere Vault..."
+    mkdir -p "${VAULT_DIR}"
+    # 12 Standardordner
+    for d in "00_Inbox" "00_Inbox/Verarbeitet" "00_Inbox/Problemfaelle" \
+             "01_Daily" "10_Wiki" "10_Wiki/Seiten" "20_Projekte" \
+             "90_Templates" "99_System" "99_System/Skripte" \
+             "99_System/Logs" "99_System/Cache"; do
+        mkdir -p "${VAULT_DIR}/$d"
+    done
+    # Konfig.md
+    if [[ ! -f "${VAULT_DIR}/99_System/Konfig.md" ]]; then
+        cat > "${VAULT_DIR}/99_System/Konfig.md" <<'EOF'
+---
+veraltet_schwellwert_monate: 12
+token_budget_default: 4000
+token_budget_hardcap: false
+qmd_cache_pfad: 99_System/Cache
+sync_remote: https://git.orfel.de/Jannik/Mind-o-Mat-Vault.git
+ki_provider: minimax
+ki_modell: MiniMax-M3
+ki_api_url: https://api.minimaxi.chat/v1
+ki_api_key_env: MINIMAX_API_KEY
+---
+EOF
+    fi
+    echo "      Vault initialisiert: $VAULT_DIR"
+else
+    echo "[1/4] Vault existiert bereits: $VAULT_DIR"
+fi
+
+# 2. git init in Vault (falls noetig)
+if [[ ! -d "${VAULT_DIR}/.git" ]]; then
+    echo "[2/4] git init im Vault..."
+    cd "${VAULT_DIR}"
+    git init -b main
+    git add -A
+    git -c user.email=mindomat@orfel.de -c user.name=Mindomat commit -m "Initial: Vault-Struktur"
+fi
+
+# 3. QMD-Collections einrichten (einmalig)
+if command -v qmd &>/dev/null; then
+    echo "[3/4] QMD-Collections einrichten..."
+    # Container-Shell noetig fuer qmd; hier nur Documentation
+    echo "      Bitte einmalig ausfuehren (im Container):"
+    echo "      docker compose exec mindomat-app sh -c \\"
+    echo "        'qmd collection add /vault/00_Inbox --name inbox && \\"
+    echo "         qmd collection add /vault/01_Daily --name daily && \\"
+    echo "         qmd collection add /vault/10_Wiki --name wiki && \\"
+    echo "         qmd collection add /vault/20_Projekte --name projekte && \\"
+    echo "         qmd embed'"
+else
+    echo "[3/4] QMD nicht im PATH (Container-Deployment)"
+fi
+
+# 4. Service-Enabled-Marker sicherstellen
+touch "${SVC_DIR}/service.enabled"
+
+echo "==========================================="
+echo " Mind-o-Mat Init completed"
+echo "==========================================="

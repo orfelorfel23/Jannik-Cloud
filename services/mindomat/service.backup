@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# Mind-o-Mat Service-Backup (wird von deploy_script.sh vor Container-Stop aufgerufen)
+# Sichert den Vault in ein tar.gz
+
+set -euo pipefail
+
+BACKUP_DIR="${HOME}/mindomat_backups"
+TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+VAULT_BACKUP_FILE="${BACKUP_DIR}/mindomat_vault_${TIMESTAMP}.tar.gz"
+QMD_BACKUP_FILE="${BACKUP_DIR}/mindomat_qmd_${TIMESTAMP}.tar.gz"
+QMD_DATA_DIR="/mnt/Jannik-Cloud-Volume-01/mindomat-qmd"
+
+echo "===================================="
+echo " Mind-o-Mat Auto-Backup"
+echo "===================================="
+mkdir -p "${BACKUP_DIR}"
+
+# 1. Vault-Backup (Notizen, Konfig, Wiki)
+echo "[1/2] Backing up Vault..."
+if [[ -d "/mnt/Jannik-Cloud-Volume-01/mindomat-vault" ]]; then
+    tar -czf "${VAULT_BACKUP_FILE}" \
+        -C /mnt/Jannik-Cloud-Volume-01 mindomat-vault
+    echo "      -> Vault saved to: ${VAULT_BACKUP_FILE}"
+else
+    echo "      -> WARNING: Vault volume not found, skipping"
+fi
+
+# 2. QMD-Cache-Backup (Embeddings, ~2 GB)
+echo "[2/2] Backing up QMD cache..."
+if [[ -d "${QMD_DATA_DIR}" ]]; then
+    # Nur Embedding-Files, nicht das ganze /data
+    if [[ -d "${QMD_DATA_DIR}/embeddings" ]]; then
+        tar -czf "${QMD_BACKUP_FILE}" \
+            -C "${QMD_DATA_DIR}" embeddings
+        echo "      -> QMD embeddings saved to: ${QMD_BACKUP_FILE}"
+    else
+        echo "      -> No embeddings yet, skipping QMD cache backup"
+    fi
+else
+    echo "      -> WARNING: QMD data dir not found, skipping"
+fi
+
+# 3. Cleanup alte Backups (behalte letzte 5)
+echo "[3/3] Cleaning up old backups (keeping last 5)..."
+ls -t "${BACKUP_DIR}"/mindomat_vault_*.tar.gz 2>/dev/null | tail -n +6 | xargs -r rm -f || true
+ls -t "${BACKUP_DIR}"/mindomat_qmd_*.tar.gz 2>/dev/null | tail -n +6 | xargs -r rm -f || true
+
+echo "===================================="
+echo " Backup completed"
+echo "===================================="

@@ -1,39 +1,25 @@
 services:
-  webapp:
+  app:
     build:
-      context: ./webapp
+      context: .
       dockerfile: Dockerfile
-    container_name: mindomat-webapp
+    container_name: mindomat-app
     restart: unless-stopped
     ports:
       - "127.0.0.1:5173:5173"
+      - "127.0.0.1:8181:8181"
     environment:
-      # Vault-Pfad im Container (Volume-Mount auf /vault)
       MINDOMAT_VAULT_PATH: /vault
-      # Notes-API Auth (optional, aus .env)
+      QMD_CACHE_DIR: /data
+      NODE_ENV: production
+      # Notes-API Auth (aus .env)
       NOTES_API_TOKEN: ${NOTES_API_TOKEN:-}
       NOTES_API_ALLOWED_ORIGINS: ${NOTES_API_ALLOWED_ORIGINS:-}
     volumes:
+      # Vault (Notizen, Wiki, Konfig, Logs)
       - /mnt/Jannik-Cloud-Volume-01/mindomat-vault:/vault
-    depends_on:
-      - qmd
-    networks:
-      - jannik-cloud-net
-
-  qmd:
-    build:
-      context: ./qmd
-      dockerfile: Dockerfile
-    container_name: mindomat-qmd
-    restart: unless-stopped
-    ports:
-      - "127.0.0.1:8181:8181"
-    environment:
-      QMD_CACHE_DIR: /data
-    volumes:
+      # QMD-Cache (Embeddings, Model-Cache)
       - /mnt/Jannik-Cloud-Volume-01/mindomat-qmd:/data
-      # Read-only Mount des Vault, damit QMD die Notizen lesen kann
-      - /mnt/Jannik-Cloud-Volume-01/mindomat-vault:/vault:ro
     networks:
       - jannik-cloud-net
 
