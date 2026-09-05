@@ -56,6 +56,7 @@ Self-hosted cloud infrastructure on Hetzner Ubuntu 24 LTS, managed via Docker Co
 | Syncthing | [sync.orfel.de](https://sync.orfel.de) | 7962 |
 | Vaultwarden | [pw.orfel.de](https://pw.orfel.de) | 7277 |
 | Viz | [viz.orfel.de](https://viz.orfel.de) | 849 |
+| [Mind-o-Mat](services/mindomat/README.md) | [mindomat.orfel.de](https://mindomat.orfel.de) | 5173 |
 | Webhook | [webhook.orfel.de](https://webhook.orfel.de) | 9500 |
 | Zipline | [short.orfel.de](https://short.orfel.de) | 947 |
 

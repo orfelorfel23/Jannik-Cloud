@@ -1,0 +1,4 @@
+mindomat.orfel.de {
+	encode zstd gzip
+	reverse_proxy mindomat-webapp:5173
+}
