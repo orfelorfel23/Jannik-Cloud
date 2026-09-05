@@ -11,7 +11,7 @@ cat > "${SCRIPT_DIR}/.env" <<EOF
 # Auth: HMAC-SHA256 Bearer-Token fuer Notes-API
 NOTES_API_TOKEN=$(generate_password)
 # Erlaubte Origins fuer CORS (kommasepariert)
-NOTES_API_ALLOWED_ORIGINS=https://mindomat.orfel.de,https://vault.orfel.de
+NOTES_API_ALLOWED_ORIGINS=https://mindomat.orfel.de
 EOF
 
 chmod 600 "${SCRIPT_DIR}/.env"
