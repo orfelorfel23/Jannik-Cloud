@@ -33,6 +33,7 @@ CATEGORY_MAPPING = {
     "mediawiki": ("KI & Wissen", "wikipedia.png", "fa-book-open"),
     "outline": ("KI & Wissen", "outline.png", "fa-book"),
     "ilias": ("KI & Wissen", "ilias.png", "fa-graduation-cap"),
+    "mindomat": ("KI & Wissen", "brain.png", "fa-brain"),
     "mc-survival-wiki": ("KI & Wissen", "minecraft.png", "fa-cube"),
 
     # DevOps & Server

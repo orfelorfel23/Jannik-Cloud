@@ -1,13 +1,14 @@
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: git.orfel.de/jannik/mindomat:latest
+    pull_policy: always
     container_name: mindomat-app
     restart: unless-stopped
     ports:
       - "127.0.0.1:5173:5173"
       - "127.0.0.1:8181:8181"
+    env_file:
+      - .env
     environment:
       MINDOMAT_VAULT_PATH: /vault
       QMD_CACHE_DIR: /data

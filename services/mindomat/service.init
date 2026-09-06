@@ -15,17 +15,21 @@ echo "==========================================="
 # 1. Vault-Verzeichnis anlegen (idempotent)
 if [[ ! -d "${VAULT_DIR}" ]]; then
     echo "[1/4] Initialisiere Vault..."
-    mkdir -p "${VAULT_DIR}"
-    # 12 Standardordner
-    for d in "00_Inbox" "00_Inbox/Verarbeitet" "00_Inbox/Problemfaelle" \
-             "01_Daily" "10_Wiki" "10_Wiki/Seiten" "20_Projekte" \
-             "90_Templates" "99_System" "99_System/Skripte" \
-             "99_System/Logs" "99_System/Cache"; do
-        mkdir -p "${VAULT_DIR}/$d"
-    done
-    # Konfig.md (mit Standardwerten)
-    if [[ ! -f "${VAULT_DIR}/99_System/Konfig.md" ]]; then
-        cat > "${VAULT_DIR}/99_System/Konfig.md" <<'EOF'
+    if git ls-remote "${VAULT_REPO_URL}" &>/dev/null; then
+        echo "      Klone existierenden Vault von ${VAULT_REPO_URL}..."
+        git clone "${VAULT_REPO_URL}" "${VAULT_DIR}"
+    else
+        mkdir -p "${VAULT_DIR}"
+        # 12 Standardordner
+        for d in "00_Inbox" "00_Inbox/Verarbeitet" "00_Inbox/Problemfaelle" \
+                 "01_Daily" "10_Wiki" "10_Wiki/Seiten" "20_Projekte" \
+                 "90_Templates" "99_System" "99_System/Skripte" \
+                 "99_System/Logs" "99_System/Cache"; do
+            mkdir -p "${VAULT_DIR}/$d"
+        done
+        # Konfig.md (mit Standardwerten)
+        if [[ ! -f "${VAULT_DIR}/99_System/Konfig.md" ]]; then
+            cat > "${VAULT_DIR}/99_System/Konfig.md" <<'EOF'
 ---
 veraltet_schwellwert_monate: 12
 token_budget_default: 4000
@@ -38,15 +42,16 @@ ki_api_url: https://api.minimaxi.chat/v1
 ki_api_key_env: MINIMAX_API_KEY
 ---
 EOF
+        fi
+        # git init (idempotent)
+        if [[ ! -d "${VAULT_DIR}/.git" ]]; then
+            cd "${VAULT_DIR}"
+            git init -b main
+            git add -A
+            git -c user.email=mindomat@orfel.de -c user.name=Mindomat commit -m "Initial: Vault-Struktur"
+        fi
     fi
-    # git init (idempotent)
-    if [[ ! -d "${VAULT_DIR}/.git" ]]; then
-        cd "${VAULT_DIR}"
-        git init -b main
-        git add -A
-        git -c user.email=mindomat@orfel.de -c user.name=Mindomat commit -m "Initial: Vault-Struktur"
-    fi
-    echo "      Vault initialisiert: $VAULT_DIR"
+    echo "      Vault bereit: $VAULT_DIR"
 else
     echo "[1/4] Vault existiert bereits, ueberspringe"
 fi

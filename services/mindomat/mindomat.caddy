@@ -1,4 +1,4 @@
-mindomat.orfel.de {
+mindomat.orfel.de, mind.orfel.de, mom.orfel.de {
 	encode zstd gzip
 	reverse_proxy mindomat-app:5173
 }
