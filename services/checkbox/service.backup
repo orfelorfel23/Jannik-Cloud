@@ -48,24 +48,25 @@ CONTAINER_FILE="/var/opt/mssql/${MSSQL_DB_NAME}_${DATE}.bak"
 TEMP_HOST_FILE="${DATA_DIR}/${MSSQL_DB_NAME}_${DATE}.bak"
 FINAL_HOST_FILE="${BACKUP_DIR}/${MSSQL_DB_NAME}_${DATE}.bak"
 
-echo "[Backup] Erstelle komprimiertes MS SQL Backup für Datenbank: ${MSSQL_DB_NAME}..."
+echo "[Backup] Erstelle MS SQL Backup für Datenbank: ${MSSQL_DB_NAME}..."
 
 # Führe SQLCMD im Container aus, um das Backup zu erstellen
-# Wir verwenden WITH COMPRESSION für maximale Platzersparnis (oft >80%)
+# Express Edition unterstützt kein WITH COMPRESSION, daher komprimieren wir anschließend auf dem Host per gzip
 docker exec checkbox_mssql /opt/mssql-tools18/bin/sqlcmd \
     -S localhost \
     -U sa \
     -P "${MSSQL_SA_PASSWORD}" \
     -C \
     -b \
-    -Q "BACKUP DATABASE [${MSSQL_DB_NAME}] TO DISK = N'${CONTAINER_FILE}' WITH COMPRESSION, INIT, STATS = 10"
+    -Q "BACKUP DATABASE [${MSSQL_DB_NAME}] TO DISK = N'${CONTAINER_FILE}' WITH INIT, STATS = 10"
 
 # Das Backup wurde nun im Container unter /var/opt/mssql angelegt.
 # Da dies auf /mnt/.../data gemappt ist, liegt die Datei nun auf dem Host.
-# Wir verschieben sie in den sauberen Backup-Ordner.
+# Wir verschieben sie in den sauberen Backup-Ordner und komprimieren sie per gzip.
 if [[ -f "${TEMP_HOST_FILE}" ]]; then
     mv "${TEMP_HOST_FILE}" "${FINAL_HOST_FILE}"
-    echo "[Backup] Erfolgreich gespeichert: ${FINAL_HOST_FILE}"
+    gzip -f "${FINAL_HOST_FILE}"
+    echo "[Backup] Erfolgreich komprimiert und gespeichert: ${FINAL_HOST_FILE}.gz"
 else
     echo "[Backup] FEHLER: Backup-Datei wurde nach dem Ausführen nicht gefunden (${TEMP_HOST_FILE})"
     exit 1
@@ -73,6 +74,6 @@ fi
 
 # Lösche alte Backups (behalte nur 7 Tage)
 echo "[Backup] Bereinige alte Backups (älter als 7 Tage)..."
-find "${BACKUP_DIR}" -name "*.bak" -type f -mtime +7 -delete
+find "${BACKUP_DIR}" -name "*.bak*" -type f -mtime +7 -delete
 
 echo "[Backup] Routine erfolgreich abgeschlossen."

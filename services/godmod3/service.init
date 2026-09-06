@@ -21,24 +21,33 @@ echo "[godmod3] Checking upstream version from ${UPSTREAM_REPO} (${BRANCH})..."
 # Fetch latest commit hash from GitHub (timeout 10s)
 REMOTE_COMMIT=$(git ls-remote --heads "${UPSTREAM_REPO}" "refs/heads/${BRANCH}" 2>/dev/null | awk '{print $1}' || true)
 
-# Read cached commit hash
-LOCAL_COMMIT=""
+# Calculate config hash so changes to Dockerfiles or compose trigger a rebuild
+CONFIG_HASH=$(cat "${SCRIPT_DIR}/Dockerfile.api" "${SCRIPT_DIR}/Dockerfile.web" "${SCRIPT_DIR}/docker-compose.yml" 2>/dev/null | md5sum | awk '{print $1}')
+TARGET_SIG="${REMOTE_COMMIT}_${CONFIG_HASH}"
+
+# Read cached signature
+LOCAL_SIG=""
 if [[ -f "${STATE_FILE}" ]]; then
-    LOCAL_COMMIT=$(tr -d '[:space:]' < "${STATE_FILE}" || true)
+    LOCAL_SIG=$(tr -d '[:space:]' < "${STATE_FILE}" || true)
 fi
 
 # Check if Docker images currently exist locally
 HAS_API_IMAGE=$(docker images --format '{{.Repository}}' 2>/dev/null | grep -E 'godmod3[-_]api' || true)
 HAS_WEB_IMAGE=$(docker images --format '{{.Repository}}' 2>/dev/null | grep -E 'godmod3[-_]web' || true)
 
+# Check if godmod3-api is currently in a crashloop
+IS_CRASHING=$(docker ps --filter "name=godmod3-api" --filter "status=restarting" -q 2>/dev/null || true)
+
 NEEDS_BUILD=false
 
 if [[ -z "${HAS_API_IMAGE}" || -z "${HAS_WEB_IMAGE}" ]]; then
     echo "[godmod3] Missing Docker images (cold start / fresh server detected)."
     NEEDS_BUILD=true
-elif [[ -n "${REMOTE_COMMIT}" && "${REMOTE_COMMIT}" != "${LOCAL_COMMIT}" ]]; then
-    current_short="${LOCAL_COMMIT:0:8}"
-    echo "[godmod3] New upstream commit detected: ${REMOTE_COMMIT:0:8} (current: ${current_short:-none})."
+elif [[ -n "${IS_CRASHING}" ]]; then
+    echo "[godmod3] Container godmod3-api is currently in a crashloop. Forcing rebuild..."
+    NEEDS_BUILD=true
+elif [[ -n "${TARGET_SIG}" && "${TARGET_SIG}" != "${LOCAL_SIG}" ]]; then
+    echo "[godmod3] Updates detected (upstream commit or local Dockerfile changed). Triggering rebuild..."
     NEEDS_BUILD=true
 fi
 
@@ -46,8 +55,8 @@ if [[ "${NEEDS_BUILD}" == "true" ]]; then
     echo "[godmod3] Building godmod3 containers from source..."
     cd "${SCRIPT_DIR}"
     if docker compose build --no-cache --progress=plain; then
-        if [[ -n "${REMOTE_COMMIT}" ]]; then
-            echo "${REMOTE_COMMIT}" > "${STATE_FILE}"
+        if [[ -n "${TARGET_SIG}" ]]; then
+            echo "${TARGET_SIG}" > "${STATE_FILE}"
         fi
         echo "[godmod3] Build completed successfully."
     else
@@ -57,6 +66,5 @@ if [[ "${NEEDS_BUILD}" == "true" ]]; then
         fi
     fi
 else
-    current_short="${LOCAL_COMMIT:0:8}"
-    echo "[godmod3] Up to date (commit ${current_short:-unknown}) and images present. Build skipped."
+    echo "[godmod3] Up to date (commit ${REMOTE_COMMIT:0:8}) and images healthy. Build skipped."
 fi
