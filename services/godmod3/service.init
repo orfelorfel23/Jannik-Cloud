@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+###############################################################################
+# godmod3 — Service Init Hook
+#
+# Ensures godmod3 survives a fresh server deployment and always runs
+# the latest upstream version from GitHub (elder-plinius/G0DM0D3),
+# while skipping unnecessary builds if nothing changed.
+###############################################################################
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+UPSTREAM_REPO="https://github.com/elder-plinius/G0DM0D3.git"
+BRANCH="main"
+VOLUME_DIR="/mnt/Jannik-Cloud-Volume-01/godmod3"
+STATE_FILE="${VOLUME_DIR}/.upstream_commit"
+
+mkdir -p "${VOLUME_DIR}"
+
+echo "[godmod3] Checking upstream version from ${UPSTREAM_REPO} (${BRANCH})..."
+
+# Fetch latest commit hash from GitHub (timeout 10s)
+REMOTE_COMMIT=$(git ls-remote --heads "${UPSTREAM_REPO}" "refs/heads/${BRANCH}" 2>/dev/null | awk '{print $1}' || true)
+
+# Read cached commit hash
+LOCAL_COMMIT=""
+if [[ -f "${STATE_FILE}" ]]; then
+    LOCAL_COMMIT=$(tr -d '[:space:]' < "${STATE_FILE}" || true)
+fi
+
+# Check if Docker images currently exist locally
+HAS_API_IMAGE=$(docker images --format '{{.Repository}}' 2>/dev/null | grep -E 'godmod3[-_]api' || true)
+HAS_WEB_IMAGE=$(docker images --format '{{.Repository}}' 2>/dev/null | grep -E 'godmod3[-_]web' || true)
+
+NEEDS_BUILD=false
+
+if [[ -z "${HAS_API_IMAGE}" || -z "${HAS_WEB_IMAGE}" ]]; then
+    echo "[godmod3] Missing Docker images (cold start / fresh server detected)."
+    NEEDS_BUILD=true
+elif [[ -n "${REMOTE_COMMIT}" && "${REMOTE_COMMIT}" != "${LOCAL_COMMIT}" ]]; then
+    echo "[godmod3] New upstream commit detected: ${REMOTE_COMMIT:0:8} (current: ${LOCAL_COMMIT:0:8:-none})."
+    NEEDS_BUILD=true
+fi
+
+if [[ "${NEEDS_BUILD}" == "true" ]]; then
+    echo "[godmod3] Building godmod3 containers from source..."
+    cd "${SCRIPT_DIR}"
+    if docker compose build --no-cache --progress=plain; then
+        if [[ -n "${REMOTE_COMMIT}" ]]; then
+            echo "${REMOTE_COMMIT}" > "${STATE_FILE}"
+        fi
+        echo "[godmod3] Build completed successfully."
+    else
+        echo "[godmod3] WARNING: Build failed. Falling back to existing images if available."
+        if [[ -z "${HAS_API_IMAGE}" || -z "${HAS_WEB_IMAGE}" ]]; then
+            exit 1
+        fi
+    fi
+else
+    echo "[godmod3] Up to date (commit ${LOCAL_COMMIT:0:8}) and images present. Build skipped."
+fi
