@@ -1,11 +1,11 @@
 services:
   quizalarm-stat:
-    build: /mnt/Jannik-Cloud-Volume-01/quizalarm-stat/app
+    image: git.orfel.de/jannik/quizalarm-stat:latest
     container_name: quizalarm-stat
     restart: unless-stopped
     env_file: .env
     healthcheck:
-      test: ["CMD", "node", "-e", "require('http').get('http://localhost:7850', (r) => r.statusCode === 200 ? process.exit(0) : process.exit(1)).on('error', () => process.exit(1))"]
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:7850/ || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3

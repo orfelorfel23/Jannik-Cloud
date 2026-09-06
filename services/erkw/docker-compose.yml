@@ -1,11 +1,9 @@
 services:
   erkw:
-    image: nginx:alpine
+    image: git.orfel.de/jannik/erkw:latest
     container_name: erkw
     restart: unless-stopped
     volumes:
-      - /mnt/Jannik-Cloud-Volume-01/erkw/content:/usr/share/nginx/html:ro
-      - /mnt/Jannik-Cloud-Volume-01/erkw/nginx.conf:/etc/nginx/conf.d/default.conf:ro
       - /mnt/Jannik-Cloud-Volume-01/erkw/.htpasswd:/etc/nginx/.htpasswd:ro
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost"]
