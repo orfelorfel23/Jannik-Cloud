@@ -176,7 +176,7 @@ def extract_readme_metadata(readme_path, service_name):
         if line.startswith("# "):
             title_part = line[2:].strip()
             # Check for pattern "Title — Description" or "Title - Description"
-            m = re.split(r"\s*[-—–]\s*", title_part, maxsplit=1)
+            m = re.split(r"\s+[-—–]\s+", title_part, maxsplit=1)
             if len(m) == 2:
                 return m[0].strip(), m[1].strip()
             else:

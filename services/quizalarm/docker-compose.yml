@@ -1,13 +1,13 @@
 services:
   quizalarm:
-    build: /mnt/Jannik-Cloud-Volume-01/quizalarm/app
+    image: git.orfel.de/jannik/quizalarm:latest
     container_name: quizalarm
     restart: unless-stopped
     env_file: .env
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/quizalarm/data:/data
     healthcheck:
-      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000', (r) => r.statusCode === 200 ? process.exit(0) : process.exit(1)).on('error', () => process.exit(1))"]
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:7849', (r) => r.statusCode === 200 ? process.exit(0) : process.exit(1)).on('error', () => process.exit(1))"]
       interval: 30s
       timeout: 10s
       retries: 3

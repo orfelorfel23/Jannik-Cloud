@@ -16,5 +16,4 @@ Hybrid-Quiz-Plattform für Live-Quiz (Kahoot-ähnlich) und Solo-Lernen mit Baser
 
 ## Daten
 
-- App-Code: `/mnt/Jannik-Cloud-Volume-01/quizalarm/app/`
 - Konfiguration: `/mnt/Jannik-Cloud-Volume-01/quizalarm/data/config.json`

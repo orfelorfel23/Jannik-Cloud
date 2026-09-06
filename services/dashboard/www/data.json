@@ -1,0 +1,556 @@
+{
+  "title": "Jannik-Cloud Hub",
+  "description": "Zentrale Übersicht aller aktiven Cloud-Dienste",
+  "activeCount": 43,
+  "categories": [
+    {
+      "name": "Cloud & Speicher",
+      "icon": "fa-cloud",
+      "services": [
+        {
+          "id": "archivebox",
+          "title": "Archivebox",
+          "description": "Jannik-Cloud Service",
+          "url": "https://archive.orfel.de",
+          "domains": [
+            "archive.orfel.de"
+          ],
+          "icon": "fa-archive",
+          "category": "Cloud & Speicher"
+        },
+        {
+          "id": "nextcloud",
+          "title": "Nextcloud",
+          "description": "File Sync & Share",
+          "url": "https://nextcloud.orfel.de",
+          "domains": [
+            "nextcloud.orfel.de"
+          ],
+          "icon": "fa-cloud",
+          "category": "Cloud & Speicher"
+        },
+        {
+          "id": "ocis",
+          "title": "OwnCloud Infinite Scale (OCIS)",
+          "description": "Jannik-Cloud Service",
+          "url": "https://owncloud.orfel.de",
+          "domains": [
+            "owncloud.orfel.de"
+          ],
+          "icon": "fa-cloud",
+          "category": "Cloud & Speicher"
+        },
+        {
+          "id": "syncthing",
+          "title": "Syncthing",
+          "description": "Jannik-Cloud Service",
+          "url": "https://sync.orfel.de",
+          "domains": [
+            "sync.orfel.de"
+          ],
+          "icon": "fa-sync-alt",
+          "category": "Cloud & Speicher"
+        }
+      ]
+    },
+    {
+      "name": "Sicherheit & Auth",
+      "icon": "fa-shield-halved",
+      "services": [
+        {
+          "id": "authentik",
+          "title": "Authentik",
+          "description": "Identity Provider",
+          "url": "https://auth.orfel.de",
+          "domains": [
+            "auth.orfel.de"
+          ],
+          "icon": "fa-key",
+          "category": "Sicherheit & Auth"
+        },
+        {
+          "id": "netbird",
+          "title": "NetBird VPN",
+          "description": "Jannik-Cloud Service",
+          "url": "https://vpn.orfel.de",
+          "domains": [
+            "vpn.orfel.de"
+          ],
+          "icon": "fa-network-wired",
+          "category": "Sicherheit & Auth"
+        },
+        {
+          "id": "vaultwarden",
+          "title": "Vaultwarden",
+          "description": "Password Manager",
+          "url": "https://pw.orfel.de",
+          "domains": [
+            "pw.orfel.de"
+          ],
+          "icon": "fa-shield-halved",
+          "category": "Sicherheit & Auth"
+        }
+      ]
+    },
+    {
+      "name": "KI & Wissen",
+      "icon": "fa-brain",
+      "services": [
+        {
+          "id": "librechat",
+          "title": "LibreChat",
+          "description": "AI Chat Interface",
+          "url": "https://chat.orfel.de",
+          "domains": [
+            "chat.orfel.de"
+          ],
+          "icon": "fa-robot",
+          "category": "KI & Wissen"
+        },
+        {
+          "id": "litellm",
+          "title": "LiteLLM",
+          "description": "LLM Proxy Gateway",
+          "url": "https://llm.orfel.de",
+          "domains": [
+            "llm.orfel.de"
+          ],
+          "icon": "fa-brain",
+          "category": "KI & Wissen"
+        },
+        {
+          "id": "mc-survival-wiki",
+          "title": "Mc Survival Wiki",
+          "description": "Jannik-Cloud Service",
+          "url": "https://mc-survivalprojekt-wiki.orfel.de",
+          "domains": [
+            "mc-survivalprojekt-wiki.orfel.de",
+            "mc-survival-wiki.orfel.de",
+            "mc-wiki.orfel.de"
+          ],
+          "icon": "fa-cube",
+          "category": "KI & Wissen"
+        },
+        {
+          "id": "mindomat",
+          "title": "Mind-o-Mat",
+          "description": "Lokales Second-Brain-System",
+          "url": "https://mindomat.orfel.de",
+          "domains": [
+            "mindomat.orfel.de",
+            "mind.orfel.de",
+            "mom.orfel.de"
+          ],
+          "icon": "fa-brain",
+          "category": "KI & Wissen"
+        }
+      ]
+    },
+    {
+      "name": "DevOps & Server",
+      "icon": "fa-server",
+      "services": [
+        {
+          "id": "gitea",
+          "title": "Gitea",
+          "description": "Git Hosting",
+          "url": "https://git.orfel.de",
+          "domains": [
+            "git.orfel.de"
+          ],
+          "icon": "fa-code-branch",
+          "category": "DevOps & Server"
+        },
+        {
+          "id": "n8n",
+          "title": "N8N",
+          "description": "Workflow Automation",
+          "url": "https://n8n.orfel.de",
+          "domains": [
+            "n8n.orfel.de"
+          ],
+          "icon": "fa-diagram-project",
+          "category": "DevOps & Server"
+        },
+        {
+          "id": "portainer",
+          "title": "Portainer",
+          "description": "Docker Management UI",
+          "url": "https://port.orfel.de",
+          "domains": [
+            "port.orfel.de"
+          ],
+          "icon": "fa-docker",
+          "category": "DevOps & Server"
+        },
+        {
+          "id": "webhook",
+          "title": "Webhook",
+          "description": "GitHub Webhook Receiver",
+          "url": "https://webhook.orfel.de",
+          "domains": [
+            "webhook.orfel.de"
+          ],
+          "icon": "fa-bolt",
+          "category": "DevOps & Server"
+        }
+      ]
+    },
+    {
+      "name": "Medien & Audio",
+      "icon": "fa-music",
+      "services": [
+        {
+          "id": "deezer",
+          "title": "Deezer Downloader",
+          "description": "Jannik-Cloud Service",
+          "url": "https://deezer.orfel.de",
+          "domains": [
+            "deezer.orfel.de"
+          ],
+          "icon": "fa-headphones",
+          "category": "Medien & Audio"
+        },
+        {
+          "id": "handbrake",
+          "title": "Handbrake",
+          "description": "Jannik-Cloud Service",
+          "url": "https://hb.orfel.de",
+          "domains": [
+            "hb.orfel.de"
+          ],
+          "icon": "fa-film",
+          "category": "Medien & Audio"
+        },
+        {
+          "id": "linus",
+          "title": "Linus",
+          "description": "lsound Website",
+          "url": "https://linus.orfel.de",
+          "domains": [
+            "linus.orfel.de",
+            "lsound.orfel.de"
+          ],
+          "icon": "fa-volume-high",
+          "category": "Medien & Audio"
+        },
+        {
+          "id": "melodymuse",
+          "title": "Melodymuse",
+          "description": "Jannik-Cloud Service",
+          "url": "https://mm.orfel.de",
+          "domains": [
+            "mm.orfel.de"
+          ],
+          "icon": "fa-compact-disc",
+          "category": "Medien & Audio"
+        },
+        {
+          "id": "navidrome",
+          "title": "Navidrome",
+          "description": "Jannik-Cloud Service",
+          "url": "https://songs.orfel.de",
+          "domains": [
+            "songs.orfel.de",
+            "song.orfel.de",
+            "suno.orfel.de",
+            "music.orfel.de",
+            "musik.orfel.de"
+          ],
+          "icon": "fa-music",
+          "category": "Medien & Audio"
+        },
+        {
+          "id": "soulsync",
+          "title": "Soulsync",
+          "description": "Jannik-Cloud Service",
+          "url": "https://soulsync.orfel.de",
+          "domains": [
+            "soulsync.orfel.de"
+          ],
+          "icon": "fa-radio",
+          "category": "Medien & Audio"
+        },
+        {
+          "id": "spotify",
+          "title": "Spotify Plailist",
+          "description": "Jannik-Cloud Service",
+          "url": "https://spotify.orfel.de",
+          "domains": [
+            "spotify.orfel.de"
+          ],
+          "icon": "fa-spotify",
+          "category": "Medien & Audio"
+        }
+      ]
+    },
+    {
+      "name": "Smart Home & 3D",
+      "icon": "fa-house-signal",
+      "services": [
+        {
+          "id": "spoolman",
+          "title": "Spoolman",
+          "description": "3D Printer Filament Manager",
+          "url": "https://3d.orfel.de",
+          "domains": [
+            "3d.orfel.de"
+          ],
+          "icon": "fa-cubes",
+          "category": "Smart Home & 3D"
+        }
+      ]
+    },
+    {
+      "name": "Tools & Produktivität",
+      "icon": "fa-wrench",
+      "services": [
+        {
+          "id": "baserow",
+          "title": "Baserow",
+          "description": "No-Code Database",
+          "url": "https://br.orfel.de",
+          "domains": [
+            "br.orfel.de"
+          ],
+          "icon": "fa-table",
+          "category": "Tools & Produktivität"
+        },
+        {
+          "id": "bit",
+          "title": "Bit",
+          "description": "Jannik-Cloud Service",
+          "url": "https://bit.orfel.de",
+          "domains": [
+            "bit.orfel.de"
+          ],
+          "icon": "fa-arrow-up-right-from-square",
+          "category": "Tools & Produktivität"
+        },
+        {
+          "id": "ntfy",
+          "title": "NTFY",
+          "description": "Push Notifications",
+          "url": "https://ntfy.orfel.de",
+          "domains": [
+            "ntfy.orfel.de"
+          ],
+          "icon": "fa-bell",
+          "category": "Tools & Produktivität"
+        },
+        {
+          "id": "searxng",
+          "title": "SearXNG",
+          "description": "Meta Search Engine",
+          "url": "https://go.orfel.de",
+          "domains": [
+            "go.orfel.de"
+          ],
+          "icon": "fa-magnifying-glass",
+          "category": "Tools & Produktivität"
+        },
+        {
+          "id": "simple-url-shortener",
+          "title": "Simple Url Shortener",
+          "description": "Jannik-Cloud Service",
+          "url": "https://tiny.orfel.de",
+          "domains": [
+            "tiny.orfel.de"
+          ],
+          "icon": "fa-link",
+          "category": "Tools & Produktivität"
+        },
+        {
+          "id": "slash",
+          "title": "Slash",
+          "description": "Jannik-Cloud Service",
+          "url": "https://slash.orfel.de",
+          "domains": [
+            "slash.orfel.de"
+          ],
+          "icon": "fa-hashtag",
+          "category": "Tools & Produktivität"
+        },
+        {
+          "id": "stirlingpdf",
+          "title": "Stirling PDF",
+          "description": "PDF Tools",
+          "url": "https://pdf.orfel.de",
+          "domains": [
+            "pdf.orfel.de"
+          ],
+          "icon": "fa-file-pdf",
+          "category": "Tools & Produktivität"
+        },
+        {
+          "id": "zipline",
+          "title": "Zipline",
+          "description": "URL Shortener / File Host",
+          "url": "https://short.orfel.de",
+          "domains": [
+            "short.orfel.de"
+          ],
+          "icon": "fa-cloud-arrow-up",
+          "category": "Tools & Produktivität"
+        }
+      ]
+    },
+    {
+      "name": "Einsatz & CBRN",
+      "icon": "fa-fire-extinguisher",
+      "services": [
+        {
+          "id": "cbrn",
+          "title": "Cbrn",
+          "description": "Jannik-Cloud Service",
+          "url": "https://cbrn.orfel.de",
+          "domains": [
+            "cbrn.orfel.de",
+            "admin.cbrn.orfel.de",
+            "api.cbrn.orfel.de"
+          ],
+          "icon": "fa-fire-extinguisher",
+          "category": "Einsatz & CBRN"
+        },
+        {
+          "id": "erkw",
+          "title": "Erkw",
+          "description": "Jannik-Cloud Service",
+          "url": "https://erkw.orfel.de",
+          "domains": [
+            "erkw.orfel.de"
+          ],
+          "icon": "fa-truck-medical",
+          "category": "Einsatz & CBRN"
+        }
+      ]
+    },
+    {
+      "name": "Community & Apps",
+      "icon": "fa-users",
+      "services": [
+        {
+          "id": "godmod3",
+          "title": "Godmod3",
+          "description": "Jannik-Cloud Service",
+          "url": "https://god.orfel.de",
+          "domains": [
+            "god.orfel.de"
+          ],
+          "icon": "fa-wand-magic-sparkles",
+          "category": "Community & Apps"
+        },
+        {
+          "id": "nein",
+          "title": "Nein",
+          "description": "Jannik-Cloud Service",
+          "url": "https://nein.orfel.de",
+          "domains": [
+            "nein.orfel.de"
+          ],
+          "icon": "fa-hand",
+          "category": "Community & Apps"
+        },
+        {
+          "id": "quizalarm",
+          "title": "Quizalarm",
+          "description": "Jannik-Cloud Service",
+          "url": "https://quizalarm.orfel.de",
+          "domains": [
+            "quizalarm.orfel.de"
+          ],
+          "icon": "fa-gamepad",
+          "category": "Community & Apps"
+        },
+        {
+          "id": "quizalarm-stat",
+          "title": "Quizalarm-Stat",
+          "description": "Jannik-Cloud Service",
+          "url": "https://quizalarm-stat.orfel.de",
+          "domains": [
+            "quizalarm-stat.orfel.de"
+          ],
+          "icon": "fa-chart-line",
+          "category": "Community & Apps"
+        },
+        {
+          "id": "schnappix",
+          "title": "Schnappix",
+          "description": "Jannik-Cloud Service",
+          "url": "https://schnappix.orfel.de",
+          "domains": [
+            "schnappix.orfel.de"
+          ],
+          "icon": "fa-camera",
+          "category": "Community & Apps"
+        }
+      ]
+    },
+    {
+      "name": "Weitere Dienste",
+      "icon": "fa-cubes",
+      "services": [
+        {
+          "id": "dashboard",
+          "title": "Jannik-Cloud Hub",
+          "description": "Custom Dashboard & Portal",
+          "url": "https://dash.orfel.de",
+          "domains": [
+            "dash.orfel.de",
+            "hub.orfel.de"
+          ],
+          "icon": "fa-cubes",
+          "category": "Weitere Dienste"
+        },
+        {
+          "id": "homepage",
+          "title": "Homepage",
+          "description": "Dashboard & Service Portal",
+          "url": "https://homepage.orfel.de",
+          "domains": [
+            "homepage.orfel.de"
+          ],
+          "icon": "fa-cubes",
+          "category": "Weitere Dienste"
+        },
+        {
+          "id": "keyselector",
+          "title": "Keyselector",
+          "description": "Jannik-Cloud Service",
+          "url": "https://keyselector.orfel.de",
+          "domains": [
+            "keyselector.orfel.de",
+            "keysel.orfel.de",
+            "ks.orfel.de"
+          ],
+          "icon": "fa-cubes",
+          "category": "Weitere Dienste"
+        },
+        {
+          "id": "tokenwatch",
+          "title": "TokenWatch Deployment for Jannik-Cloud",
+          "description": "Jannik-Cloud Service",
+          "url": "https://tw.orfel.de",
+          "domains": [
+            "tw.orfel.de",
+            "token.orfel.de",
+            "tokenwatch.orfel.de"
+          ],
+          "icon": "fa-cubes",
+          "category": "Weitere Dienste"
+        },
+        {
+          "id": "viz",
+          "title": "Viz",
+          "description": "Audio Visualizer Studio for DaVinci Resolve",
+          "url": "https://viz.orfel.de",
+          "domains": [
+            "viz.orfel.de"
+          ],
+          "icon": "fa-cubes",
+          "category": "Weitere Dienste"
+        }
+      ]
+    }
+  ]
+}
