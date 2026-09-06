@@ -3,14 +3,44 @@ set -e
 
 echo "[Backup] Starte MS SQL Backup Routine..."
 
+# Prüfe, ob die .env Datei existiert
+ENV_FILE="$(dirname "$0")/.env"
+if [[ ! -f "${ENV_FILE}" ]]; then
+    echo "[Backup] Keine .env Datei vorhanden. Überspringe Backup."
+    exit 0
+fi
+
 # Lade Umgebungsvariablen aus der aktuellen .env Datei im Verzeichnis
-source "$(dirname "$0")/.env"
+source "${ENV_FILE}"
+
+# Prüfe, ob der MSSQL Container läuft
+if ! docker ps --format '{{.Names}}' | grep -q "^checkbox_mssql$"; then
+    echo "[Backup] Container checkbox_mssql läuft nicht. Überspringe Backup."
+    exit 0
+fi
+
+if [[ -z "${MSSQL_SA_PASSWORD:-}" || -z "${MSSQL_DB_NAME:-}" ]]; then
+    echo "[Backup] MSSQL_SA_PASSWORD oder MSSQL_DB_NAME nicht konfiguriert. Überspringe Backup."
+    exit 0
+fi
 
 VOLUME_BASE="/mnt/Jannik-Cloud-Volume-01/checkbox"
 DATA_DIR="${VOLUME_BASE}/data"
 BACKUP_DIR="${VOLUME_BASE}/backups"
 
 mkdir -p "${BACKUP_DIR}"
+
+# Prüfe, ob die Datenbank im SQL Server existiert
+if ! docker exec checkbox_mssql /opt/mssql-tools18/bin/sqlcmd \
+    -S localhost \
+    -U sa \
+    -P "${MSSQL_SA_PASSWORD}" \
+    -C \
+    -b \
+    -Q "IF DB_ID('${MSSQL_DB_NAME}') IS NULL THROW 50000, 'DB does not exist', 1;" >/dev/null 2>&1; then
+    echo "[Backup] Datenbank '${MSSQL_DB_NAME}' existiert noch nicht im SQL Server. Überspringe Backup."
+    exit 0
+fi
 
 # Dateinamen generieren
 DATE=$(date +%Y-%m-%d_%H-%M-%S)
