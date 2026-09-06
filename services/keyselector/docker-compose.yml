@@ -1,13 +1,6 @@
 services:
   keyselector:
-    build:
-      context: .
-      dockerfile: build.Dockerfile
-      args:
-        REPO_URL: https://git.orfel.de/Jannik/KeySelector.git
-        BRANCH: main
-    image: keyselector:latest
-    pull_policy: build
+    image: git.orfel.de/jannik/keyselector:latest
     container_name: keyselector
     restart: unless-stopped
     ports:

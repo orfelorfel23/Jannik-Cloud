@@ -1,13 +1,6 @@
 services:
   viz:
-    build:
-      context: .
-      dockerfile: build.Dockerfile
-      args:
-        REPO_URL: https://git.orfel.de/Jannik/Viz.git
-        BRANCH: main
-    image: viz:latest
-    pull_policy: build
+    image: git.orfel.de/jannik/viz:latest
     container_name: viz
     restart: unless-stopped
     ports:

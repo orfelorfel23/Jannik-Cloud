@@ -1,16 +1,5 @@
 #!/usr/bin/env bash
 set -euo pipefail
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-
-echo "Waiting for git.orfel.de to be reachable through Caddy..."
-until curl -sf --max-time 3 "https://git.orfel.de" &>/dev/null; do
-    echo "  Waiting..."
-    sleep 2
-done
 
 echo "Cleaning up viz temp folder..."
 rm -rf /mnt/Jannik-Cloud-Volume-01/viz/temp/* 2>/dev/null || true
-
-echo "Building Viz Audio Visualizer now that Gitea is up..."
-cd "${SCRIPT_DIR}"
-docker compose build
