@@ -37,7 +37,8 @@ if [[ -z "${HAS_API_IMAGE}" || -z "${HAS_WEB_IMAGE}" ]]; then
     echo "[godmod3] Missing Docker images (cold start / fresh server detected)."
     NEEDS_BUILD=true
 elif [[ -n "${REMOTE_COMMIT}" && "${REMOTE_COMMIT}" != "${LOCAL_COMMIT}" ]]; then
-    echo "[godmod3] New upstream commit detected: ${REMOTE_COMMIT:0:8} (current: ${LOCAL_COMMIT:0:8:-none})."
+    current_short="${LOCAL_COMMIT:0:8}"
+    echo "[godmod3] New upstream commit detected: ${REMOTE_COMMIT:0:8} (current: ${current_short:-none})."
     NEEDS_BUILD=true
 fi
 
@@ -56,5 +57,6 @@ if [[ "${NEEDS_BUILD}" == "true" ]]; then
         fi
     fi
 else
-    echo "[godmod3] Up to date (commit ${LOCAL_COMMIT:0:8}) and images present. Build skipped."
+    current_short="${LOCAL_COMMIT:0:8}"
+    echo "[godmod3] Up to date (commit ${current_short:-unknown}) and images present. Build skipped."
 fi

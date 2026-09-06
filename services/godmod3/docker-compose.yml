@@ -1,8 +1,8 @@
 services:
   api:
     build:
-      context: https://github.com/elder-plinius/G0DM0D3.git#main
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: Dockerfile.api
     container_name: godmod3-api
     restart: unless-stopped
     env_file: .env
