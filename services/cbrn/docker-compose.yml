@@ -1,13 +1,6 @@
 services:
   cbrn-frontend:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        REPO_URL: https://github.com/orfelorfel23/Content-Vault.git
-        BRANCH: main
-        VITE_API_URL: https://api.cbrn.orfel.de
-    image: cbrn-frontend:latest
+    image: git.orfel.de/jannik/cbrn-frontend:latest
     container_name: cbrn-frontend
     restart: unless-stopped
     ports:
@@ -21,10 +14,7 @@ services:
       - jannik-cloud-net
 
   cbrn-backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    image: cbrn-backend:latest
+    image: git.orfel.de/jannik/cbrn-backend:latest
     container_name: cbrn-backend
     restart: unless-stopped
     env_file:

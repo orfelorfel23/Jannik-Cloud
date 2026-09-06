@@ -18,19 +18,19 @@ export TZ='Europe/Berlin'
 TIMESTAMP=\$(date '+%Y-%m-%d %H:%M:%S')
 
 curl -s -o /dev/null --retry 3 --retry-delay 2 --max-time 10 \\
-  -H 'Title: Content-Vault (CBRN) Rebuild startet' \\
+  -H 'Title: Content-Vault (CBRN) Update startet' \\
   -H 'Priority: default' \\
   -H 'Tags: hammer' \\
-  -d \"Push für Content-Vault um \${TIMESTAMP} erkannt. Container wird neu gebaut...\" \\
+  -d "Push für Content-Vault um \${TIMESTAMP} erkannt. Container wird aktualisiert..." \\
   \"\${NTFY_URL}\"
 
 cd /opt/Jannik-Cloud/services/cbrn
-docker compose build --no-cache 2>&1 || {
+docker compose pull 2>&1 || {
   curl -s -o /dev/null --retry 3 --retry-delay 2 --max-time 10 \\
-    -H 'Title: CBRN Rebuild FEHLGESCHLAGEN' \\
+    -H 'Title: CBRN Pull FEHLGESCHLAGEN' \\
     -H 'Priority: urgent' \\
     -H 'Tags: x' \\
-    -d 'CBRN Container Build ist fehlgeschlagen. Prüfe die Server-Logs.' \\
+    -d 'CBRN Container Pull ist fehlgeschlagen. Prüfe die Server-Logs.' \\
     \"\${NTFY_URL}\"
   exit 1
 }
@@ -45,10 +45,10 @@ docker exec postgres psql -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE conte
 docker compose up -d --remove-orphans --force-recreate 2>&1
 
 curl -s -o /dev/null --retry 3 --retry-delay 2 --max-time 10 \\
-  -H 'Title: CBRN Rebuild abgeschlossen' \\
+  -H 'Title: CBRN Update abgeschlossen' \\
   -H 'Priority: default' \\
   -H 'Tags: white_check_mark' \\
-  -d 'CBRN Service wurde erfolgreich neu gebaut und gestartet.' \\
+  -d 'CBRN Service wurde erfolgreich aktualisiert und gestartet.' \\
   \"\${NTFY_URL}\"
 " 2>&1
 
