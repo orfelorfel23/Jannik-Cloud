@@ -8,8 +8,9 @@ RUN apt-get update && apt-get install -y git curl && rm -rf /var/lib/apt/lists/*
 # Clone the target repository
 RUN git clone https://github.com/elder-plinius/G0DM0D3.git .
 
-# Patch path-to-regexp v8 wildcard route bug in research.ts: '/batch/*' -> '/batch/*0'
-RUN sed -i "s|'/batch/\*'|'/batch/\*0'|g" api/routes/research.ts || true
+# Patch path-to-regexp v8 wildcard route bug in research.ts: '/batch/*' -> '/batch/*path'
+RUN sed -i "s|'/batch/\*'|'/batch/\*path'|g" api/routes/research.ts || true
+RUN sed -i "s|req.params\[0\]|((req.params as any).path \|\| (req.params as any)\[0\])|g" api/routes/research.ts || true
 
 # Install production dependencies
 RUN npm ci --omit=dev 2>/dev/null || npm install --omit=dev
