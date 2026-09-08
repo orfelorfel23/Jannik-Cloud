@@ -33,7 +33,7 @@ Mind-o-Mat nutzt den **Ziel-Workflow (Standard)**:
 2. Der Hetzner-Server zieht das fertige Image via `docker compose pull` und startet den Container.
 
 Das `service.init`-Skript wird automatisch aufgerufen, wenn der Service das erste Mal aktiviert wird:
-1. **Vault** wird initialisiert (klont automatisch `https://git.orfel.de/Jannik/Mind-o-Mat-Vault.git` falls vorhanden)
+1. **Vault** wird initialisiert (klont automatisch `https://git.orfel.de/Jannik/Mind-o-Mat-Vault.git` via `VAULT_SYNC_TOKEN` Token-Auth)
 2. **QMD-Collections** werden vorbereitet
 3. **service.enabled**-Marker bleibt gesetzt
 
