@@ -52,7 +52,12 @@ else
     cd "${VAULT_DIR}"
     git remote set-url origin "$AUTH_REPO_URL" 2>/dev/null || true
     git fetch origin main 2>/dev/null || true
-    git pull --ff-only origin main 2>/dev/null || true
+    if ! git reset --hard origin/main 2>/dev/null; then
+        echo "      Reset fehlgeschlagen (divergierende Historie), klone sauber neu..."
+        cd /
+        rm -rf "${VAULT_DIR}"
+        git clone "${AUTH_REPO_URL}" "${VAULT_DIR}"
+    fi
 fi
 
 # 2. Git Config & Remote sicherstellen
