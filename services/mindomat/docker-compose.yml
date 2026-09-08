@@ -1,6 +1,6 @@
 services:
   app:
-    image: git.orfel.de/jannik/mindomat:latest
+    image: git.orfel.de/jannik/mindomat:latest # v1.0.1: Safe Cytoscape rendering & Notizenliste
     pull_policy: always
     container_name: mindomat-app
     restart: unless-stopped
