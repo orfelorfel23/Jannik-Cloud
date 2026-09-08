@@ -59,6 +59,8 @@ on_deploy_failure() {
     notify "Deployment GEFEHLT" \
         "Deploy-Skript fehlgeschlagen${duration_msg}. Prüfe die Server-Logs." \
         "urgent" "x,rotating_light"
+    # Ensure Caddy is not left in maintenance mode
+    disable_maintenance_mode 2>/dev/null || true
 }
 
 is_active_service() {
@@ -444,7 +446,7 @@ run_service_init_hooks() {
         if [[ -f "${init_script}" ]]; then
             log "  Running init hook for ${svc_name}..."
             chmod +x "${init_script}" 2>/dev/null || true
-            ( cd "${svc_dir}" && bash "${init_script}" )
+            ( cd "${svc_dir}" && bash "${init_script}" ) || warn "  Init hook for ${svc_name} exited with error (non-fatal, continuing)..."
         fi
     done
 }
