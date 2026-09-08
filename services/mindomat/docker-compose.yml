@@ -20,6 +20,8 @@ services:
       MINIMAX_API_KEY: ${LLM_API_KEY:-}
       MINIMAX_API_URL: ${LLM_ENDPOINT:-}
       MINIMAX_MODEL: ${LLM_MODEL:-}
+      # Gitea Vault Sync Auth
+      VAULT_SYNC_TOKEN: ${VAULT_SYNC_TOKEN:-}
     volumes:
       # Vault (Notizen, Wiki, Konfig, Logs)
       - /mnt/Jannik-Cloud-Volume-01/mindomat-vault:/vault

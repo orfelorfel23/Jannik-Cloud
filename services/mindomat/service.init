@@ -12,17 +12,27 @@ echo "==========================================="
 echo " Mind-o-Mat Service Init"
 echo "==========================================="
 
+# Lese VAULT_SYNC_TOKEN aus .env falls vorhanden
+VAULT_SYNC_TOKEN=""
+if [[ -f "${SVC_DIR}/.env" ]]; then
+    VAULT_SYNC_TOKEN=$(grep -E "^VAULT_SYNC_TOKEN=" "${SVC_DIR}/.env" 2>/dev/null | cut -d= -f2 | tr -d '[:space:]"' || true)
+fi
+
+AUTH_REPO_URL="${VAULT_REPO_URL}"
+if [[ -n "${VAULT_SYNC_TOKEN}" ]]; then
+    AUTH_REPO_URL="https://${VAULT_SYNC_TOKEN}@git.orfel.de/Jannik/Mind-o-Mat-Vault.git"
+fi
+
 git config --global --add safe.directory "${VAULT_DIR}" 2>/dev/null || true
 
 # 1. Vault klonen oder aktualisieren (idempotent)
 if [[ ! -d "${VAULT_DIR}/.git" ]]; then
     echo "[1/4] Initialisiere Vault aus Git-Repository..."
-    # Falls das Verzeichnis existiert (z. B. durch Docker automatisch angelegt), aber kein Git-Repo ist:
     rm -rf "${VAULT_DIR}"
     mkdir -p "$(dirname "${VAULT_DIR}")"
     echo "      Klone existierenden Vault von ${VAULT_REPO_URL}..."
-    git clone "${VAULT_REPO_URL}" "${VAULT_DIR}" || {
-        echo "      WARNUNG: git clone fehlgeschlagen (evtl. Offline oder Rechte). Erstelle Fallback-Struktur..."
+    git clone "${AUTH_REPO_URL}" "${VAULT_DIR}" || {
+        echo "      WARNUNG: git clone fehlgeschlagen. Erstelle Fallback-Struktur..."
         mkdir -p "${VAULT_DIR}"
         for d in "00_Inbox" "00_Inbox/Verarbeitet" "00_Inbox/Problemfaelle" \
                  "01_Daily" "10_Wiki" "10_Wiki/Seiten" "20_Projekte" \
@@ -33,26 +43,25 @@ if [[ ! -d "${VAULT_DIR}/.git" ]]; then
         if [[ ! -d "${VAULT_DIR}/.git" ]]; then
             cd "${VAULT_DIR}"
             git init -b main
-            git remote add origin "$VAULT_REPO_URL" || true
+            git remote add origin "$AUTH_REPO_URL" || true
         fi
     }
     echo "      Vault bereit: $VAULT_DIR"
 else
     echo "[1/4] Vault existiert bereits, aktualisiere mit origin/main..."
     cd "${VAULT_DIR}"
+    git remote set-url origin "$AUTH_REPO_URL" 2>/dev/null || true
     git fetch origin main 2>/dev/null || true
     git pull --ff-only origin main 2>/dev/null || true
 fi
 
-# 2. Git Remote sicherstellen
+# 2. Git Config & Remote sicherstellen
 cd "${VAULT_DIR}"
 if git rev-parse --is-inside-work-tree &>/dev/null; then
-    if ! git remote get-url origin &>/dev/null; then
-        echo "[2/4] Setze Git Remote: $VAULT_REPO_URL"
-        git remote add origin "$VAULT_REPO_URL"
-    else
-        echo "[2/4] Git Remote origin bereits gesetzt"
-    fi
+    git config user.name "Mind-o-Mat Server" 2>/dev/null || true
+    git config user.email "mindomat@orfel.de" 2>/dev/null || true
+    git remote set-url origin "$AUTH_REPO_URL" 2>/dev/null || git remote add origin "$AUTH_REPO_URL" 2>/dev/null || true
+    echo "[2/4] Git Remote origin mit Authentifizierung eingerichtet"
 fi
 
 # 3. QMD-Collections einrichten (manuell, wenn gewuenscht)
