@@ -7,12 +7,15 @@ set -euo pipefail
 VAULT_DIR="/mnt/Jannik-Cloud-Volume-01/mindomat-vault"
 TOOL_BIN="/opt/Jannik-Cloud/services/mindomat/webapp/node_modules/.bin/mindomat"
 
-# Falls Vault nicht existiert: initialisieren
-if [[ ! -d "$VAULT_DIR" ]]; then
-    echo "Initialisiere neuen Vault..."
+# Falls Vault nicht existiert oder kein Git-Repo ist: initialisieren
+if [[ ! -d "$VAULT_DIR/.git" ]]; then
+    echo "Initialisiere Vault aus Git-Repository..."
+    rm -rf "$VAULT_DIR"
     git clone https://git.orfel.de/Jannik/Mind-o-Mat-Vault.git "$VAULT_DIR"
 else
-    echo "Vault existiert bereits, ueberspringe Init."
+    echo "Vault existiert bereits, aktualisiere mit git pull..."
+    cd "$VAULT_DIR"
+    git pull origin main || true
 fi
 
 # Alle 12 Standardordner anlegen (falls nicht da)

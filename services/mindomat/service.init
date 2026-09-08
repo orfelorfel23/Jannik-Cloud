@@ -12,64 +12,47 @@ echo "==========================================="
 echo " Mind-o-Mat Service Init"
 echo "==========================================="
 
-# 1. Vault-Verzeichnis anlegen (idempotent)
-if [[ ! -d "${VAULT_DIR}" ]]; then
-    echo "[1/4] Initialisiere Vault..."
-    if git ls-remote "${VAULT_REPO_URL}" &>/dev/null; then
-        echo "      Klone existierenden Vault von ${VAULT_REPO_URL}..."
-        git clone "${VAULT_REPO_URL}" "${VAULT_DIR}"
-    else
+git config --global --add safe.directory "${VAULT_DIR}" 2>/dev/null || true
+
+# 1. Vault klonen oder aktualisieren (idempotent)
+if [[ ! -d "${VAULT_DIR}/.git" ]]; then
+    echo "[1/4] Initialisiere Vault aus Git-Repository..."
+    # Falls das Verzeichnis existiert (z. B. durch Docker automatisch angelegt), aber kein Git-Repo ist:
+    rm -rf "${VAULT_DIR}"
+    mkdir -p "$(dirname "${VAULT_DIR}")"
+    echo "      Klone existierenden Vault von ${VAULT_REPO_URL}..."
+    git clone "${VAULT_REPO_URL}" "${VAULT_DIR}" || {
+        echo "      WARNUNG: git clone fehlgeschlagen (evtl. Offline oder Rechte). Erstelle Fallback-Struktur..."
         mkdir -p "${VAULT_DIR}"
-        # 12 Standardordner
         for d in "00_Inbox" "00_Inbox/Verarbeitet" "00_Inbox/Problemfaelle" \
                  "01_Daily" "10_Wiki" "10_Wiki/Seiten" "20_Projekte" \
                  "90_Templates" "99_System" "99_System/Skripte" \
                  "99_System/Logs" "99_System/Cache"; do
             mkdir -p "${VAULT_DIR}/$d"
         done
-        # Konfig.md (mit Standardwerten)
-        if [[ ! -f "${VAULT_DIR}/99_System/Konfig.md" ]]; then
-            cat > "${VAULT_DIR}/99_System/Konfig.md" <<'EOF'
----
-veraltet_schwellwert_monate: 12
-token_budget_default: 4000
-token_budget_hardcap: false
-qmd_cache_pfad: 99_System/Cache
-sync_remote: https://git.orfel.de/Jannik/Mind-o-Mat-Vault.git
-ki_provider: minimax
-ki_modell: MiniMax-M3
-ki_api_url: https://api.minimaxi.chat/v1
-ki_api_key_env: MINIMAX_API_KEY
----
-EOF
-        fi
-        # git init (idempotent)
         if [[ ! -d "${VAULT_DIR}/.git" ]]; then
             cd "${VAULT_DIR}"
             git init -b main
-            git add -A
-            git -c user.email=mindomat@orfel.de -c user.name=Mindomat commit -m "Initial: Vault-Struktur"
+            git remote add origin "$VAULT_REPO_URL" || true
         fi
-    fi
+    }
     echo "      Vault bereit: $VAULT_DIR"
 else
-    echo "[1/4] Vault existiert bereits, ueberspringe"
+    echo "[1/4] Vault existiert bereits, aktualisiere mit origin/main..."
+    cd "${VAULT_DIR}"
+    git fetch origin main 2>/dev/null || true
+    git pull --ff-only origin main 2>/dev/null || true
 fi
 
-# 2. Git Remote setzen (idempotent)
+# 2. Git Remote sicherstellen
 cd "${VAULT_DIR}"
-if ! git remote get-url origin &>/dev/null; then
-    echo "[2/4] Setze Git Remote: $VAULT_REPO_URL"
-    git remote add origin "$VAULT_REPO_URL"
-    # Erster Push (nur wenn Remote-Repo existiert, sonst Fehler ignorieren)
-    if git ls-remote origin &>/dev/null; then
-        git push -u origin main 2>/dev/null || true
-        echo "      Initial-Push zu origin/main erfolgreich"
+if git rev-parse --is-inside-work-tree &>/dev/null; then
+    if ! git remote get-url origin &>/dev/null; then
+        echo "[2/4] Setze Git Remote: $VAULT_REPO_URL"
+        git remote add origin "$VAULT_REPO_URL"
     else
-        echo "      Remote-Repo existiert noch nicht (wird spaeter manuell erstellt)"
+        echo "[2/4] Git Remote origin bereits gesetzt"
     fi
-else
-    echo "[2/4] Git Remote origin bereits gesetzt"
 fi
 
 # 3. QMD-Collections einrichten (manuell, wenn gewuenscht)
