@@ -71,6 +71,7 @@ CATEGORY_MAPPING = {
     "simple-url-shortener": ("Tools & Produktivität", "link.png", "fa-link"),
     "slash": ("Tools & Produktivität", "slash.png", "fa-hashtag"),
     "zipline": ("Tools & Produktivität", "zipline.png", "fa-cloud-arrow-up"),
+    "xbackbone": ("Tools & Produktivität", "xbackbone.png", "fa-image"),
     "clink": ("Tools & Produktivität", "link.png", "fa-paperclip"),
     "bit": ("Tools & Produktivität", "link.png", "fa-arrow-up-right-from-square"),
     "dub": ("Tools & Produktivität", "link.png", "fa-link"),

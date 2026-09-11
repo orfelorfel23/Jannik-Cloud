@@ -1,7 +1,7 @@
 {
   "title": "Jannik-Cloud Hub",
   "description": "Zentrale Übersicht aller aktiven Cloud-Dienste",
-  "activeCount": 43,
+  "activeCount": 44,
   "categories": [
     {
       "name": "Cloud & Speicher",
@@ -380,6 +380,19 @@
             "pdf.orfel.de"
           ],
           "icon": "fa-file-pdf",
+          "category": "Tools & Produktivität"
+        },
+        {
+          "id": "xbackbone",
+          "title": "XBackBone",
+          "description": "Image & File Sharing",
+          "url": "https://image.orfel.de",
+          "domains": [
+            "image.orfel.de",
+            "bild.orfel.de",
+            "bilder.orfel.de"
+          ],
+          "icon": "fa-image",
           "category": "Tools & Produktivität"
         },
         {

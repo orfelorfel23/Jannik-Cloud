@@ -1,0 +1,3 @@
+image.orfel.de, bild.orfel.de, bilder.orfel.de {
+	reverse_proxy xbackbone:80
+}

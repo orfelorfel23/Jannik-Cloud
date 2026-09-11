@@ -1,0 +1,24 @@
+services:
+  xbackbone:
+    image: lscr.io/linuxserver/xbackbone:latest
+    container_name: xbackbone
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:948:80"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Berlin
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/xbackbone/config:/config
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1024M
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true

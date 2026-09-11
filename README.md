@@ -59,6 +59,7 @@ Self-hosted cloud infrastructure on Hetzner Ubuntu 24 LTS, managed via Docker Co
 | [Mind-o-Mat](services/mindomat/README.md) | [mindomat.orfel.de](https://mindomat.orfel.de), [mind.orfel.de](https://mind.orfel.de), [mom.orfel.de](https://mom.orfel.de) | 5173 |
 | Webhook | [webhook.orfel.de](https://webhook.orfel.de) | 9500 |
 | Zipline | [short.orfel.de](https://short.orfel.de) | 947 |
+| XBackBone | [image.orfel.de](https://image.orfel.de), [bild.orfel.de](https://bild.orfel.de), [bilder.orfel.de](https://bilder.orfel.de) | 948 |
 
 ## First-Time Setup
 
