@@ -1,6 +1,6 @@
 services:
   erkw:
-    image: git.orfel.de/jannik/erkw:latest # Update: Modul 2 Folien und Uebungen 1 & 2 repariert (Offset- und Asset-Korrektur)
+    image: git.orfel.de/jannik/erkw:latest # Update 2026-09-12: Cache-Busting und Nginx no-cache Fix
     pull_policy: always
     container_name: erkw
     restart: unless-stopped
