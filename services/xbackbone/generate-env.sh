@@ -25,7 +25,12 @@ chmod 600 "${SCRIPT_DIR}/.env"
 
 cat > "${SCRIPT_DIR}/xbackbone.caddy" <<'EOF'
 image.orfel.de, bild.orfel.de, bilder.orfel.de {
-	reverse_proxy xbackbone:80
+	reverse_proxy xbackbone:80 {
+		header_up Host {host}
+		header_up X-Forwarded-Proto https
+		header_up X-Forwarded-Port 443
+		header_down Location http:// https://
+	}
 }
 EOF
 

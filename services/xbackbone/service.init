@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+VOLUME_CONFIG="/mnt/Jannik-Cloud-Volume-01/xbackbone/config"
+APP_CONFIG="${VOLUME_CONFIG}/www/xbackbone/config.php"
+NGINX_CONF="${VOLUME_CONFIG}/nginx/site-confs/default.conf"
+
+if [[ -f "${APP_CONFIG}" ]]; then
+    python3 - << 'PYEOF'
+import re
+
+path = "/mnt/Jannik-Cloud-Volume-01/xbackbone/config/www/xbackbone/config.php"
+try:
+    with open(path, "r", encoding="utf-8") as f:
+        content = f.read()
+
+    replacement = "(isset($_SERVER['HTTP_HOST']) ? 'https://' . $_SERVER['HTTP_HOST'] : 'https://image.orfel.de')"
+    content = re.sub(r"(['\"]base_url['\"]\s*=>\s*)[^,\n]+", r"\g<1>" + replacement, content)
+
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(content)
+    print("[xbackbone service.init] Successfully updated base_url to dynamic HTTPS in config.php")
+except Exception as e:
+    print(f"[xbackbone service.init] Error patching config.php: {e}")
+PYEOF
+fi
+
+if [[ -f "${NGINX_CONF}" ]]; then
+    if ! grep -q "fastcgi_param HTTPS on;" "${NGINX_CONF}"; then
+        sed -i '/include \/etc\/nginx\/fastcgi_params;/i \        fastcgi_param HTTPS on;' "${NGINX_CONF}"
+        echo "[xbackbone service.init] Added fastcgi_param HTTPS on to Nginx config"
+    fi
+fi
