@@ -10,7 +10,7 @@ services:
       - .env
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/hochzeit/media:/media:ro
-      - /mnt/Jannik-Cloud-Volume-01/hochzeit/cache:/cache
+      - wedding-cache:/cache
     depends_on:
       postgres:
         condition: service_healthy
@@ -67,6 +67,9 @@ services:
           memory: 192M
     networks:
       - wedding-internal
+
+volumes:
+  wedding-cache:
 
 networks:
   jannik-cloud-net:
