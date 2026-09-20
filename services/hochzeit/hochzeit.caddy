@@ -1,3 +1,6 @@
 hochzeit.orfel.de, tillundnele.orfel.de, neleundtill.orfel.de, till-und-nele.orfel.de, nele-und-till.orfel.de, hochzeit-tillundnele.orfel.de, hochzeit-neleundtill.orfel.de, hochzeit-till-und-nele.orfel.de, hochzeit-nele-und-till.orfel.de, tillundnele-hochzeit.orfel.de, neleundtill-hochzeit.orfel.de, till-und-nele-hochzeit.orfel.de, nele-und-till-hochzeit.orfel.de, nt-hochzeit.orfel.de, tn-hochzeit.orfel.de {
 	reverse_proxy wedding-app:3000
 }
+sync-hochzeit.orfel.de {
+	reverse_proxy wedding-syncthing:8384
+}

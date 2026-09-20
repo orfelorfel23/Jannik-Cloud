@@ -68,6 +68,26 @@ services:
     networks:
       - wedding-internal
 
+  syncthing:
+    image: lscr.io/linuxserver/syncthing:latest
+    container_name: wedding-syncthing
+    hostname: syncthing-hochzeit
+    environment:
+      - PUID=0
+      - PGID=0
+      - TZ=Europe/Berlin
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/hochzeit/syncthing-config:/config
+      - /mnt/Jannik-Cloud-Volume-01/hochzeit/media:/media
+    ports:
+      - 22026:22000/tcp
+      - 22026:22000/udp
+      - 21027:21027/udp
+    restart: unless-stopped
+    networks:
+      - jannik-cloud-net
+      - wedding-internal
+
 networks:
   jannik-cloud-net:
     external: true
