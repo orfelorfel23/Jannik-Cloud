@@ -1,0 +1,75 @@
+services:
+  app:
+    image: git.orfel.de/jannik/nele-till-hochzeit:latest
+    pull_policy: always
+    container_name: wedding-app
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3847:3000"
+    env_file:
+      - .env
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/hochzeit/media:/media:ro
+      - /mnt/Jannik-Cloud-Volume-01/hochzeit/cache:/cache
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 1024M
+    networks:
+      - jannik-cloud-net
+      - wedding-internal
+
+  postgres:
+    image: postgres:16.4-alpine
+    container_name: wedding-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/hochzeit/pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+    networks:
+      - wedding-internal
+
+  redis:
+    image: redis:7.4-alpine
+    container_name: wedding-redis
+    restart: unless-stopped
+    command: redis-server --maxmemory 128mb --maxmemory-policy allkeys-lru
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/hochzeit/redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 192M
+    networks:
+      - wedding-internal
+
+networks:
+  jannik-cloud-net:
+    external: true
+  wedding-internal:
+    driver: bridge
