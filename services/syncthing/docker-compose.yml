@@ -15,6 +15,7 @@ services:
       - /mnt/Jannik-Cloud-Volume-01/syncthing/config:/config
       - /mnt/Jannik-Cloud-Volume-01/navidrome/music:/var/syncthing/Music
       - /mnt/Jannik-Cloud-Volume-01/deezer/downloads:/var/syncthing/DeezerDownloads
+      - /mnt/Jannik-Cloud-Volume-01/hochzeit/media:/var/syncthing/HochzeitMedia
     deploy:
       resources:
         limits:
