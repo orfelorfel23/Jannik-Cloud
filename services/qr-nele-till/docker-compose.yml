@@ -1,10 +1,8 @@
 services:
-  qr-blumen:
+  qr-nele-till:
     image: git.orfel.de/jannik/qr-nele-till:latest
-    container_name: qr-blumen
+    container_name: qr-nele-till
     restart: unless-stopped
-    ports:
-      - "127.0.0.1:3848:80"
     networks:
       - jannik-cloud-net
 

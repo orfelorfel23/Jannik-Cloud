@@ -1,0 +1,3 @@
+qr.orfel.de {
+    reverse_proxy qr-nele-till:80
+}
