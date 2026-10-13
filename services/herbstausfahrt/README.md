@@ -19,7 +19,7 @@ Interaktive Leaflet-Karte mit den Standorten der Herbstausfahrt und individuelle
 - **Keine Farbanzeige:** Die Fahrzeugfarben dienen ausschließlich der Icon-Zuordnung und werden in der Benutzeroberfläche nicht angezeigt.
 - **Modernes Automotive-Design:** Glassmorphism UI, Dark-Mode-Tiles, animierter Treffpunkt-Radar und optionale Routing-Linien.
 - **Kompakte Treffpunkt-Kachel:** Schlanke UI mit direktem Fokus- und Navigationsbutton ohne redundante Ortsbezeichner.
-- **Teilnehmerliste (9 Fahrzeuge):** Vollständige Erfassung inklusive Tommy (Mondeo weiß) und Philipp (Seat Cupra blau) mit deterministischem Side-by-Side-Clustering in Hainichen und Chemnitz.
+- **Teilnehmerliste (9 Fahrzeuge):** Vollständige Erfassung inklusive Cathrin (Skoda Octavia weiß), Kai (Opel Kadett rot), Tommy (Ford Mondeo weiß) und Philipp (Seat Cupra blau) mit deterministischem Side-by-Side-Clustering in Hainichen und Chemnitz.
 
 ## Docker Build & Deployment
 
