@@ -12,13 +12,19 @@ Interaktive Leaflet-Karte mit den Standorten der Herbstausfahrt und individuelle
 - **Reverse Proxy**: Caddy (`herbstausfahrt.caddy`)
 - **Repository**: [Orfel-HermesAI-Bot/Herbstausfahrt](https://git.orfel.de/Orfel-HermesAI-Bot/Herbstausfahrt)
 
+## Features & Architektur
+
+- **Optimaler Treffpunkt (Fermat-Weber-Punkt):** Berechnung des optimalen Treffpunkts via Weiszfeld-Algorithmus, bei dem die Gesamtfahrstrecke aller Teilnehmer minimiert wird.
+- **Side-by-Side Pin-Darstellung:** Standorte mit identischen Koordinaten (z. B. Schelli & Kai in Hainichen) werden automatisch horizontal nebeneinander aufgefächert, damit beide Icons immer sichtbar sind.
+- **Keine Farbanzeige:** Die Fahrzeugfarben dienen ausschließlich der Icon-Zuordnung und werden in der Benutzeroberfläche nicht angezeigt.
+- **Modernes Automotive-Design:** Glassmorphism UI, Dark-Mode-Tiles, animierter Treffpunkt-Radar und optionale Routing-Linien.
+
 ## Docker Build & Deployment
 
-Das Docker-Image wird direkt aus dem Gitea-Repository gebaut (analog zu `linus` und `spotify`):
-- `Dockerfile` klont das Repository (`https://git.orfel.de/Orfel-HermesAI-Bot/Herbstausfahrt.git`) im Build-Schritt.
-- Beim Server-Deployment (`deploy_script.sh`) wird das Image via `docker compose build --no-cache` auf dem Server gebaut.
-- Alternativ kann das Image auch lokal gebaut und in die Gitea Container Registry gepusht werden:
+Das Docker-Image wird direkt gebaut und deployed:
+- Server-Deployment via `deploy_script.sh` mit `docker compose build --no-cache` (oder Pull des Images).
+- Lokaler Build & Push via:
   ```bash
-  docker compose build
+  docker build -t git.orfel.de/jannik/herbstausfahrt:latest .
   docker push git.orfel.de/jannik/herbstausfahrt:latest
   ```
