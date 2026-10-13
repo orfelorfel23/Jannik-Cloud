@@ -1,11 +1,5 @@
 services:
   herbstausfahrt:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        REPO_URL: https://git.orfel.de/Orfel-HermesAI-Bot/Herbstausfahrt.git
-        BRANCH: main
     image: git.orfel.de/jannik/herbstausfahrt:latest
     container_name: herbstausfahrt
     restart: unless-stopped
