@@ -1,6 +1,7 @@
 services:
   herbstausfahrt:
     image: git.orfel.de/jannik/herbstausfahrt:latest
+    pull_policy: always
     container_name: herbstausfahrt
     restart: unless-stopped
     ports:
