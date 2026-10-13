@@ -88,6 +88,7 @@ CATEGORY_MAPPING = {
     "godmod3": ("Community & Apps", "smile.png", "fa-wand-magic-sparkles"),
     "jga": ("Community & Apps", "users.png", "fa-users"),
     "schnappix": ("Community & Apps", "camera.png", "fa-camera"),
+    "herbstausfahrt": ("Community & Apps", "car.png", "fa-car"),
 }
 
 CATEGORY_ORDER = [

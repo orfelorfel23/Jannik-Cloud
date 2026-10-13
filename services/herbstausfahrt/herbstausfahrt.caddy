@@ -1,0 +1,3 @@
+karte.orfel.de {
+    reverse_proxy herbstausfahrt:80
+}

@@ -30,6 +30,7 @@ Self-hosted cloud infrastructure on Hetzner Ubuntu 24 LTS, managed via Docker Co
 | Deezer | [deezer.orfel.de](https://deezer.orfel.de) | 673 |
 | Gitea | [git.orfel.de](https://git.orfel.de) | 448 |
 | Handbrake | [hb.orfel.de](https://hb.orfel.de) | 5800 |
+| Herbstausfahrt | [karte.orfel.de](https://karte.orfel.de) | 3850 |
 | Home Assistant | [home.orfel.de](https://home.orfel.de) | 4663 |
 | ILIAS | [ilias.orfel.de](https://ilias.orfel.de) | 45427 |
 | ioBroker | [io.orfel.de](https://io.orfel.de) | 46 |
