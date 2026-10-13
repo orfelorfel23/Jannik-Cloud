@@ -1,13 +1,16 @@
 services:
   herbstausfahrt:
-    image: nginx:alpine
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        REPO_URL: https://git.orfel.de/Orfel-HermesAI-Bot/Herbstausfahrt.git
+        BRANCH: main
+    image: git.orfel.de/jannik/herbstausfahrt:latest
     container_name: herbstausfahrt
     restart: unless-stopped
     ports:
       - "127.0.0.1:3850:80"
-    volumes:
-      - /mnt/Jannik-Cloud-Volume-01/herbstausfahrt/content:/usr/share/nginx/html:ro
-      - /mnt/Jannik-Cloud-Volume-01/herbstausfahrt/nginx.conf:/etc/nginx/conf.d/default.conf:ro
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:80/"]
       interval: 30s

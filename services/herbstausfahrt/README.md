@@ -6,14 +6,19 @@ Interaktive Leaflet-Karte mit den Standorten der Herbstausfahrt und individuelle
 
 - **Domain**: [karte.orfel.de](https://karte.orfel.de)
 - **Container**: `herbstausfahrt`
-- **Image**: `nginx:alpine`
+- **Image**: `git.orfel.de/jannik/herbstausfahrt:latest`
 - **Internal Port**: 80
 - **Host Port**: `127.0.0.1:3850`
 - **Reverse Proxy**: Caddy (`herbstausfahrt.caddy`)
 - **Repository**: [Orfel-HermesAI-Bot/Herbstausfahrt](https://git.orfel.de/Orfel-HermesAI-Bot/Herbstausfahrt)
-- **Content Volume**: `/mnt/Jannik-Cloud-Volume-01/herbstausfahrt/content`
 
-## Automatischer Sync (service.init)
+## Docker Build & Deployment
 
-Über `service.init` wird das Repository direkt von Gitea auf den Server nach `/mnt/Jannik-Cloud-Volume-01/herbstausfahrt/content` geklont und bei jedem Deployment per `git pull` aktualisiert (analog zum JGA-Setup).
-Änderungen an `locations.json` oder Icons, die in Gitea gepusht werden, sind nach dem Deployment sofort live, ohne dass manuell ein neues Docker-Image gebaut werden muss.
+Das Docker-Image wird direkt aus dem Gitea-Repository gebaut (analog zu `linus` und `spotify`):
+- `Dockerfile` klont das Repository (`https://git.orfel.de/Orfel-HermesAI-Bot/Herbstausfahrt.git`) im Build-Schritt.
+- Beim Server-Deployment (`deploy_script.sh`) wird das Image via `docker compose build --no-cache` auf dem Server gebaut.
+- Alternativ kann das Image auch lokal gebaut und in die Gitea Container Registry gepusht werden:
+  ```bash
+  docker compose build
+  docker push git.orfel.de/jannik/herbstausfahrt:latest
+  ```
