@@ -18,6 +18,7 @@ Interaktive Leaflet-Karte mit den Standorten der Herbstausfahrt und individuelle
 - **Side-by-Side Pin-Darstellung:** Standorte mit identischen Koordinaten (z. B. Schelli & Kai in Hainichen) werden automatisch horizontal nebeneinander aufgefächert, damit beide Icons immer sichtbar sind.
 - **Keine Farbanzeige:** Die Fahrzeugfarben dienen ausschließlich der Icon-Zuordnung und werden in der Benutzeroberfläche nicht angezeigt.
 - **Modernes Automotive-Design:** Glassmorphism UI, Dark-Mode-Tiles, animierter Treffpunkt-Radar und optionale Routing-Linien.
+- **Kompakte Treffpunkt-Kachel:** Schlanke UI mit direktem Fokus- und Navigationsbutton ohne redundante Ortsbezeichner.
 
 ## Docker Build & Deployment
 
