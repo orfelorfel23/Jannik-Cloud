@@ -410,17 +410,18 @@ decrypt_envs() {
     log "Decrypting .env.age files..."
     for svc_name in "${ACTIVE_SERVICES[@]}"; do
         local svc_dir="${SERVICES_DIR}/${svc_name}"
-        local env_age="${svc_dir}/.env.age"
-        local env_file="${svc_dir}/.env"
-        if [[ -f "${env_age}" ]]; then
-            age --decrypt -i "${AGE_PRIVATE_KEY}" -o "${env_file}" "${env_age}"
-            # Strip Windows CRLF line endings that break Docker env var interpolation
-            sed -i 's/\r$//' "${env_file}"
-            # Remove UTF-8 BOM if present
-            sed -i '1s/^\xEF\xBB\xBF//' "${env_file}"
-            chmod 600 "${env_file}"
-            log "  Decrypted: ${svc_name}/.env"
-        fi
+        for env_age in "${svc_dir}"/.env*.age; do
+            if [[ -f "${env_age}" ]]; then
+                local env_file="${env_age%.age}"
+                age --decrypt -i "${AGE_PRIVATE_KEY}" -o "${env_file}" "${env_age}"
+                # Strip Windows CRLF line endings that break Docker env var interpolation
+                sed -i 's/\r$//' "${env_file}"
+                # Remove UTF-8 BOM if present
+                sed -i '1s/^\xEF\xBB\xBF//' "${env_file}"
+                chmod 600 "${env_file}"
+                log "  Decrypted: ${svc_name}/$(basename "${env_file}")"
+            fi
+        done
     done
 }
 

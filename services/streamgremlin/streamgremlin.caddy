@@ -1,3 +1,11 @@
 streamgremlin.orfel.de, sg.orfel.de, gremlin.orfel.de {
 	reverse_proxy streamgremlin:4736
 }
+
+jonisdaily-streamgremlin.orfel.de, jsg.orfel.de {
+	reverse_proxy streamgremlin-jonisdaily:4736
+}
+
+niggephotography-streamgremlin.orfel.de, nsg.orfel.de {
+	reverse_proxy streamgremlin-niggephotography:4736
+}

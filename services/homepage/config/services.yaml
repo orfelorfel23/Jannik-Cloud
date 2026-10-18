@@ -194,6 +194,11 @@
         href: https://god.orfel.de
         description: Jannik-Cloud Service
         ping: https://god.orfel.de
+    - Herbstausfahrt:
+        icon: car.png
+        href: https://karte.orfel.de
+        description: Karte
+        ping: https://karte.orfel.de
     - Nein:
         icon: smile.png
         href: https://nein.orfel.de
@@ -221,11 +226,26 @@
         href: https://dash.orfel.de
         description: Custom Dashboard & Portal
         ping: https://dash.orfel.de
+    - Hochzeit:
+        icon: docker.png
+        href: https://hochzeit.orfel.de
+        description: Jannik-Cloud Service
+        ping: https://hochzeit.orfel.de
     - Keyselector:
         icon: docker.png
         href: https://keyselector.orfel.de
         description: Jannik-Cloud Service
         ping: https://keyselector.orfel.de
+    - Qr Nele Till:
+        icon: docker.png
+        href: https://qr.orfel.de
+        description: Jannik-Cloud Service
+        ping: https://qr.orfel.de
+    - Streamgremlin:
+        icon: docker.png
+        href: https://streamgremlin.orfel.de
+        description: Jannik-Cloud Service
+        ping: https://streamgremlin.orfel.de
     - TokenWatch Deployment for Jannik-Cloud:
         icon: docker.png
         href: https://tw.orfel.de

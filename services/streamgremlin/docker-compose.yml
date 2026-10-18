@@ -10,6 +10,40 @@ services:
     volumes:
       - ./config:/app/config
       - ./sounds:/app/sounds
+      - ./tts_cache:/app/tts_cache
+      - ./.env:/app/.env
+    networks:
+      - jannik-cloud-net
+
+  streamgremlin-jonisdaily:
+    image: git.orfel.de/jannik/streamgremlin:latest
+    container_name: streamgremlin-jonisdaily
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:4737:4736"
+    env_file:
+      - .env.jonisdaily
+    volumes:
+      - ./config:/app/config
+      - ./sounds:/app/sounds
+      - ./tts_cache:/app/tts_cache
+      - ./.env.jonisdaily:/app/.env
+    networks:
+      - jannik-cloud-net
+
+  streamgremlin-niggephotography:
+    image: git.orfel.de/jannik/streamgremlin:latest
+    container_name: streamgremlin-niggephotography
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:4738:4736"
+    env_file:
+      - .env.niggephotography
+    volumes:
+      - ./config:/app/config
+      - ./sounds:/app/sounds
+      - ./tts_cache:/app/tts_cache
+      - ./.env.niggephotography:/app/.env
     networks:
       - jannik-cloud-net
 

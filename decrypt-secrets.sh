@@ -25,18 +25,18 @@ fi
 log "Decrypting all .env.age files..."
 
 count=0
-for env_age in "${SERVICES_DIR}"/*/.env.age; do
+for env_age in "${SERVICES_DIR}"/*/.env*.age; do
     if [[ ! -f "${env_age}" ]]; then
         continue
     fi
 
     svc_dir="$(dirname "${env_age}")"
     svc_name="$(basename "${svc_dir}")"
-    env_file="${svc_dir}/.env"
+    env_file="${env_age%.age}"
 
     age --decrypt -i "${AGE_PRIVATE_KEY}" -o "${env_file}" "${env_age}"
     chmod 600 "${env_file}"
-    log "  ✓ ${svc_name}/.env"
+    log "  ✓ ${svc_name}/$(basename "${env_file}")"
     count=$((count + 1))
 done
 

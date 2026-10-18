@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -euo pipefail
+SVC_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_DIR="$(cd "${SVC_DIR}/../.." && pwd)"
+AGE_KEY="${REPO_DIR}/keys/age-key.txt"
+
+mkdir -p "${SVC_DIR}/config" "${SVC_DIR}/sounds" "${SVC_DIR}/tts_cache"
+
+if [[ -f "${AGE_KEY}" ]] && command -v age >/dev/null 2>&1; then
+    for env_age in "${SVC_DIR}"/.env*.age; do
+        if [[ -f "${env_age}" ]]; then
+            target_env="${env_age%.age}"
+            age --decrypt -i "${AGE_KEY}" -o "${target_env}" "${env_age}"
+            sed -i 's/\r$//' "${target_env}"
+            chmod 600 "${target_env}"
+            echo "Decrypted $(basename "${target_env}")"
+        fi
+    done
+fi

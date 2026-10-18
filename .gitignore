@@ -1,5 +1,7 @@
 # Environment files (contain secrets)
 **/.env
+**/.env.*
+!**/.env*.age
 
 # AGE private key (never commit)
 **/age-key.txt

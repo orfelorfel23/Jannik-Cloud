@@ -1,7 +1,7 @@
 {
   "title": "Jannik-Cloud Hub",
   "description": "Zentrale Übersicht aller aktiven Cloud-Dienste",
-  "activeCount": 44,
+  "activeCount": 48,
   "categories": [
     {
       "name": "Cloud & Speicher",
@@ -454,6 +454,17 @@
           "category": "Community & Apps"
         },
         {
+          "id": "herbstausfahrt",
+          "title": "Herbstausfahrt",
+          "description": "Karte",
+          "url": "https://karte.orfel.de",
+          "domains": [
+            "karte.orfel.de"
+          ],
+          "icon": "fa-car",
+          "category": "Community & Apps"
+        },
+        {
           "id": "nein",
           "title": "Nein",
           "description": "Jannik-Cloud Service",
@@ -516,6 +527,31 @@
           "category": "Weitere Dienste"
         },
         {
+          "id": "hochzeit",
+          "title": "Hochzeit",
+          "description": "Jannik-Cloud Service",
+          "url": "https://hochzeit.orfel.de",
+          "domains": [
+            "hochzeit.orfel.de",
+            "tillundnele.orfel.de",
+            "neleundtill.orfel.de",
+            "till-und-nele.orfel.de",
+            "nele-und-till.orfel.de",
+            "hochzeit-tillundnele.orfel.de",
+            "hochzeit-neleundtill.orfel.de",
+            "hochzeit-till-und-nele.orfel.de",
+            "hochzeit-nele-und-till.orfel.de",
+            "tillundnele-hochzeit.orfel.de",
+            "neleundtill-hochzeit.orfel.de",
+            "till-und-nele-hochzeit.orfel.de",
+            "nele-und-till-hochzeit.orfel.de",
+            "nt-hochzeit.orfel.de",
+            "tn-hochzeit.orfel.de"
+          ],
+          "icon": "fa-cubes",
+          "category": "Weitere Dienste"
+        },
+        {
           "id": "homepage",
           "title": "Homepage",
           "description": "Dashboard & Service Portal",
@@ -535,6 +571,34 @@
             "keyselector.orfel.de",
             "keysel.orfel.de",
             "ks.orfel.de"
+          ],
+          "icon": "fa-cubes",
+          "category": "Weitere Dienste"
+        },
+        {
+          "id": "qr-nele-till",
+          "title": "Qr Nele Till",
+          "description": "Jannik-Cloud Service",
+          "url": "https://qr.orfel.de",
+          "domains": [
+            "qr.orfel.de"
+          ],
+          "icon": "fa-cubes",
+          "category": "Weitere Dienste"
+        },
+        {
+          "id": "streamgremlin",
+          "title": "Streamgremlin",
+          "description": "Jannik-Cloud Service",
+          "url": "https://streamgremlin.orfel.de",
+          "domains": [
+            "streamgremlin.orfel.de",
+            "sg.orfel.de",
+            "gremlin.orfel.de",
+            "jonisdaily-streamgremlin.orfel.de",
+            "jsg.orfel.de",
+            "niggephotography-streamgremlin.orfel.de",
+            "nsg.orfel.de"
           ],
           "icon": "fa-cubes",
           "category": "Weitere Dienste"
