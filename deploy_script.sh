@@ -5,6 +5,7 @@
 # Usage:  sudo bash /opt/Jannik-Cloud/deploy_script.sh
 ###############################################################################
 set -euo pipefail
+export GIT_TERMINAL_PROMPT=0
 
 REPO_DIR="/opt/Jannik-Cloud"
 GIT_REPO_URL="https://github.com/orfelorfel23/Jannik-Cloud.git"
