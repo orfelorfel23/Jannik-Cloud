@@ -7,6 +7,8 @@ services:
       - "127.0.0.1:4736:4736"
     env_file:
       - .env
+    environment:
+      - INSTANCE_ID=streamgremlin
     volumes:
       - ./config:/app/config
       - ./sounds:/app/sounds
@@ -23,6 +25,8 @@ services:
       - "127.0.0.1:4737:4736"
     env_file:
       - .env.jonisdaily
+    environment:
+      - INSTANCE_ID=jonisdaily
     volumes:
       - ./config:/app/config
       - ./sounds:/app/sounds
@@ -39,6 +43,8 @@ services:
       - "127.0.0.1:4738:4736"
     env_file:
       - .env.niggephotography
+    environment:
+      - INSTANCE_ID=niggephotography
     volumes:
       - ./config:/app/config
       - ./sounds:/app/sounds
