@@ -1,6 +1,6 @@
 services:
   authentik-server:
-    image: ghcr.io/goauthentik/server:latest
+    image: beryju/authentik:2025.2.4
     container_name: authentik-server
     restart: unless-stopped
     command: server
@@ -20,13 +20,13 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.5"
-          memory: 512M
+          cpus: "1.0"
+          memory: 1024M
     networks:
       - jannik-cloud-net
 
   authentik-worker:
-    image: ghcr.io/goauthentik/server:latest
+    image: beryju/authentik:2025.2.4
     container_name: authentik-worker
     restart: unless-stopped
     command: worker
@@ -45,8 +45,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.5"
-          memory: 768M
+          cpus: "1.0"
+          memory: 1024M
     networks:
       - jannik-cloud-net
 
