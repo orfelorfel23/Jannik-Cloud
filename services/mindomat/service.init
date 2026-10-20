@@ -19,19 +19,22 @@ fi
 
 AUTH_REPO_URL="${VAULT_REPO_URL}"
 if [[ -n "${VAULT_SYNC_TOKEN}" ]]; then
-    AUTH_REPO_URL="https://${VAULT_SYNC_TOKEN}@git.orfel.de/Jannik/Mind-o-Mat-Vault.git"
+    AUTH_REPO_URL="https://oauth2:${VAULT_SYNC_TOKEN}@git.orfel.de/Jannik/Mind-o-Mat-Vault.git"
 fi
 
-git config --global --add safe.directory "${VAULT_DIR}" 2>/dev/null || true
+if ! git config --global --get-all safe.directory 2>/dev/null | grep -qFx "${VAULT_DIR}"; then
+    git config --global --add safe.directory "${VAULT_DIR}" 2>/dev/null || true
+fi
 
 # 1. Erreichbarkeit von Gitea prüfen (Gitea / Caddy brauchen nach dem Start oft ein paar Sekunden)
 GITEA_READY=false
 if [[ -n "${VAULT_SYNC_TOKEN}" ]]; then
     MAX_RETRIES=10
     COUNT=0
+    LAST_ERROR=""
     while [[ ${COUNT} -lt ${MAX_RETRIES} ]]; do
         COUNT=$((COUNT + 1))
-        if git ls-remote "${AUTH_REPO_URL}" &>/dev/null; then
+        if LAST_ERROR=$(git ls-remote "${AUTH_REPO_URL}" 2>&1 >/dev/null); then
             GITEA_READY=true
             break
         fi
@@ -40,6 +43,9 @@ if [[ -n "${VAULT_SYNC_TOKEN}" ]]; then
     done
     if [[ "${GITEA_READY}" != "true" ]]; then
         echo "      WARNUNG: git.orfel.de nach ${MAX_RETRIES} Versuchen nicht erreichbar."
+        if [[ -n "${LAST_ERROR}" ]]; then
+            echo "      Fehler-Details: ${LAST_ERROR}"
+        fi
     fi
 else
     echo "      WARNUNG: Kein VAULT_SYNC_TOKEN gefunden. Überspringe Remote-Sync."

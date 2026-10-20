@@ -18,7 +18,7 @@ fi
 
 AUTH_REPO_URL="${VAULT_REPO_URL}"
 if [[ -n "${VAULT_SYNC_TOKEN}" ]]; then
-    AUTH_REPO_URL="https://${VAULT_SYNC_TOKEN}@git.orfel.de/Jannik/Mind-o-Mat-Vault.git"
+    AUTH_REPO_URL="https://oauth2:${VAULT_SYNC_TOKEN}@git.orfel.de/Jannik/Mind-o-Mat-Vault.git"
 fi
 
 # Falls Vault nicht existiert oder kein Git-Repo ist: initialisieren

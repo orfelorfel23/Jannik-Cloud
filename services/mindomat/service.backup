@@ -16,7 +16,7 @@ echo "===================================="
 mkdir -p "${BACKUP_DIR}"
 
 # 1. Vault-Backup (Notizen, Konfig, Wiki)
-echo "[1/2] Backing up Vault..."
+echo "[1/3] Backing up Vault..."
 if [[ -d "/mnt/Jannik-Cloud-Volume-01/mindomat-vault" ]]; then
     tar -czf "${VAULT_BACKUP_FILE}" \
         -C /mnt/Jannik-Cloud-Volume-01 mindomat-vault
@@ -26,7 +26,7 @@ else
 fi
 
 # 2. QMD-Cache-Backup (Embeddings, ~2 GB)
-echo "[2/2] Backing up QMD cache..."
+echo "[2/3] Backing up QMD cache..."
 if [[ -d "${QMD_DATA_DIR}" ]]; then
     # Nur Embedding-Files, nicht das ganze /data
     if [[ -d "${QMD_DATA_DIR}/embeddings" ]]; then

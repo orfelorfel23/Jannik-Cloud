@@ -2,4 +2,13 @@
 	email jannik.mueller.jannik+git@googlemail.com
 }
 
+(access_log) {
+	log {
+		output file /data/access.log {
+			roll_size 20mb
+			roll_keep 3
+		}
+	}
+}
+
 import /etc/caddy/fragments/*.caddy

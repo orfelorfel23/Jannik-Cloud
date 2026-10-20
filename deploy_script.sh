@@ -4,7 +4,7 @@
 # Fully idempotent. Safe to re-run at any time.
 # Usage:  sudo bash /opt/Jannik-Cloud/deploy_script.sh
 ###############################################################################
-set -euo pipefail
+set -Eeuo pipefail
 export GIT_TERMINAL_PROMPT=0
 
 REPO_DIR="/opt/Jannik-Cloud"
@@ -57,7 +57,7 @@ on_deploy_failure() {
         local elapsed=$(( $(date +%s) - DEPLOY_START_TIME ))
         duration_msg=" nach $((elapsed / 60))m $((elapsed % 60))s"
     fi
-    notify "Deployment GEFEHLT" \
+    notify "Deployment FEHLGESCHLAGEN" \
         "Deploy-Skript fehlgeschlagen${duration_msg}. Prüfe die Server-Logs." \
         "urgent" "x,rotating_light"
     # Ensure Caddy is not left in maintenance mode
@@ -129,7 +129,6 @@ install_packages() {
 configure_docker_daemon() {
     log "Configuring Docker daemon log limits..."
     mkdir -p /etc/docker
-    # Only write if it does not already exist with log limitations
     if ! grep -q "max-file" /etc/docker/daemon.json 2>/dev/null; then
         cat > /etc/docker/daemon.json <<'EOF'
 {
@@ -148,27 +147,78 @@ EOF
 }
 
 ###############################################################################
-# 2b. Enable fail2ban for SSH
+# 2b. Enable fail2ban for SSH & Caddy scanner
 ###############################################################################
 setup_fail2ban() {
-    log "Configuring fail2ban for SSH..."
-    cat > /etc/fail2ban/jail.local <<'EOF'
+    log "Configuring fail2ban (strict SSH mode, recidive & Caddy scanner)..."
+    mkdir -p /etc/fail2ban/filter.d
+
+    # 1. Caddy bad-bot / vulnerability scanner filter
+    local scanner_filter="/etc/fail2ban/filter.d/caddy-scanner.conf"
+    local scanner_filter_content='[Definition]
+failregex = ^.*"remote_ip":"<HOST>".*"uri":"[^"]*(?:\.env|wp-admin|wp-login|phpmyadmin|shell\.php|actuator|boaform|solr|telescope|\.git/config|\.aws/credentials|\.vscode|\.ds_store|xmlrpc\.php).*$
+ignoreregex ='
+
+    if [[ ! -f "${scanner_filter}" ]] || [[ "$(cat "${scanner_filter}")" != "${scanner_filter_content}" ]]; then
+        echo "${scanner_filter_content}" > "${scanner_filter}"
+    fi
+
+    # 2. Main jail configuration
+    local jail_config="/etc/fail2ban/jail.local"
+    local new_jail_content='[DEFAULT]
+banaction = nftables
+banaction_allports = nftables[type=allports]
+ignoreip = 127.0.0.1/8 ::1 100.64.0.0/10
+bantime.increment = true
+bantime.factor = 2
+bantime.maxtime = 52w
+
 [sshd]
-enabled  = true
-port     = ssh
-filter   = sshd
-logpath  = /var/log/auth.log
-maxretry = 5
-bantime  = 3600
-findtime = 600
-EOF
-    systemctl enable --now fail2ban
-    systemctl restart fail2ban
-    log "fail2ban is active."
+enabled      = true
+port         = ssh
+backend      = systemd
+journalmatch = _SYSTEMD_UNIT=ssh.service + _COMM=sshd
+filter       = sshd[mode=aggressive]
+maxretry     = 2
+findtime     = 24h
+bantime      = 1w
+
+[recidive]
+enabled   = true
+logpath   = /var/log/fail2ban.log
+banaction = %(banaction_allports)s
+findtime  = 1d
+maxretry  = 3
+bantime   = 1w
+
+[caddy-scanner]
+enabled   = true
+port      = http,https
+filter    = caddy-scanner
+logpath   = /mnt/Jannik-Cloud-Volume-01/caddy/data/access.log
+maxretry  = 2
+findtime  = 24h
+bantime   = 1w'
+
+    local needs_restart=false
+    if [[ ! -f "${jail_config}" ]] || [[ "$(cat "${jail_config}")" != "${new_jail_content}" ]]; then
+        echo "${new_jail_content}" > "${jail_config}"
+        needs_restart=true
+    fi
+
+    systemctl enable --now fail2ban -q 2>/dev/null || systemctl enable --now fail2ban >/dev/null 2>&1 || true
+
+    if [[ "${needs_restart}" == "true" ]]; then
+        systemctl restart fail2ban >/dev/null 2>&1 || true
+        log "fail2ban updated and restarted."
+    else
+        systemctl is-active --quiet fail2ban || systemctl start fail2ban >/dev/null 2>&1 || true
+        log "fail2ban configuration up to date."
+    fi
 }
 
 ###############################################################################
-# 2b. Ensure swap is configured
+# 2c. Ensure swap is configured
 ###############################################################################
 setup_swap() {
     local SWAP_FILE="/swapfile"
@@ -193,11 +243,11 @@ setup_swap() {
 }
 
 ###############################################################################
-# 2c. Ensure crontab is configured for daily auto-deploy
+# 2d. Ensure crontab is configured for daily auto-deploy
 ###############################################################################
 setup_cron_job() {
     log "Configuring daily automatic deployment (cron) for 02:31..."
-    local CRON_JOB="31 2 * * * cd /opt/Jannik-Cloud && git fetch origin && git reset --hard origin/main && /bin/bash /opt/Jannik-Cloud/deploy_script.sh >> /var/log/jannik-cloud-deploy.log 2>&1"
+    local CRON_JOB="31 2 * * * cd /opt/Jannik-Cloud && /bin/bash /opt/Jannik-Cloud/deploy_script.sh >> /var/log/jannik-cloud-deploy.log 2>&1"
     
     # Remove old copies of this cron job to prevent duplicates
     crontab -l 2>/dev/null | grep -v "/opt/Jannik-Cloud/deploy_script.sh" | crontab - || true
@@ -208,7 +258,7 @@ setup_cron_job() {
 }
 
 ###############################################################################
-# 2d. Ensure system timezone is correct
+# 2e. Ensure system timezone is correct
 ###############################################################################
 configure_timezone() {
     local TARGET_TZ="Europe/Berlin"
@@ -271,8 +321,20 @@ update_repo() {
     else
         cd "${REPO_DIR}"
         git fetch origin
-        git reset --hard origin/main || git reset --hard origin/master || true
-        log "Repository updated via git pull."
+        local current_head remote_head
+        current_head=$(git rev-parse HEAD 2>/dev/null || echo "1")
+        remote_head=$(git rev-parse origin/main 2>/dev/null || git rev-parse origin/master 2>/dev/null || echo "2")
+        if [[ "${current_head}" != "${remote_head}" ]]; then
+            git reset --hard origin/main || git reset --hard origin/master || true
+            log "Repository updated via git reset."
+        else
+            log "Repository already at latest commit (${current_head:0:7})."
+        fi
+    fi
+
+    # Deduplicate safe.directory in root gitconfig if inflated by legacy runs
+    if [[ -f /root/.gitconfig ]]; then
+        awk '!seen[$0]++' /root/.gitconfig > /root/.gitconfig.dedup 2>/dev/null && mv -f /root/.gitconfig.dedup /root/.gitconfig
     fi
 
     # Restore executable permissions (git reset may strip them)
@@ -310,18 +372,15 @@ discover_services() {
 
 cleanup_deactivated() {
     log "Checking for deactivated services to clean up..."
-    # Get all running containers with our project label
-    local running_containers
-    running_containers=$(docker ps --format '{{.Names}}' 2>/dev/null || true)
-
     for svc_dir in "${SERVICES_DIR}"/*/; do
-        svc_name="$(basename "${svc_dir}")"
+        local svc_name="$(basename "${svc_dir}")"
         if ! is_active_service "${svc_dir}" && [[ -f "${svc_dir}/docker-compose.yml" ]]; then
-            # Check if this service has running containers
-            if echo "${running_containers}" | grep -q "${svc_name}"; then
+            # Precisely check if this service currently has running containers
+            local running_in_svc
+            running_in_svc=$(cd "${svc_dir}" && docker compose ps -q 2>/dev/null || true)
+            if [[ -n "${running_in_svc}" ]]; then
                 log "Stopping deactivated service: ${svc_name}"
-                cd "${svc_dir}"
-                docker compose down --remove-orphans 2>/dev/null || true
+                ( cd "${svc_dir}" && docker compose down --remove-orphans 2>/dev/null || true )
             fi
         fi
     done
@@ -331,7 +390,7 @@ cleanup_deactivated() {
 # 7b. Run pre-stop service backup hooks
 ###############################################################################
 run_service_backup_hooks() {
-    log "Running service backup hooks (before stopping containers)..."
+    log "Running service backup hooks..."
     for svc_name in "${ACTIVE_SERVICES[@]}"; do
         local svc_dir="${SERVICES_DIR}/${svc_name}"
         local backup_script="${svc_dir}/service.backup"
@@ -344,67 +403,7 @@ run_service_backup_hooks() {
 }
 
 ###############################################################################
-# 8. Enable Maintenance Mode & Stop all running service containers
-###############################################################################
-enable_maintenance_mode() {
-    log "Enabling maintenance mode on all active subdomains..."
-    
-    local all_domains
-    # Extract domains from all service caddy definitions (excluding internal infra like git.orfel.de needed for builds/syncs)
-    all_domains=$(grep -hEo "([a-zA-Z0-9.-]+\.orfel\.de|orfel\.de)" "${SERVICES_DIR}"/*/*.caddy 2>/dev/null | grep -v -E "^git\.orfel\.de$" | sort -u | tr '\n' ' ' | sed 's/ $//')
-    
-    # Fallback to CADDY_FRAGMENTS_DIR if needed
-    if [[ -z "${all_domains}" ]]; then
-        all_domains=$(grep -hEo "([a-zA-Z0-9.-]+\.orfel\.de|orfel\.de)" "${CADDY_FRAGMENTS_DIR}"/*.caddy 2>/dev/null | grep -v -E "^git\.orfel\.de$" | sort -u | tr '\n' ' ' | sed 's/ $//')
-    fi
-    
-    if [[ -z "${all_domains}" ]]; then
-        warn "  No domains found for maintenance mode. Skipping."
-        return
-    fi
-    
-    mkdir -p "${CADDY_FRAGMENTS_DIR}"
-    # Clear existing fragments except gitea.caddy (needs to stay online for pulling images)
-    find "${CADDY_FRAGMENTS_DIR}" -name '*.caddy' ! -name 'gitea.caddy' -type f -delete 2>/dev/null || true
-    
-    # Create maintenance fragment
-    cat << 'EOF' > "${CADDY_FRAGMENTS_DIR}/maintenance.caddy"
-DOMAINS_PLACEHOLDER {
-    header Content-Type text/html
-    respond "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><title>Wartungsarbeiten</title><style>body{background:#1a202c;color:#e2e8f0;font-family:system-ui,-apple-system,sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0}.box{text-align:center;padding:2rem;background:#2d3748;border-radius:1rem;box-shadow:0 10px 15px -3px rgba(0,0,0,0.1)}h1{margin-top:0;color:#63b3ed}</style></head><body><div class=\"box\"><h1>Wartungsarbeiten</h1><p>Das System wird gerade aktualisiert.<br>Die Seite ist in wenigen Minuten wieder erreichbar.<br>ca. Restzeit verbleibend: <span id=\"countdown\">10:00</span></p></div><script>var startTime=START_TIME_PLACEHOLDER;var duration=10*60*1000;function update(){var elapsed=Date.now()-startTime;var remaining=Math.max(0,duration-elapsed);var min=Math.floor(remaining/60000);var sec=Math.floor((remaining%60000)/1000);document.getElementById('countdown').innerText=min+':'+(sec<10?'0':'')+sec;if(remaining>0)setTimeout(update,1000);}update();</script></body></html>" 503
-}
-EOF
-    local start_time_ms=$(($(date +%s) * 1000))
-    sed -i "s|DOMAINS_PLACEHOLDER|${all_domains}|g" "${CADDY_FRAGMENTS_DIR}/maintenance.caddy"
-    sed -i "s|START_TIME_PLACEHOLDER|${start_time_ms}|g" "${CADDY_FRAGMENTS_DIR}/maintenance.caddy"
-    
-    # Ensure Caddy is running and reloaded with maintenance config
-    if docker ps --format '{{.Names}}' | grep -q "^caddy$"; then
-        log "  Reloading Caddy with maintenance config..."
-        docker exec caddy caddy reload --config /etc/caddy/Caddyfile 2>/dev/null || true
-    elif [[ " ${ACTIVE_SERVICES[*]} " =~ " caddy " ]]; then
-        log "  Starting Caddy in maintenance mode..."
-        cd "${SERVICES_DIR}/caddy"
-        docker compose up -d --remove-orphans 2>/dev/null || true
-    fi
-    sleep 1
-}
-
-stop_all_services() {
-    log "Stopping all currently running service containers (excluding infra)..."
-    for svc_name in "${ACTIVE_SERVICES[@]}"; do
-        if [[ " ${INFRA_SERVICES[*]} " =~ " ${svc_name} " ]]; then
-            continue
-        fi
-        local svc_dir="${SERVICES_DIR}/${svc_name}"
-        cd "${svc_dir}"
-        docker compose down --remove-orphans 2>/dev/null || true
-    done
-    log "All remaining services stopped."
-}
-
-###############################################################################
-# 9. Decrypt .env.age files
+# 8. Decrypt .env.age files
 ###############################################################################
 decrypt_envs() {
     log "Decrypting .env.age files..."
@@ -426,7 +425,7 @@ decrypt_envs() {
 }
 
 ###############################################################################
-# 10. Create persistent volume directories
+# 9. Create persistent volume directories
 ###############################################################################
 create_volumes() {
     log "Creating persistent volume directories..."
@@ -438,23 +437,7 @@ create_volumes() {
 }
 
 ###############################################################################
-# 10b. Run per-service init hooks (service.init scripts)
-###############################################################################
-run_service_init_hooks() {
-    log "Running service init hooks..."
-    for svc_name in "${ACTIVE_SERVICES[@]}"; do
-        local svc_dir="${SERVICES_DIR}/${svc_name}"
-        local init_script="${svc_dir}/service.init"
-        if [[ -f "${init_script}" ]]; then
-            log "  Running init hook for ${svc_name}..."
-            chmod +x "${init_script}" 2>/dev/null || true
-            ( cd "${svc_dir}" && bash "${init_script}" ) || warn "  Init hook for ${svc_name} exited with error (non-fatal, continuing)..."
-        fi
-    done
-}
-
-###############################################################################
-# 10c. Generate Dynamic Dashboard & Homepage configurations
+# 10. Generate Dynamic Dashboard & Homepage configurations
 ###############################################################################
 generate_dashboards() {
     log "Generating dynamic dashboard and homepage configurations..."
@@ -469,44 +452,72 @@ generate_dashboards() {
 }
 
 ###############################################################################
-# 11. Assemble Caddy fragments
-###############################################################################
-assemble_caddy_fragments() {
-    log "Assembling Caddy fragments..."
-    mkdir -p "${CADDY_FRAGMENTS_DIR}"
-    # Remove old fragments
-    rm -f "${CADDY_FRAGMENTS_DIR}"/*.caddy
-
-    for svc_name in "${ACTIVE_SERVICES[@]}"; do
-        local svc_dir="${SERVICES_DIR}/${svc_name}"
-        local caddy_file="${svc_dir}/${svc_name}.caddy"
-        if [[ -f "${caddy_file}" ]]; then
-            cp "${caddy_file}" "${CADDY_FRAGMENTS_DIR}/"
-            log "  Copied: ${svc_name}.caddy"
-        fi
-    done
-}
-
-###############################################################################
-# 12. Pull / build Docker images
+# 11. Pull / build Docker images (Performed BEFORE any container downtime)
 ###############################################################################
 pull_images() {
-    log "Pulling/building Docker images for all active services..."
+    log "Pulling/building Docker images for all active services (in background)..."
     for svc_name in "${ACTIVE_SERVICES[@]}"; do
         local svc_dir="${SERVICES_DIR}/${svc_name}"
         cd "${svc_dir}"
         if [[ -f "${svc_dir}/Dockerfile" ]]; then
             log "  Building ${svc_name} (has Dockerfile)..."
-            timeout 1800 docker compose build --no-cache --progress=plain > build.log 2>&1 || {
+            local build_start=$(date +%s)
+            if timeout 1800 docker compose build --no-cache --progress=plain > build.log 2>&1; then
+                local build_time=$(( $(date +%s) - build_start ))
+                log "  ✓ Built ${svc_name} in ${build_time}s"
+            else
                 err "Build failed/timed out for ${svc_name}. Check ${svc_dir}/build.log"
                 SKIPPED_SERVICES+=("${svc_name} (Build failed)")
                 continue
-            }
+            fi
         else
             log "  Pulling ${svc_name}..."
             timeout 120 docker compose pull 2>&1 || warn "  Pull failed/timed out for ${svc_name} (will use cached image if available)"
         fi
     done
+}
+
+###############################################################################
+# 12. Maintenance Mode handling
+###############################################################################
+enable_maintenance_mode() {
+    log "Enabling maintenance mode on active subdomains during container reload..."
+    
+    local all_domains
+    all_domains=$(grep -hEo "([a-zA-Z0-9.-]+\.orfel\.de|orfel\.de)" "${SERVICES_DIR}"/*/*.caddy 2>/dev/null | grep -v -E "^git\.orfel\.de$" | sort -u | tr '\n' ' ' | sed 's/ $//')
+    
+    if [[ -z "${all_domains}" ]]; then
+        all_domains=$(grep -hEo "([a-zA-Z0-9.-]+\.orfel\.de|orfel\.de)" "${CADDY_FRAGMENTS_DIR}"/*.caddy 2>/dev/null | grep -v -E "^git\.orfel\.de$" | sort -u | tr '\n' ' ' | sed 's/ $//')
+    fi
+    
+    if [[ -z "${all_domains}" ]]; then
+        warn "  No domains found for maintenance mode. Skipping."
+        return
+    fi
+    
+    mkdir -p "${CADDY_FRAGMENTS_DIR}"
+    # Keep gitea.caddy online so git operations and init hooks keep working
+    find "${CADDY_FRAGMENTS_DIR}" -name '*.caddy' ! -name 'gitea.caddy' -type f -delete 2>/dev/null || true
+    
+    # Create maintenance fragment
+    cat << 'EOF' > "${CADDY_FRAGMENTS_DIR}/maintenance.caddy"
+DOMAINS_PLACEHOLDER {
+    header Content-Type text/html
+    respond "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><title>Wartungsarbeiten</title><style>body{background:#1a202c;color:#e2e8f0;font-family:system-ui,-apple-system,sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0}.box{text-align:center;padding:2rem;background:#2d3748;border-radius:1rem;box-shadow:0 10px 15px -3px rgba(0,0,0,0.1)}h1{margin-top:0;color:#63b3ed}</style></head><body><div class=\"box\"><h1>Wartungsarbeiten</h1><p>Das System wird gerade aktualisiert.<br>Die Seite ist in wenigen Augenblicken wieder erreichbar.<br>ca. Restzeit: <span id=\"countdown\">02:00</span></p></div><script>var startTime=START_TIME_PLACEHOLDER;var duration=2*60*1000;function update(){var elapsed=Date.now()-startTime;var remaining=Math.max(0,duration-elapsed);var min=Math.floor(remaining/60000);var sec=Math.floor((remaining%60000)/1000);document.getElementById('countdown').innerText=min+':'+(sec<10?'0':'')+sec;if(remaining>0)setTimeout(update,1000);}update();</script></body></html>" 503
+}
+EOF
+    local start_time_ms=$(($(date +%s) * 1000))
+    sed -i "s|DOMAINS_PLACEHOLDER|${all_domains}|g" "${CADDY_FRAGMENTS_DIR}/maintenance.caddy"
+    sed -i "s|START_TIME_PLACEHOLDER|${start_time_ms}|g" "${CADDY_FRAGMENTS_DIR}/maintenance.caddy"
+    
+    if docker ps --format '{{.Names}}' | grep -q "^caddy$"; then
+        log "  Reloading Caddy with maintenance config..."
+        docker exec caddy caddy reload --config /etc/caddy/Caddyfile 2>/dev/null || true
+    elif [[ " ${ACTIVE_SERVICES[*]} " =~ " caddy " ]]; then
+        log "  Starting Caddy in maintenance mode..."
+        cd "${SERVICES_DIR}/caddy"
+        docker compose up -d --remove-orphans 2>/dev/null || true
+    fi
 }
 
 ###############################################################################
@@ -535,7 +546,7 @@ start_infra() {
         docker compose up -d --remove-orphans
         wait_for_gitea
 
-        # Activate Gitea Caddy reverse proxy immediately (so init hooks & builds can clone via HTTPS)
+        # Activate Gitea Caddy reverse proxy immediately
         if [[ -f "${SERVICES_DIR}/gitea/gitea.caddy" ]]; then
             cp "${SERVICES_DIR}/gitea/gitea.caddy" "${CADDY_FRAGMENTS_DIR}/"
             if docker ps --format '{{.Names}}' | grep -q "^caddy$"; then
@@ -544,7 +555,6 @@ start_infra() {
             fi
         fi
     fi
-
 }
 
 wait_for_postgres() {
@@ -578,8 +588,6 @@ wait_for_gitea() {
     log "Gitea is reachable."
 }
 
-
-
 ###############################################################################
 # 14. Auto-create PostgreSQL databases and users
 ###############################################################################
@@ -589,7 +597,6 @@ create_postgres_dbs() {
         local svc_dir="${SERVICES_DIR}/${svc_name}"
         local env_file="${svc_dir}/.env"
 
-        # Skip if no .env or NEEDS_POSTGRES is not set
         if [[ ! -f "${env_file}" ]]; then
             continue
         fi
@@ -600,10 +607,8 @@ create_postgres_dbs() {
             continue
         fi
 
-        # Sanitize .env file to ensure no CRLF line endings break docker-compose variable interpolation
         sed -i 's/\r$//' "${env_file}"
 
-        # Read DB credentials from service .env
         local db_name db_user db_pass
         db_name=$(grep -E "^DB_NAME=" "${env_file}" | cut -d= -f2 | tr -d '[:space:]"' || echo "${svc_name}_db")
         db_user=$(grep -E "^DB_USER=" "${env_file}" | cut -d= -f2 | tr -d '[:space:]"' || echo "${svc_name}_user")
@@ -616,52 +621,51 @@ create_postgres_dbs() {
 
         log "  Creating DB '${db_name}' and user '${db_user}' for ${svc_name}..."
 
-        # Create user if not exists, update password
-        docker exec "${POSTGRES_CONTAINER}" psql -U postgres -c \
-            "DO \$\$ BEGIN
-                IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = '${db_user}') THEN
-                    CREATE ROLE ${db_user} WITH LOGIN PASSWORD '${db_pass}';
-                ELSE
-                    ALTER ROLE ${db_user} WITH PASSWORD '${db_pass}';
-                END IF;
-            END \$\$;" 2>/dev/null
+        # Create user if not exists, update password (piped via stdin to protect credentials from process listing)
+        docker exec -i "${POSTGRES_CONTAINER}" psql -q -U postgres <<EOF 2>/dev/null
+DO \$\$ BEGIN
+    IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = '${db_user}') THEN
+        CREATE ROLE ${db_user} WITH LOGIN PASSWORD '${db_pass}';
+    ELSE
+        ALTER ROLE ${db_user} WITH PASSWORD '${db_pass}';
+    END IF;
+END \$\$;
+EOF
 
         # Create database if not exists
-        docker exec "${POSTGRES_CONTAINER}" psql -U postgres -c \
-            "SELECT 1 FROM pg_database WHERE datname = '${db_name}'" | grep -q 1 || \
-            docker exec "${POSTGRES_CONTAINER}" psql -U postgres -c \
-            "CREATE DATABASE ${db_name} OWNER ${db_user};" 2>/dev/null
+        if ! docker exec -i "${POSTGRES_CONTAINER}" psql -q -tAc "SELECT 1 FROM pg_database WHERE datname = '${db_name}'" -U postgres 2>/dev/null | grep -q 1; then
+            docker exec -i "${POSTGRES_CONTAINER}" psql -q -U postgres -c "CREATE DATABASE ${db_name} OWNER ${db_user};" 2>/dev/null
+        fi
 
         # Grant privileges
-        docker exec "${POSTGRES_CONTAINER}" psql -U postgres -c \
-            "GRANT ALL PRIVILEGES ON DATABASE ${db_name} TO ${db_user};" 2>/dev/null
+        docker exec -i "${POSTGRES_CONTAINER}" psql -q -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE ${db_name} TO ${db_user};" 2>/dev/null
 
         log "  ✓ ${svc_name}: DB=${db_name}, User=${db_user}"
     done
 }
 
 ###############################################################################
-# 15. Start remaining services & switch Caddy to production
+# 15. Run per-service init hooks (service.init scripts)
 ###############################################################################
-disable_maintenance_mode() {
-    log "Switching Caddy from maintenance mode to production..."
-    assemble_caddy_fragments
-    
-    if [[ " ${ACTIVE_SERVICES[*]} " =~ " caddy " ]]; then
-        cd "${SERVICES_DIR}/caddy"
-        docker compose up -d --remove-orphans
-        log "  Waiting 2s for backend services to initialize before reloading Caddy..."
-        sleep 2
-        log "  Reloading Caddy with production config..."
-        docker exec caddy caddy reload --config /etc/caddy/Caddyfile 2>/dev/null || true
-        log "Maintenance mode disabled. All services are live!"
-    fi
+run_service_init_hooks() {
+    log "Running service init hooks..."
+    for svc_name in "${ACTIVE_SERVICES[@]}"; do
+        local svc_dir="${SERVICES_DIR}/${svc_name}"
+        local init_script="${svc_dir}/service.init"
+        if [[ -f "${init_script}" ]]; then
+            log "  Running init hook for ${svc_name}..."
+            chmod +x "${init_script}" 2>/dev/null || true
+            ( cd "${svc_dir}" && bash "${init_script}" ) || warn "  Init hook for ${svc_name} exited with error (non-fatal, continuing)..."
+        fi
+    done
 }
 
+###############################################################################
+# 16. Start remaining services with rolling recreation
+###############################################################################
 start_remaining() {
-    log "Starting remaining services..."
+    log "Starting remaining services (rolling recreation)..."
     for svc_name in "${ACTIVE_SERVICES[@]}"; do
-        # Skip infra services (already started)
         if [[ " ${INFRA_SERVICES[*]} " =~ " ${svc_name} " ]]; then
             continue
         fi
@@ -674,15 +678,20 @@ start_remaining() {
             req_uid=$(tr -d '[:space:]\r' < "${uid_file}")
             
             if [[ -n "${req_uid}" ]]; then
-                log "    Setting permissions to UID/GID ${req_uid} for ${svc_name} volumes..."
                 mkdir -p "${VOLUME_BASE}/${svc_name}"
-                # Extract volume host paths and create them so Docker daemon doesn't auto-create them as root
-                grep -E "^\s*- /mnt/Jannik-Cloud-Volume-01" "${SERVICES_DIR}/${svc_name}/docker-compose.yml" | tr -d '\r' | awk -F ':' '{print $1}' | sed -e 's/^[[:space:]]*- //' | while read -r host_path; do
+                grep -E "^\s*- /mnt/Jannik-Cloud-Volume-01" "${SERVICES_DIR}/${svc_name}/docker-compose.yml" 2>/dev/null | tr -d '\r' | awk -F ':' '{print $1}' | sed -e 's/^[[:space:]]*- //' | while read -r host_path; do
                     if [[ -n "${host_path}" ]]; then
                         mkdir -p "${host_path}"
                     fi
                 done
-                chown -R "${req_uid}:${req_uid}" "${VOLUME_BASE}/${svc_name}"
+
+                # Only chown if ownership doesn't already match to prevent slow I/O
+                local current_owner
+                current_owner=$(stat -c '%u:%g' "${VOLUME_BASE}/${svc_name}" 2>/dev/null || echo "")
+                if [[ "${current_owner}" != "${req_uid}:${req_uid}" ]] || find "${VOLUME_BASE}/${svc_name}" -maxdepth 2 ! -user "${req_uid}" -print -quit 2>/dev/null | grep -q .; then
+                    log "    Setting permissions to UID/GID ${req_uid} for ${svc_name} volumes..."
+                    chown -R "${req_uid}:${req_uid}" "${VOLUME_BASE}/${svc_name}"
+                fi
             fi
         fi
 
@@ -695,14 +704,93 @@ start_remaining() {
     done
 }
 
+###############################################################################
+# 17. Verify health of active containers
+###############################################################################
+verify_service_health() {
+    log "Verifying health and status of active service containers..."
+    local unhealthy_found=false
+
+    # 1. Containers in restart loops
+    local restarting
+    restarting=$(docker ps --filter "status=restarting" --format '{{.Names}}' 2>/dev/null || true)
+    if [[ -n "${restarting}" ]]; then
+        for c in ${restarting}; do
+            err "Container '${c}' is crashlooping (status=restarting)!"
+            SKIPPED_SERVICES+=("${c} (Crashloop)")
+            unhealthy_found=true
+        done
+    fi
+
+    # 2. Containers failing healthcheck
+    local unhealthy
+    unhealthy=$(docker ps --filter "health=unhealthy" --format '{{.Names}}' 2>/dev/null || true)
+    if [[ -n "${unhealthy}" ]]; then
+        for c in ${unhealthy}; do
+            warn "Container '${c}' is marked unhealthy!"
+            SKIPPED_SERVICES+=("${c} (Unhealthy)")
+            unhealthy_found=true
+        done
+    fi
+
+    if [[ "${unhealthy_found}" == "false" ]]; then
+        log "All service containers are running normally."
+    fi
+}
 
 ###############################################################################
-# 16. Cleanup unused Docker images and caches
+# 18. Assemble Caddy fragments & switch Caddy to production
+###############################################################################
+assemble_caddy_fragments() {
+    log "Assembling Caddy fragments..."
+    mkdir -p "${CADDY_FRAGMENTS_DIR}"
+    rm -f "${CADDY_FRAGMENTS_DIR}"/*.caddy
+
+    for svc_name in "${ACTIVE_SERVICES[@]}"; do
+        local svc_dir="${SERVICES_DIR}/${svc_name}"
+        local caddy_file="${svc_dir}/${svc_name}.caddy"
+        if [[ -f "${caddy_file}" ]]; then
+            local dest="${CADDY_FRAGMENTS_DIR}/${svc_name}.caddy"
+            cp "${caddy_file}" "${dest}"
+
+            # Inject access log into top-level site blocks if not present
+            if ! grep -q "import access_log" "${dest}"; then
+                sed -i -E '/^[a-zA-Z0-9.*_-]+[^{]*\{/ {
+                    /import access_log/! s/\{/{\n\timport access_log/
+                }' "${dest}" 2>/dev/null || true
+            fi
+            log "  Copied: ${svc_name}.caddy"
+        fi
+    done
+}
+
+disable_maintenance_mode() {
+    log "Switching Caddy from maintenance mode to production..."
+    assemble_caddy_fragments
+    
+    if [[ " ${ACTIVE_SERVICES[*]} " =~ " caddy " ]]; then
+        cd "${SERVICES_DIR}/caddy"
+        docker compose up -d --remove-orphans
+        log "  Reloading Caddy with production config..."
+        docker exec caddy caddy reload --config /etc/caddy/Caddyfile 2>/dev/null || true
+        log "Maintenance mode disabled. All services are live!"
+    fi
+}
+
+###############################################################################
+# 19. Cleanup unused Docker images and caches
 ###############################################################################
 cleanup_docker() {
-    log "Cleaning up unused Docker images and build caches to free disk space..."
+    log "Cleaning up unused Docker images and build caches..."
     docker image prune -af 2>/dev/null || true
-    docker builder prune -af 2>/dev/null || true
+
+    local build_prune_output
+    build_prune_output=$(docker builder prune -af 2>/dev/null || true)
+    local reclaimed
+    reclaimed=$(echo "${build_prune_output}" | grep -E "Total:" || true)
+    if [[ -n "${reclaimed}" ]]; then
+        log "  ${reclaimed}"
+    fi
 }
 
 ###############################################################################
@@ -717,19 +805,12 @@ main() {
         die "This script must be run as root (sudo)."
     fi
 
-    # Track timing
     DEPLOY_START_TIME=$(date +%s)
-
-    # Trap failures so we always get a notification
     trap on_deploy_failure ERR
 
-    # --- Notify early before anything is checked or updated ---
     notify "Deployment startet" \
         "Deploy-Skript um $(date '+%H:%M') gestartet. System wird überprüft und aktualisiert..." \
         "default" "gear"
-        
-    log "Waiting 5 seconds to ensure the start notification is delivered safely..."
-    sleep 5
 
     install_packages
     configure_docker_daemon
@@ -739,47 +820,67 @@ main() {
     setup_cron_job
     handle_age_key
     update_repo
-    
+
     # Fix permissions for webhook scripts so the unprivileged container can read them
     chmod -R a+rx "${REPO_DIR}/services/webhook/scripts" 2>/dev/null || true
 
     ensure_network
     discover_services
     cleanup_deactivated
-    
-    run_service_backup_hooks
 
-    enable_maintenance_mode
-    stop_all_services
+    # 1. Prepare environment, volumes, dashboards, and pull/build images BEFORE taking anything down
     decrypt_envs
     create_volumes
     generate_dashboards
     pull_images
+
+    # 2. Run service backup hooks while containers are still active
+    run_service_backup_hooks
+
+    # 3. Fast rolling reload: activate maintenance mode briefly
+    enable_maintenance_mode
+
+    # 4. Ensure infra (Postgres, Redis, Gitea)
     start_infra
     create_postgres_dbs
+
+    # 5. Run service init hooks
     run_service_init_hooks
+
+    # 6. Recreate / restart modified services
     start_remaining
+
+    # 7. Verify health of containers
+    verify_service_health
+
+    # 8. Switch Caddy back to production
     disable_maintenance_mode
+
+    # 9. Free up disk space
     cleanup_docker
 
-    # --- Notify success ---
+    # Summary and notification
     local elapsed=$(( $(date +%s) - DEPLOY_START_TIME ))
+    local total_containers
+    total_containers=$(docker ps -q 2>/dev/null | wc -l)
+
+    log "=========================================="
+    log "  Deployment complete in $((elapsed / 60))m $((elapsed % 60))s!"
+    log "  Active services: ${#ACTIVE_SERVICES[@]}"
+    log "  Running containers: ${total_containers}"
+    log "=========================================="
+
     if [[ ${#SKIPPED_SERVICES[@]} -gt 0 ]]; then
         notify "Deployment mit Fehlern" \
-            "Deployment in $((elapsed / 60))m $((elapsed % 60))s abgeschlossen. ACHTUNG: Folgende Dienste wurden wegen Fehlern übersprungen: ${SKIPPED_SERVICES[*]}" \
+            "Deployment in $((elapsed / 60))m $((elapsed % 60))s abgeschlossen. ACHTUNG: Folgende Probleme wurden festgestellt: ${SKIPPED_SERVICES[*]}" \
             "high" "warning"
     else
         notify "Deployment abgeschlossen" \
-            "Deployment erfolgreich in $((elapsed / 60))m $((elapsed % 60))s abgeschlossen. ${#ACTIVE_SERVICES[@]} Dienste gestartet." \
+            "Deployment in $((elapsed / 60))m $((elapsed % 60))s erfolgreich abgeschlossen. ${#ACTIVE_SERVICES[@]} Dienste aktiv, ${total_containers} Container laufen." \
             "default" "white_check_mark,tada"
     fi
 
     trap - ERR
-
-    log "=========================================="
-    log "  Deployment complete!"
-    log "=========================================="
-    log "Active services: ${ACTIVE_SERVICES[*]}"
 }
 
 main "$@"
