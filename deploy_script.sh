@@ -721,9 +721,13 @@ start_remaining() {
 
         cd "${SERVICES_DIR}/${svc_name}"
         if ! docker compose up -d --remove-orphans; then
-            err "Failed to start service: ${svc_name}. Skipping to next service."
-            SKIPPED_SERVICES+=("${svc_name} (Start failed)")
-            continue
+            warn "First attempt to start ${svc_name} failed. Retrying in 3 seconds..."
+            sleep 3
+            if ! docker compose up -d --remove-orphans; then
+                err "Failed to start service: ${svc_name}. Skipping to next service."
+                SKIPPED_SERVICES+=("${svc_name} (Start failed)")
+                continue
+            fi
         fi
     done
 }

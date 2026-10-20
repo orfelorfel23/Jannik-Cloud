@@ -1,7 +1,6 @@
 services:
   app:
     image: git.orfel.de/jannik/nele-till-hochzeit:latest
-    pull_policy: always
     container_name: wedding-app
     restart: unless-stopped
     ports:

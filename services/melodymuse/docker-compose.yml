@@ -1,7 +1,6 @@
 services:
   melodymuse:
     image: git.orfel.de/jannik/melodymuse:latest
-    pull_policy: always
     container_name: melodymuse
     restart: unless-stopped
     ports:

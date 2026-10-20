@@ -1,7 +1,6 @@
 services:
   keyselector:
     image: git.orfel.de/jannik/keyselector:latest
-    pull_policy: always
     container_name: keyselector
     restart: unless-stopped
     ports:

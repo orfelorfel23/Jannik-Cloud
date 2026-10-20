@@ -1,13 +1,12 @@
 services:
   erkw:
     image: git.orfel.de/jannik/erkw:latest # Update 2026-09-12: Cache-Busting und Nginx no-cache Fix
-    pull_policy: always
     container_name: erkw
     restart: unless-stopped
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/erkw/.htpasswd:/etc/nginx/.htpasswd:ro
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost"]
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1"]
       interval: 30s
       timeout: 10s
       retries: 3
