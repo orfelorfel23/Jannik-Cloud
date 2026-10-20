@@ -61,16 +61,30 @@ docker exec checkbox_mssql /opt/mssql-tools18/bin/sqlcmd \
     -Q "BACKUP DATABASE [${MSSQL_DB_NAME}] TO DISK = N'${CONTAINER_FILE}' WITH INIT, STATS = 10"
 
 # Das Backup wurde nun im Container unter /var/opt/mssql angelegt.
-# Da dies auf /mnt/.../data gemappt ist, liegt die Datei nun auf dem Host.
-# Wir verschieben sie in den sauberen Backup-Ordner und komprimieren sie per gzip.
-if [[ -f "${TEMP_HOST_FILE}" ]]; then
+# Warte kurz und prüfe, ob die Datei auf dem Host sichtbar ist.
+FOUND=false
+for ((i=0; i<5; i++)); do
+    sync 2>/dev/null || true
+    if [[ -f "${TEMP_HOST_FILE}" ]]; then
+        FOUND=true
+        break
+    fi
+    sleep 1
+done
+
+if [[ "${FOUND}" == "true" ]]; then
     mv "${TEMP_HOST_FILE}" "${FINAL_HOST_FILE}"
-    gzip -f "${FINAL_HOST_FILE}"
-    echo "[Backup] Erfolgreich komprimiert und gespeichert: ${FINAL_HOST_FILE}.gz"
+elif docker exec checkbox_mssql test -f "${CONTAINER_FILE}" 2>/dev/null; then
+    echo "[Backup] Hole Backup-Datei direkt per docker cp aus dem Container..."
+    docker cp "checkbox_mssql:${CONTAINER_FILE}" "${FINAL_HOST_FILE}"
+    docker exec checkbox_mssql rm -f "${CONTAINER_FILE}" 2>/dev/null || true
 else
-    echo "[Backup] FEHLER: Backup-Datei wurde nach dem Ausführen nicht gefunden (${TEMP_HOST_FILE})"
+    echo "[Backup] FEHLER: Backup-Datei wurde nach dem Ausführen weder auf dem Host (${TEMP_HOST_FILE}) noch im Container gefunden!"
     exit 1
 fi
+
+gzip -f "${FINAL_HOST_FILE}"
+echo "[Backup] Erfolgreich komprimiert und gespeichert: ${FINAL_HOST_FILE}.gz"
 
 # Lösche alte Backups (behalte nur 7 Tage)
 echo "[Backup] Bereinige alte Backups (älter als 7 Tage)..."

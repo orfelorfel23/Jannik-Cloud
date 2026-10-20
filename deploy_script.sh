@@ -825,11 +825,13 @@ disable_maintenance_mode() {
 # 19. Cleanup unused Docker images and caches
 ###############################################################################
 cleanup_docker() {
-    log "Cleaning up unused Docker images and build caches..."
-    docker image prune -af 2>/dev/null || true
+    log "Cleaning up dangling Docker images..."
+    # Safe cleanup: only prune untagged/dangling images, preserving tagged cached images (avoids re-pulling everything)
+    docker image prune -f 2>/dev/null || true
 
     local build_prune_output
-    build_prune_output=$(docker builder prune -af 2>/dev/null || true)
+    # Only prune build cache older than 72 hours
+    build_prune_output=$(docker builder prune -f --filter "until=72h" 2>/dev/null || true)
     local reclaimed
     reclaimed=$(echo "${build_prune_output}" | grep -E "Total:" || true)
     if [[ -n "${reclaimed}" ]]; then
