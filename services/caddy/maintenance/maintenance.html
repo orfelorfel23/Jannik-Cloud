@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wartungsarbeiten</title>
+  <style>
+    body {
+      background: #1a202c;
+      color: #e2e8f0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 1rem;
+      box-sizing: border-box;
+    }
+    .box {
+      text-align: center;
+      padding: 2.25rem 2rem;
+      background: #2d3748;
+      border-radius: 1rem;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+      max-width: 480px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    h1 {
+      margin-top: 0;
+      margin-bottom: 0.5rem;
+      color: #63b3ed;
+      font-size: 1.75rem;
+      font-weight: 700;
+    }
+    .subtitle {
+      color: #cbd5e0;
+      font-size: 0.95rem;
+      margin: 0 0 1.25rem 0;
+      line-height: 1.5;
+    }
+    .progress-container {
+      background: #1a202c;
+      border-radius: 999px;
+      height: 12px;
+      width: 100%;
+      margin: 1.25rem 0 0.5rem 0;
+      overflow: hidden;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+    }
+    .progress-bar {
+      background: #63b3ed;
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      transition: width 0.6s ease-in-out;
+    }
+    .timer-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: #a0aec0;
+      margin-bottom: 1.5rem;
+    }
+    .activity-box {
+      min-height: 3.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-top: 1px solid #4a5568;
+      padding-top: 1.25rem;
+    }
+    .activity-text {
+      font-size: 0.95rem;
+      font-style: italic;
+      color: #90cdf4;
+      margin: 0;
+      opacity: 1;
+      transition: opacity 0.4s ease-in-out;
+      line-height: 1.4;
+    }
+    .activity-text.fade {
+      opacity: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>Wartungsarbeiten</h1>
+    <p class="subtitle">Das System wird gerade aktualisiert.<br>Die Seite ist in wenigen Augenblicken wieder erreichbar.</p>
+    
+    <div class="progress-container">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+    
+    <div class="timer-row">
+      <span>ca. Restzeit: <strong id="countdown" style="color: #e2e8f0;">02:00</strong></span>
+      <span id="percent" style="color: #e2e8f0;">0%</span>
+    </div>
+    
+    <div class="activity-box">
+      <p class="activity-text" id="activity">Die Server-Hamster werden gerade gefüttert und neu geölt...</p>
+    </div>
+  </div>
+
+  <script>
+    var rawStartTime = "START_TIME_PLACEHOLDER";
+    var startTime = (!isNaN(rawStartTime) && rawStartTime > 0) ? Number(rawStartTime) : Date.now();
+    var duration = 2 * 60 * 1000;
+    var quotes = [
+      "Die Server-Hamster werden gerade gefüttert und neu geölt...",
+      "Nullen und Einsen werden sortiert – Nullen nach links, Einsen nach rechts...",
+      "Docker-Container werden vorsichtig gestapelt, damit keiner umfällt..."
+    ];
+    var currentQuoteIndex = 0;
+
+    // Load full quote list from separate quotes.json
+    fetch('/quotes.json')
+      .then(function(res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.json();
+      })
+      .then(function(data) {
+        if (Array.isArray(data) && data.length > 0) {
+          quotes = data;
+          rotateQuote();
+        }
+      })
+      .catch(function(err) {
+        // Fallback quotes will keep rotating if fetch fails
+      });
+
+    function rotateQuote() {
+      if (!quotes || quotes.length === 0) return;
+      var nextIndex;
+      if (quotes.length === 1) {
+        nextIndex = 0;
+      } else {
+        do {
+          nextIndex = Math.floor(Math.random() * quotes.length);
+        } while (nextIndex === currentQuoteIndex);
+      }
+      currentQuoteIndex = nextIndex;
+
+      var el = document.getElementById('activity');
+      el.classList.add('fade');
+      setTimeout(function() {
+        el.innerText = quotes[currentQuoteIndex];
+        el.classList.remove('fade');
+      }, 400);
+    }
+
+    // Rotate every 15 seconds
+    setInterval(rotateQuote, 15000);
+
+    // Update progress bar and countdown
+    function updateProgress() {
+      var now = Date.now();
+      var elapsed = now - startTime;
+      var remaining = Math.max(0, duration - elapsed);
+      var percent = Math.min(100, Math.max(0, Math.floor((elapsed / duration) * 100)));
+
+      var min = Math.floor(remaining / 60000);
+      var sec = Math.floor((remaining % 60000) / 1000);
+
+      var countdownEl = document.getElementById('countdown');
+      var percentEl = document.getElementById('percent');
+      var barEl = document.getElementById('progress-bar');
+
+      if (remaining > 0) {
+        countdownEl.innerText = (min < 10 ? '0' : '') + min + ':' + (sec < 10 ? '0' : '') + sec;
+        percentEl.innerText = percent + '%';
+        barEl.style.width = percent + '%';
+        setTimeout(updateProgress, 1000);
+      } else {
+        barEl.style.width = '100%';
+        percentEl.innerText = '100%';
+        countdownEl.innerText = 'Fast geschafft...';
+        // Auto reload after timeout
+        setTimeout(function() {
+          window.location.reload();
+        }, 5000);
+      }
+    }
+
+    updateProgress();
+  </script>
+</body>
+</html>

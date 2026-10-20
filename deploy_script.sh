@@ -499,16 +499,40 @@ enable_maintenance_mode() {
     # Keep gitea.caddy online so git operations and init hooks keep working
     find "${CADDY_FRAGMENTS_DIR}" -name '*.caddy' ! -name 'gitea.caddy' -type f -delete 2>/dev/null || true
     
-    # Create maintenance fragment
-    cat << 'EOF' > "${CADDY_FRAGMENTS_DIR}/maintenance.caddy"
+    local maint_dir="${SERVICES_DIR}/caddy/maintenance"
+    local start_time_ms=$(($(date +%s) * 1000))
+
+    if [[ -f "${maint_dir}/maintenance.html" && -f "${maint_dir}/quotes.json" ]]; then
+        cp "${maint_dir}/quotes.json" "${CADDY_FRAGMENTS_DIR}/quotes.json"
+        sed "s|START_TIME_PLACEHOLDER|${start_time_ms}|g" "${maint_dir}/maintenance.html" > "${CADDY_FRAGMENTS_DIR}/maintenance.html"
+
+        cat << 'EOF' > "${CADDY_FRAGMENTS_DIR}/maintenance.caddy"
 DOMAINS_PLACEHOLDER {
-    header Content-Type text/html
-    respond "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><title>Wartungsarbeiten</title><style>body{background:#1a202c;color:#e2e8f0;font-family:system-ui,-apple-system,sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0}.box{text-align:center;padding:2rem;background:#2d3748;border-radius:1rem;box-shadow:0 10px 15px -3px rgba(0,0,0,0.1)}h1{margin-top:0;color:#63b3ed}</style></head><body><div class=\"box\"><h1>Wartungsarbeiten</h1><p>Das System wird gerade aktualisiert.<br>Die Seite ist in wenigen Augenblicken wieder erreichbar.<br>ca. Restzeit: <span id=\"countdown\">02:00</span></p></div><script>var startTime=START_TIME_PLACEHOLDER;var duration=2*60*1000;function update(){var elapsed=Date.now()-startTime;var remaining=Math.max(0,duration-elapsed);var min=Math.floor(remaining/60000);var sec=Math.floor((remaining%60000)/1000);document.getElementById('countdown').innerText=min+':'+(sec<10?'0':'')+sec;if(remaining>0)setTimeout(update,1000);}update();</script></body></html>" 503
+    handle /quotes.json {
+        root * /etc/caddy/fragments
+        header Content-Type application/json
+        file_server
+    }
+    handle {
+        error 503
+    }
+    handle_errors {
+        root * /etc/caddy/fragments
+        rewrite * /maintenance.html
+        file_server
+    }
 }
 EOF
-    local start_time_ms=$(($(date +%s) * 1000))
+    else
+        cat << 'EOF' > "${CADDY_FRAGMENTS_DIR}/maintenance.caddy"
+DOMAINS_PLACEHOLDER {
+    header Content-Type text/html
+    respond "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title>Wartungsarbeiten</title></head><body><h1>Wartungsarbeiten</h1><p>Das System wird gerade aktualisiert.</p></body></html>" 503
+}
+EOF
+    fi
+
     sed -i "s|DOMAINS_PLACEHOLDER|${all_domains}|g" "${CADDY_FRAGMENTS_DIR}/maintenance.caddy"
-    sed -i "s|START_TIME_PLACEHOLDER|${start_time_ms}|g" "${CADDY_FRAGMENTS_DIR}/maintenance.caddy"
     
     if docker ps --format '{{.Names}}' | grep -q "^caddy$"; then
         log "  Reloading Caddy with maintenance config..."
@@ -767,6 +791,7 @@ assemble_caddy_fragments() {
 disable_maintenance_mode() {
     log "Switching Caddy from maintenance mode to production..."
     assemble_caddy_fragments
+    rm -f "${CADDY_FRAGMENTS_DIR}/maintenance.html" "${CADDY_FRAGMENTS_DIR}/quotes.json" 2>/dev/null || true
     
     if [[ " ${ACTIVE_SERVICES[*]} " =~ " caddy " ]]; then
         cd "${SERVICES_DIR}/caddy"
