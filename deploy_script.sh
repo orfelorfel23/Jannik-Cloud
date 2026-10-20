@@ -774,6 +774,18 @@ assemble_caddy_fragments() {
     mkdir -p "${CADDY_FRAGMENTS_DIR}"
     rm -f "${CADDY_FRAGMENTS_DIR}"/*.caddy
 
+    # Always ensure 00-snippets.caddy is present so (access_log) is always available to all fragments
+    cat << 'EOF' > "${CADDY_FRAGMENTS_DIR}/00-snippets.caddy"
+(access_log) {
+	log {
+		output file /data/access.log {
+			roll_size 20mb
+			roll_keep 3
+		}
+	}
+}
+EOF
+
     for svc_name in "${ACTIVE_SERVICES[@]}"; do
         local svc_dir="${SERVICES_DIR}/${svc_name}"
         local caddy_file="${svc_dir}/${svc_name}.caddy"
@@ -795,13 +807,16 @@ assemble_caddy_fragments() {
 disable_maintenance_mode() {
     log "Switching Caddy from maintenance mode to production..."
     assemble_caddy_fragments
-    rm -f "${CADDY_FRAGMENTS_DIR}/maintenance.html" "${CADDY_FRAGMENTS_DIR}/quotes.json" 2>/dev/null || true
+    rm -f "${CADDY_FRAGMENTS_DIR}/maintenance.caddy" "${CADDY_FRAGMENTS_DIR}/maintenance.html" "${CADDY_FRAGMENTS_DIR}/quotes.json" 2>/dev/null || true
     
     if [[ " ${ACTIVE_SERVICES[*]} " =~ " caddy " ]]; then
         cd "${SERVICES_DIR}/caddy"
         docker compose up -d --remove-orphans
         log "  Reloading Caddy with production config..."
-        docker exec caddy caddy reload --config /etc/caddy/Caddyfile 2>/dev/null || true
+        if ! docker exec caddy caddy reload --config /etc/caddy/Caddyfile; then
+            warn "  Caddy reload failed! Restarting Caddy container to force-apply production config..."
+            docker compose restart caddy
+        fi
         log "Maintenance mode disabled. All services are live!"
     fi
 }
