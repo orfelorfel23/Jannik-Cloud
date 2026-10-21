@@ -52,6 +52,7 @@ Self-hosted cloud infrastructure on Hetzner Ubuntu 24 LTS, managed via Docker Co
 | SearXNG | [go.orfel.de](https://go.orfel.de) | 3463 |
 | Simple URL Shortener | [tiny.orfel.de](https://tiny.orfel.de) | 821 |
 | Slash | [slash.orfel.de](https://slash.orfel.de) | 511 |
+| [Solus](services/solus/README.md) | [solus.orfel.de](https://solus.orfel.de) | 8787 |
 | Spoolman | [3d.orfel.de](https://3d.orfel.de) | 33 |
 | Stirling PDF | [pdf.orfel.de](https://pdf.orfel.de) | 733 |
 | Syncthing | [sync.orfel.de](https://sync.orfel.de) | 7962 |

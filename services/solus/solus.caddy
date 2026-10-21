@@ -1,0 +1,3 @@
+solus.orfel.de {
+	reverse_proxy solus:8787
+}

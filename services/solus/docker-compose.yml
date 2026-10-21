@@ -1,0 +1,23 @@
+services:
+  solus:
+    image: git.orfel.de/jannik/solus:latest
+    container_name: solus
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8787:8787"
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - PORT=8787
+    volumes:
+      - solus_data:/app/.wrangler/state
+    networks:
+      - jannik-cloud-net
+
+volumes:
+  solus_data:
+
+networks:
+  jannik-cloud-net:
+    external: true
