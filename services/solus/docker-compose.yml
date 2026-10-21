@@ -10,13 +10,15 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=8787
+      - DB_HOST=postgres
+      - DB_PORT=5432
     volumes:
-      - solus_data:/app/.wrangler/state
+      - solus_uploads:/app/uploads
     networks:
       - jannik-cloud-net
 
 volumes:
-  solus_data:
+  solus_uploads:
 
 networks:
   jannik-cloud-net:
