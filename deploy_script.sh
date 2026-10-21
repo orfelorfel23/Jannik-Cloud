@@ -462,7 +462,8 @@ pull_images() {
         if [[ -f "${svc_dir}/Dockerfile" ]]; then
             log "  Building ${svc_name} (has Dockerfile)..."
             local build_start=$(date +%s)
-            if timeout 1800 docker compose build --no-cache --progress=plain > build.log 2>&1; then
+            # --pull: always fetch the latest base image (security patches), --no-cache alone reuses stale local bases
+            if timeout 1800 docker compose build --pull --no-cache --progress=plain > build.log 2>&1; then
                 local build_time=$(( $(date +%s) - build_start ))
                 log "  ✓ Built ${svc_name} in ${build_time}s"
             else
