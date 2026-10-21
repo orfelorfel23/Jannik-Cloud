@@ -7,6 +7,24 @@
 set -Eeuo pipefail
 export GIT_TERMINAL_PROMPT=0
 
+# Automatically prefix every output line with current timestamp [HH:MM:SS]
+if [[ -z "${DEPLOY_TIMESTAMPED:-}" ]]; then
+    export DEPLOY_TIMESTAMPED=1
+    exec > >(while IFS= read -r line || [[ -n "${line}" ]]; do
+        if [[ -z "${line}" ]]; then
+            printf "\n"
+        else
+            printf "\e[90m[%(%T)T]\e[0m %s\n" -1 "${line}"
+        fi
+    done) 2>&1
+fi
+
+cleanup_logging() {
+    exec 1>&- 2>&-
+    wait 2>/dev/null || true
+}
+trap cleanup_logging EXIT
+
 REPO_DIR="/opt/Jannik-Cloud"
 GIT_REPO_URL="https://github.com/orfelorfel23/Jannik-Cloud.git"
 VOLUME_BASE="/mnt/Jannik-Cloud-Volume-01"
