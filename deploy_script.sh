@@ -774,9 +774,18 @@ verify_service_health() {
     unhealthy=$(docker ps --filter "health=unhealthy" --format '{{.Names}}' 2>/dev/null || true)
     if [[ -n "${unhealthy}" ]]; then
         for c in ${unhealthy}; do
-            warn "Container '${c}' is marked unhealthy!"
-            SKIPPED_SERVICES+=("${c} (Unhealthy)")
-            unhealthy_found=true
+            warn "Container '${c}' is marked unhealthy! Attempting automatic restart..."
+            docker restart "${c}" 2>/dev/null || true
+            sleep 3
+            local new_health
+            new_health=$(docker inspect "${c}" --format '{{.State.Health.Status}}' 2>/dev/null || echo "")
+            if [[ "${new_health}" == "healthy" || "${new_health}" == "starting" ]]; then
+                log "  ✓ Container '${c}' recovered after restart (status=${new_health})."
+            else
+                warn "  Container '${c}' is still unhealthy after restart."
+                SKIPPED_SERVICES+=("${c} (Unhealthy)")
+                unhealthy_found=true
+            fi
         done
     fi
 
@@ -792,18 +801,6 @@ assemble_caddy_fragments() {
     log "Assembling Caddy fragments..."
     mkdir -p "${CADDY_FRAGMENTS_DIR}"
     rm -f "${CADDY_FRAGMENTS_DIR}"/*.caddy
-
-    # Always ensure 00-snippets.caddy is present so (access_log) is always available to all fragments
-    cat << 'EOF' > "${CADDY_FRAGMENTS_DIR}/00-snippets.caddy"
-(access_log) {
-	log {
-		output file /data/access.log {
-			roll_size 20mb
-			roll_keep 3
-		}
-	}
-}
-EOF
 
     for svc_name in "${ACTIVE_SERVICES[@]}"; do
         local svc_dir="${SERVICES_DIR}/${svc_name}"
