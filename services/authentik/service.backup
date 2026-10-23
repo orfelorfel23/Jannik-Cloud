@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Automatically called by /opt/Jannik-Cloud/deploy_script.sh before containers are stopped/redeployed.
+
+BACKUP_DIR="/mnt/Jannik-Cloud-Volume-01/authentik_backups"
+TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+DB_BACKUP_FILE="${BACKUP_DIR}/authentik_db_${TIMESTAMP}.sql.gz"
+
+echo "======================================"
+echo " Authentik Auto-Backup Hook "
+echo "======================================"
+
+mkdir -p "${BACKUP_DIR}"
+
+if docker ps --format '{{.Names}}' | grep -q "^postgres$"; then
+    echo "[1/2] Backing up PostgreSQL database 'authentik_db'..."
+    if docker exec postgres psql -U postgres -lqt | cut -d \| -f 1 | grep -qw authentik_db; then
+        docker exec postgres pg_dump -U postgres authentik_db | gzip -c > "${DB_BACKUP_FILE}"
+        echo "      -> DB saved to: ${DB_BACKUP_FILE}"
+    else
+        echo "      -> Database 'authentik_db' does not exist yet. Skipping DB backup."
+    fi
+else
+    echo "[1/2] PostgreSQL container is not running. Skipping DB backup."
+fi
+
+echo "[2/2] Cleaning up old backups (keeping last 5)..."
+ls -t "${BACKUP_DIR}"/authentik_db_*.sql.gz 2>/dev/null | tail -n +6 | xargs -r rm -f || true
+
+echo "======================================"
+echo " Authentik backup completed!"
+echo "======================================"

@@ -414,6 +414,7 @@ run_service_backup_hooks() {
         local backup_script="${svc_dir}/service.backup"
         if [[ -f "${backup_script}" ]]; then
             log "  Running backup hook for ${svc_name}..."
+            sed -i 's/\r$//' "${backup_script}" 2>/dev/null || true
             chmod +x "${backup_script}" 2>/dev/null || true
             ( cd "${svc_dir}" && bash "${backup_script}" ) || warn "  Backup hook for ${svc_name} failed. Continuing deploy anyway."
         fi

@@ -1,6 +1,6 @@
 services:
   authentik-server:
-    image: beryju/authentik:2025.2.4
+    image: ghcr.io/goauthentik/server:2026.8.5
     container_name: authentik-server
     restart: unless-stopped
     command: server
@@ -9,12 +9,13 @@ services:
     environment:
       AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY}
       AUTHENTIK_ERROR_REPORTING__ENABLED: "false"
-      AUTHENTIK_REDIS__HOST: redis
+      AUTHENTIK_WEB__BASE_URL: "https://auth.orfel.de"
       AUTHENTIK_POSTGRESQL__HOST: postgres
       AUTHENTIK_POSTGRESQL__NAME: ${DB_NAME}
       AUTHENTIK_POSTGRESQL__USER: ${DB_USER}
       AUTHENTIK_POSTGRESQL__PASSWORD: ${DB_PASSWORD}
     volumes:
+      - /mnt/Jannik-Cloud-Volume-01/authentik/data:/data
       - /mnt/Jannik-Cloud-Volume-01/authentik/media:/media
       - /mnt/Jannik-Cloud-Volume-01/authentik/templates:/templates
     deploy:
@@ -26,19 +27,20 @@ services:
       - jannik-cloud-net
 
   authentik-worker:
-    image: beryju/authentik:2025.2.4
+    image: ghcr.io/goauthentik/server:2026.8.5
     container_name: authentik-worker
     restart: unless-stopped
     command: worker
     environment:
       AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY}
       AUTHENTIK_ERROR_REPORTING__ENABLED: "false"
-      AUTHENTIK_REDIS__HOST: redis
+      AUTHENTIK_WEB__BASE_URL: "https://auth.orfel.de"
       AUTHENTIK_POSTGRESQL__HOST: postgres
       AUTHENTIK_POSTGRESQL__NAME: ${DB_NAME}
       AUTHENTIK_POSTGRESQL__USER: ${DB_USER}
       AUTHENTIK_POSTGRESQL__PASSWORD: ${DB_PASSWORD}
     volumes:
+      - /mnt/Jannik-Cloud-Volume-01/authentik/data:/data
       - /mnt/Jannik-Cloud-Volume-01/authentik/media:/media
       - /mnt/Jannik-Cloud-Volume-01/authentik/templates:/templates
       - /mnt/Jannik-Cloud-Volume-01/authentik/certs:/certs
