@@ -483,8 +483,8 @@ pull_images() {
         if compgen -G "${svc_dir}/Dockerfile*" > /dev/null || grep -qE '^\s+build:' "${svc_dir}/docker-compose.yml" 2>/dev/null; then
             log "  Building ${svc_name} (has Dockerfile)..."
             local build_start=$(date +%s)
-            # --pull: always fetch the latest base image (security patches), --no-cache alone reuses stale local bases
-            if timeout 1800 docker compose build --pull --no-cache --progress=plain > build.log 2>&1; then
+            # --pull: always fetch the latest base image (security patches); BuildKit invalidates cache automatically when base image or files change
+            if timeout 1800 docker compose build --pull --progress=plain > build.log 2>&1; then
                 local build_time=$(( $(date +%s) - build_start ))
                 log "  ✓ Built ${svc_name} in ${build_time}s"
                 # Also pull image-only sidecars in mixed compose files (e.g. DBs next to a built app)
@@ -846,13 +846,13 @@ disable_maintenance_mode() {
 # 19. Cleanup unused Docker images and caches
 ###############################################################################
 cleanup_docker() {
-    log "Cleaning up dangling Docker images..."
+    log "Cleaning up dangling Docker images and excessive build cache..."
     # Safe cleanup: only prune untagged/dangling images, preserving tagged cached images (avoids re-pulling everything)
     docker image prune -f 2>/dev/null || true
 
     local build_prune_output
-    # Only prune build cache older than 72 hours
-    build_prune_output=$(docker builder prune -f --filter "until=72h" 2>/dev/null || true)
+    # Keep build cache bounded to max 2GB (and prune items older than 24h) to prevent /dev/sda1 exhaustion
+    build_prune_output=$(docker builder prune -f --keep-storage 2GB 2>/dev/null || docker builder prune -f --filter "until=24h" 2>/dev/null || true)
     local reclaimed
     reclaimed=$(echo "${build_prune_output}" | grep -E "Total:" || true)
     if [[ -n "${reclaimed}" ]]; then
@@ -899,6 +899,7 @@ main() {
     decrypt_envs
     create_volumes
     generate_dashboards
+    cleanup_docker
     pull_images
 
     # 2. Run service backup hooks while containers are still active
