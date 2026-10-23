@@ -477,13 +477,17 @@ pull_images() {
     for svc_name in "${ACTIVE_SERVICES[@]}"; do
         local svc_dir="${SERVICES_DIR}/${svc_name}"
         cd "${svc_dir}"
-        if [[ -f "${svc_dir}/Dockerfile" ]]; then
+        # Detect build-based services via any Dockerfile* or a `build:` key in compose
+        # (e.g. godmod3 uses Dockerfile.api / Dockerfile.web and was never rebuilt before)
+        if compgen -G "${svc_dir}/Dockerfile*" > /dev/null || grep -qE '^\s+build:' "${svc_dir}/docker-compose.yml" 2>/dev/null; then
             log "  Building ${svc_name} (has Dockerfile)..."
             local build_start=$(date +%s)
             # --pull: always fetch the latest base image (security patches), --no-cache alone reuses stale local bases
             if timeout 1800 docker compose build --pull --no-cache --progress=plain > build.log 2>&1; then
                 local build_time=$(( $(date +%s) - build_start ))
                 log "  ✓ Built ${svc_name} in ${build_time}s"
+                # Also pull image-only sidecars in mixed compose files (e.g. DBs next to a built app)
+                timeout 120 docker compose pull --ignore-buildable 2>&1 || warn "  Pull of image-only services failed for ${svc_name}"
             else
                 err "Build failed/timed out for ${svc_name}. Check ${svc_dir}/build.log"
                 SKIPPED_SERVICES+=("${svc_name} (Build failed)")
