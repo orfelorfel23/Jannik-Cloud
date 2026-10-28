@@ -846,18 +846,24 @@ disable_maintenance_mode() {
 # 19. Cleanup unused Docker images and caches
 ###############################################################################
 cleanup_docker() {
-    log "Cleaning up dangling Docker images and excessive build cache..."
-    # Safe cleanup: only prune untagged/dangling images, preserving tagged cached images (avoids re-pulling everything)
+    log "Cleaning up dangling Docker images, orphaned volumes, and build cache..."
+    # Safe cleanup: only prune untagged/dangling images, preserving active/tagged images
     docker image prune -f 2>/dev/null || true
 
+    # Prune orphaned/dangling anonymous volumes (keeps persistent /mnt volumes completely untouched)
+    docker volume prune -f 2>/dev/null || true
+
+    # Keep build cache bounded to max 2GB (keeps latest layers for fast builds, frees old GBs)
     local build_prune_output
-    # Keep build cache bounded to max 2GB (and prune items older than 24h) to prevent /dev/sda1 exhaustion
-    build_prune_output=$(docker builder prune -f --keep-storage 2GB 2>/dev/null || docker builder prune -f --filter "until=24h" 2>/dev/null || true)
+    build_prune_output=$(docker builder prune -a -f --keep-storage 2GB 2>/dev/null || true)
     local reclaimed
     reclaimed=$(echo "${build_prune_output}" | grep -E "Total:" || true)
     if [[ -n "${reclaimed}" ]]; then
         log "  ${reclaimed}"
     fi
+
+    # Vacuum systemd journals to max 100MB to protect root disk
+    journalctl --vacuum-size=100M >/dev/null 2>&1 || true
 }
 
 ###############################################################################
