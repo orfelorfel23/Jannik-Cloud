@@ -571,27 +571,42 @@ EOF
 ###############################################################################
 # 13. Start infrastructure services
 ###############################################################################
+start_infra_service() {
+    local svc_name="$1"
+    cd "${SERVICES_DIR}/${svc_name}"
+    local attempt=1
+    local max_attempts=3
+    while [[ ${attempt} -le ${max_attempts} ]]; do
+        if docker compose up -d --remove-orphans; then
+            return 0
+        fi
+        if [[ ${attempt} -lt ${max_attempts} ]]; then
+            warn "Attempt ${attempt} to start ${svc_name} failed. Retrying in 3 seconds..."
+            sleep 3
+        fi
+        attempt=$((attempt + 1))
+    done
+    die "Failed to start critical infrastructure service: ${svc_name} after ${max_attempts} attempts."
+}
+
 start_infra() {
     # Start PostgreSQL
     if [[ " ${ACTIVE_SERVICES[*]} " =~ " postgres " ]]; then
         log "Starting PostgreSQL..."
-        cd "${SERVICES_DIR}/postgres"
-        docker compose up -d --remove-orphans
+        start_infra_service "postgres"
         wait_for_postgres
     fi
 
     # Start Redis
     if [[ " ${ACTIVE_SERVICES[*]} " =~ " redis " ]]; then
         log "Starting Redis..."
-        cd "${SERVICES_DIR}/redis"
-        docker compose up -d --remove-orphans
+        start_infra_service "redis"
     fi
 
     # Start Gitea early so service.init hooks can clone from git.orfel.de
     if [[ " ${ACTIVE_SERVICES[*]} " =~ " gitea " ]]; then
         log "Starting Gitea (needed by service.init hooks)..."
-        cd "${SERVICES_DIR}/gitea"
-        docker compose up -d --remove-orphans
+        start_infra_service "gitea"
         wait_for_gitea
 
         # Activate Gitea Caddy reverse proxy immediately
@@ -870,6 +885,17 @@ cleanup_docker() {
 # MAIN
 ###############################################################################
 main() {
+    # Prevent concurrent deploy script executions (e.g. webhook vs cron vs manual)
+    local deploy_lock="/tmp/jannik-cloud-deploy.lock"
+    exec 200>"${deploy_lock}"
+    if ! flock -n 200; then
+        local running_pid
+        running_pid=$(cat "${deploy_lock}" 2>/dev/null || echo "unknown")
+        warn "Another deployment is currently running (PID: ${running_pid}). Exiting to prevent conflicts."
+        exit 0
+    fi
+    echo $$ > "${deploy_lock}"
+
     log "=========================================="
     log "  Jannik-Cloud Deploy Script"
     log "=========================================="

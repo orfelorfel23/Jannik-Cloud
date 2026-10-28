@@ -68,9 +68,21 @@ for ((i=0; i<5; i++)); do
     if [[ -f "${TEMP_HOST_FILE}" ]]; then
         FOUND=true
         break
+    elif [[ -f "${FINAL_HOST_FILE}.gz" || -f "${FINAL_HOST_FILE}" ]]; then
+        echo "[Backup] Backup-Datei existiert bereits in ${BACKUP_DIR}."
+        exit 0
     fi
     sleep 1
 done
+
+if [[ "${FOUND}" != "true" ]]; then
+    # Fallback bei möglichem Timestamp-Jitter: suche nach kürzlich erstellter .bak-Datei
+    RECENT_BAK=$(find "${DATA_DIR}" -maxdepth 1 -name "${MSSQL_DB_NAME}_*.bak" -mmin -2 2>/dev/null | sort | tail -n 1)
+    if [[ -n "${RECENT_BAK}" && -f "${RECENT_BAK}" ]]; then
+        TEMP_HOST_FILE="${RECENT_BAK}"
+        FOUND=true
+    fi
+fi
 
 if [[ "${FOUND}" == "true" ]]; then
     mv "${TEMP_HOST_FILE}" "${FINAL_HOST_FILE}"
@@ -78,13 +90,18 @@ elif docker exec checkbox_mssql test -f "${CONTAINER_FILE}" 2>/dev/null; then
     echo "[Backup] Hole Backup-Datei direkt per docker cp aus dem Container..."
     docker cp "checkbox_mssql:${CONTAINER_FILE}" "${FINAL_HOST_FILE}"
     docker exec checkbox_mssql rm -f "${CONTAINER_FILE}" 2>/dev/null || true
+elif [[ -f "${FINAL_HOST_FILE}.gz" || -f "${FINAL_HOST_FILE}" ]]; then
+    echo "[Backup] Backup-Datei existiert bereits in ${BACKUP_DIR}."
+    exit 0
 else
     echo "[Backup] FEHLER: Backup-Datei wurde nach dem Ausführen weder auf dem Host (${TEMP_HOST_FILE}) noch im Container gefunden!"
     exit 1
 fi
 
-gzip -f "${FINAL_HOST_FILE}"
-echo "[Backup] Erfolgreich komprimiert und gespeichert: ${FINAL_HOST_FILE}.gz"
+if [[ -f "${FINAL_HOST_FILE}" ]]; then
+    gzip -f "${FINAL_HOST_FILE}"
+    echo "[Backup] Erfolgreich komprimiert und gespeichert: ${FINAL_HOST_FILE}.gz"
+fi
 
 # Lösche alte Backups (behalte nur 7 Tage)
 echo "[Backup] Bereinige alte Backups (älter als 7 Tage)..."

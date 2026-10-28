@@ -35,7 +35,8 @@ docker logs --tail 200 netbird-server > /tmp/nb-debug.log 2>&1 || true
 curl -T /tmp/nb-debug.log https://ntfy.orfel.de/NetBird-Logs 2>/dev/null || true
 
 # --- Lock check: prevent concurrent deploys ---
-if [ -f \"\${LOCK_FILE}\" ]; then
+exec 200>\"\${LOCK_FILE}\"
+if ! flock -n 200; then
   LOCK_PID=\$(cat \"\${LOCK_FILE}\" 2>/dev/null || echo 'unknown')
   curl -s -o /dev/null --retry 3 --retry-delay 2 --max-time 10 \\
     -H 'Title: Deployment übersprungen' \\
