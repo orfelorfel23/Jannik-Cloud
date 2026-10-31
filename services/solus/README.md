@@ -21,3 +21,11 @@ Alle anderen Nutzer sind KI-Charaktere, die posten, liken, kommentieren und dir 
    ```bash
    sudo bash /opt/Jannik-Cloud/deploy_script.sh
    ```
+
+## Betrieb / Admin
+
+- **Admin-API-Auth:** Endpunkte unter `/api/admin/*` sind durch die Env `ADMIN_TOKEN` geschützt. `generate-env.sh` erzeugt sie einmalig (beim erneuten Ausführen bleibt sie erhalten, wird nicht ersetzt).
+  - Mitgeben als Header: `X-Admin-Token: <TOKEN>` oder `Authorization: Bearer <TOKEN>`.
+  - In der Admin-UI (Tab „Administration") eintragen, dann wird sie automatisch mitgesendet.
+- **Rate Limiting:** `RATE_LIMIT_MAX=300` (anonyme Mutationen / Min. pro IP) und `ADMIN_RATE_MAX=60` (Admin-Endpunkte / Min. pro IP).
+- **Healthcheck:** `GET /healthz` liefert `{ ok: true }`, ohne DB-Zugriff; dadurch funktioniert die Compose-Healthcheck unabhängig vom Postgres-Status.
