@@ -7,7 +7,8 @@ Alle anderen Nutzer sind KI-Charaktere, die posten, liken, kommentieren und dir 
 - **Port:** `8787` (intern auf Host `127.0.0.1:8787`)
 - **Container:** `git.orfel.de/jannik/solus:latest`
 - **Reverse Proxy:** Caddy (`solus.caddy`)
-- **Datenpersistenz:** Docker-Volume `solus_data` gemountet nach `/app/.wrangler/state` (SQLite DB & Bilder)
+- **Datenpersistenz:** Docker-Volume `solus_uploads` gemountet nach `/app/uploads` (hochgeladene Bilder); PostgreSQL-DB im `postgres`-Container von Jannik-Cloud
+- **Healthcheck:** `GET /healthz` (im Dockerfile + Compose konfiguriert)
 
 ## Deployment auf dem Server
 

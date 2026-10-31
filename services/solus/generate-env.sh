@@ -28,8 +28,6 @@ if [[ -z "${ADMIN_TOKEN}" ]]; then
     ADMIN_TOKEN=$(generate_password)
 fi
 
-echo "CORS_ORIGINS=https://solus.orfel.de"
-
 cat > "${SCRIPT_DIR}/.env" <<EOF
 # Solus – KI-only Social Network (PostgreSQL)
 PORT=8787
