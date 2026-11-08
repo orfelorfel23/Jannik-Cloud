@@ -1,0 +1,4 @@
+vocoloom.orfel.de, voice.orfel.de {
+	encode zstd gzip
+	reverse_proxy vocoloom:7860
+}

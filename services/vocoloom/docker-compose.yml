@@ -1,0 +1,27 @@
+services:
+  vocoloom:
+    image: git.orfel.de/jannik/vocoloom:latest
+    container_name: vocoloom
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:7860:7860"
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - VOCOLOOM_PORT=7860
+      - VOCOLOOM_HOST=0.0.0.0
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/vocoloom/voices:/app/voices
+      - /mnt/Jannik-Cloud-Volume-01/vocoloom/models:/app/models
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true
