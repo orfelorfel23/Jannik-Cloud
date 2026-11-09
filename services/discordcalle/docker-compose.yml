@@ -1,0 +1,22 @@
+services:
+  discordcalle:
+    image: git.orfel.de/jannik/discordcalle:latest
+    container_name: discordcalle
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - /mnt/Jannik-Cloud-Volume-01/discordcalle:/app/data
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 384M
+    networks:
+      - jannik-cloud-net
+
+networks:
+  jannik-cloud-net:
+    external: true
