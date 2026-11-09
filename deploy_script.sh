@@ -19,11 +19,24 @@ if [[ -z "${DEPLOY_TIMESTAMPED:-}" ]]; then
     done) 2>&1
 fi
 
-cleanup_logging() {
+MAINTENANCE_ACTIVE=0
+
+cleanup_on_exit() {
+    local exit_code=$?
+    # Safety net: ensure Caddy is NEVER left in maintenance mode if script exits prematurely
+    if [[ "${MAINTENANCE_ACTIVE:-0}" -eq 1 ]]; then
+        warn "Script exiting (code ${exit_code}) while maintenance mode is active! Restoring production Caddy config..."
+        disable_maintenance_mode 2>/dev/null || true
+    fi
+    # Remove deploy lock file if held by this PID
+    local deploy_lock="/tmp/jannik-cloud-deploy.lock"
+    if [[ -f "${deploy_lock}" ]] && [[ "$(cat "${deploy_lock}" 2>/dev/null || echo '')" == "$$" ]]; then
+        rm -f "${deploy_lock}" 2>/dev/null || true
+    fi
     exec 1>&- 2>&-
     wait 2>/dev/null || true
 }
-trap cleanup_logging EXIT
+trap cleanup_on_exit EXIT
 
 REPO_DIR="/opt/Jannik-Cloud"
 GIT_REPO_URL="https://github.com/orfelorfel23/Jannik-Cloud.git"
@@ -84,7 +97,17 @@ on_deploy_failure() {
 
 is_active_service() {
     local svc_dir="$1"
-    [[ -f "${svc_dir}/docker-compose.yml" && -f "${svc_dir}/service.enabled" ]]
+    if [[ ! -f "${svc_dir}/docker-compose.yml" || ! -f "${svc_dir}/service.enabled" ]]; then
+        return 1
+    fi
+    # If the service requires NVIDIA GPU but the host has none, treat as inactive
+    if grep -qE 'driver:\s*nvidia|capabilities:.*\[.*gpu.*\]' "${svc_dir}/docker-compose.yml" 2>/dev/null; then
+        if ! command -v nvidia-smi &>/dev/null; then
+            warn "Service $(basename "${svc_dir}") requires NVIDIA GPU, but host has no GPU. Ignoring service."
+            return 1
+        fi
+    fi
+    return 0
 }
 
 ###############################################################################
@@ -561,10 +584,12 @@ EOF
     if docker ps --format '{{.Names}}' | grep -q "^caddy$"; then
         log "  Reloading Caddy with maintenance config..."
         docker exec caddy caddy reload --config /etc/caddy/Caddyfile 2>/dev/null || true
+        MAINTENANCE_ACTIVE=1
     elif [[ " ${ACTIVE_SERVICES[*]} " =~ " caddy " ]]; then
         log "  Starting Caddy in maintenance mode..."
         cd "${SERVICES_DIR}/caddy"
         docker compose up -d --remove-orphans 2>/dev/null || true
+        MAINTENANCE_ACTIVE=1
     fi
 }
 
@@ -855,6 +880,7 @@ disable_maintenance_mode() {
         fi
         log "Maintenance mode disabled. All services are live!"
     fi
+    MAINTENANCE_ACTIVE=0
 }
 
 ###############################################################################
@@ -870,7 +896,7 @@ cleanup_docker() {
 
     # Keep build cache bounded to max 2GB (keeps latest layers for fast builds, frees old GBs)
     local build_prune_output
-    build_prune_output=$(docker builder prune -a -f --keep-storage 2GB 2>/dev/null || true)
+    build_prune_output=$(docker builder prune -a -f --reserved-space 2GB 2>/dev/null || docker builder prune -a -f --keep-storage 2GB 2>/dev/null || true)
     local reclaimed
     reclaimed=$(echo "${build_prune_output}" | grep -E "Total:" || true)
     if [[ -n "${reclaimed}" ]]; then
