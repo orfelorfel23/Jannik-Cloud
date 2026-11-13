@@ -2,7 +2,7 @@
 set -e
 
 NTFY_URL="https://ntfy.orfel.de/Jannik-Cloud-Deploy-Trigger"
-LOCK_FILE="/tmp/jannik-cloud-deploy.lock"
+LOCK_FILE="/tmp/jannik-cloud-webhook.lock"
 LOG_FILE="/var/log/jannik-cloud-deploy.log"
 
 # All work happens on the host via chroot
