@@ -888,8 +888,8 @@ disable_maintenance_mode() {
 ###############################################################################
 cleanup_docker() {
     log "Cleaning up dangling Docker images, orphaned volumes, and build cache..."
-    # Safe cleanup: only prune untagged/dangling images, preserving active/tagged images
-    docker image prune -f 2>/dev/null || true
+    # Prune unreferenced images (leaves running containers & persistent /mnt volumes completely untouched)
+    docker image prune -a -f 2>/dev/null || true
 
     # Prune orphaned/dangling anonymous volumes (keeps persistent /mnt volumes completely untouched)
     docker volume prune -f 2>/dev/null || true
