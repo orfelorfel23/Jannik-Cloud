@@ -13,6 +13,12 @@ services:
       - /mnt/Jannik-Cloud-Volume-01/xbackbone/config:/config
       # Temporary PHP2Shell mitigation (CVE-2026-109618/-109619) until image ships PHP >= 8.5.12
       - ./php-cve-mitigation.ini:/config/php/zz-cve-mitigation.ini:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:80/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     deploy:
       resources:
         limits:

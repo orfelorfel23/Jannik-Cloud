@@ -11,9 +11,9 @@
 - `21118:21118/tcp` — WebSocket (optional)
 - `21119:21119/tcp` — WebSocket (optional)
 
-## Containers
-- `rustdesk` — hbbs (ID/rendezvous server)
-- `rustdesk-relay` — hbbr (relay server)
+## Container
+- `rustdesk` — `rustdesk/rustdesk-server-s6` (`hbbs` + `hbbr` kombiniert)
+
 
 ## ⚠️ Required Firewall Configuration
 

@@ -16,6 +16,12 @@ services:
       - AUTH_SUPPORTED_SCOPES=openid profile email groups offline_access
       - AUTH_REDIRECT_URI=/nb-auth
       - AUTH_SILENT_REDIRECT_URI=/nb-silent-auth
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:80/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
     networks:
       - jannik-cloud-net
     deploy:
@@ -40,6 +46,12 @@ services:
       - FORCE_RESTART=8
     extra_hosts:
       - "vpn.orfel.de:host-gateway"
+    healthcheck:
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/80"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
     networks:
       - jannik-cloud-net
     deploy:

@@ -1,6 +1,6 @@
 services:
   rustdesk:
-    image: rustdesk/rustdesk-server:latest
+    image: rustdesk/rustdesk-server-s6:latest
     container_name: rustdesk
     restart: unless-stopped
     ports:
@@ -11,29 +11,22 @@ services:
       - "21117:21117"
       - "21118:21118"
       - "21119:21119"
-    command: hbbs
+    environment:
+      - RELAY=orfel.de
+      - ENCRYPTED_ONLY=0
     volumes:
-      - /mnt/Jannik-Cloud-Volume-01/rustdesk:/root
+      - /mnt/Jannik-Cloud-Volume-01/rustdesk:/data
+    healthcheck:
+      test: ["CMD-SHELL", "/usr/bin/healthcheck.sh"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
     deploy:
       resources:
         limits:
-          cpus: "0.25"
-          memory: 128M
-    networks:
-      - jannik-cloud-net
-
-  rustdesk-relay:
-    image: rustdesk/rustdesk-server:latest
-    container_name: rustdesk-relay
-    restart: unless-stopped
-    command: hbbr
-    volumes:
-      - /mnt/Jannik-Cloud-Volume-01/rustdesk:/root
-    deploy:
-      resources:
-        limits:
-          cpus: "0.25"
-          memory: 128M
+          cpus: "0.5"
+          memory: 256M
     networks:
       - jannik-cloud-net
 
