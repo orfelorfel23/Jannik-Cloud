@@ -9,6 +9,11 @@ services:
       - NODE_ENV=production
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/discordcalle:/app/data
+    healthcheck:
+      test: ["CMD-SHELL", "grep -qa 'node' /proc/1/cmdline"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
     deploy:
       resources:
         limits:

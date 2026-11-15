@@ -11,6 +11,11 @@ services:
       - /mnt/Jannik-Cloud-Volume-01/caddy/config:/config
       - /mnt/Jannik-Cloud-Volume-01/caddy/fragments:/etc/caddy/fragments
       - ./Caddyfile:/etc/caddy/Caddyfile
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:2019/config/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
     deploy:
       resources:
         limits:

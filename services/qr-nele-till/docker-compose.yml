@@ -3,6 +3,11 @@ services:
     image: git.orfel.de/jannik/qr-nele-till:latest
     container_name: qr-nele-till
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:80/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
     networks:
       - jannik-cloud-net
 

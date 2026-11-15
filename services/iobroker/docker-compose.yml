@@ -9,6 +9,12 @@ services:
       IOB_ADMINPORT: 8081
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/iobroker:/opt/iobroker
+    healthcheck:
+      test: ["CMD", "/bin/bash", "-c", "/opt/scripts/healthcheck.sh"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
     deploy:
       resources:
         limits:
