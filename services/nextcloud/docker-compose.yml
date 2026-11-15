@@ -17,6 +17,12 @@ services:
       OVERWRITEHOST: nextcloud.orfel.de
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/nextcloud:/var/www/html
+    healthcheck:
+      test: ["CMD", "curl", "-f", "-H", "Host: nextcloud.orfel.de", "http://127.0.0.1:80/status.php"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
     deploy:
       resources:
         limits:
