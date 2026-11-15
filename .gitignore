@@ -22,7 +22,10 @@ scratch/
 
 # Generated additions
 temp.txt
+*.tmp
+*.log
 .venv/
+venv/
 
 # StreamGremlin instance overrides
 **/services/streamgremlin/config/overrides.*.yaml
