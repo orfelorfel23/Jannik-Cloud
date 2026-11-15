@@ -106,7 +106,12 @@ if [[ -d "${VAULT_DIR}/.git" ]]; then
     fi
 fi
 
-# 4. service.enabled sicherstellen
+# 4. Volume-Berechtigungen für Non-Root-Container (UID/GID 1000 'node') angleichen
+QMD_DIR="/mnt/Jannik-Cloud-Volume-01/mindomat-qmd"
+mkdir -p "${QMD_DIR}"
+chown -R 1000:1000 "${VAULT_DIR}" "${QMD_DIR}" 2>/dev/null || true
+
+# 5. service.enabled sicherstellen
 touch "${SVC_DIR}/service.enabled"
 
 echo "==========================================="
