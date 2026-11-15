@@ -4,7 +4,7 @@ services:
     container_name: archivebox
     restart: unless-stopped
     ports:
-      - "127.0.0.1:8000:8000"
+      - "127.0.0.1:8000:5797"
     volumes:
       - /mnt/Jannik-Cloud-Volume-01/archivebox:/data
     env_file:
@@ -12,7 +12,7 @@ services:
     environment:
       - ALLOWED_HOSTS=*
     healthcheck:
-      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/')"]
+      test: ["CMD-SHELL", "curl --fail --silent --show-error --max-time 5 --connect-timeout 2 -H 'Host: admin.archivebox.localhost:5797' http://127.0.0.1:5797/health/ | grep -q 'OK'"]
       interval: 30s
       timeout: 10s
       retries: 3
