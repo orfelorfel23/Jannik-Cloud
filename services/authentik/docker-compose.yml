@@ -19,6 +19,12 @@ services:
       - /mnt/Jannik-Cloud-Volume-01/authentik/data:/data
       - /mnt/Jannik-Cloud-Volume-01/authentik/media:/media
       - /mnt/Jannik-Cloud-Volume-01/authentik/templates:/templates
+    healthcheck:
+      test: ["CMD", "ak", "healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
     deploy:
       resources:
         limits:
@@ -46,6 +52,12 @@ services:
       - /mnt/Jannik-Cloud-Volume-01/authentik/media:/media
       - /mnt/Jannik-Cloud-Volume-01/authentik/templates:/templates
       - /mnt/Jannik-Cloud-Volume-01/authentik/certs:/certs
+    healthcheck:
+      test: ["CMD", "ak", "healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
     deploy:
       resources:
         limits:
