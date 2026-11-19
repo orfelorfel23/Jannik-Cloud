@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+mkdir -p /mnt/Jannik-Cloud-Volume-01/vocoloom/voices /mnt/Jannik-Cloud-Volume-01/vocoloom/models
+chown -R 1000:1000 /mnt/Jannik-Cloud-Volume-01/vocoloom 2>/dev/null || true
+echo "[vocoloom] Initialized volume ownership (UID/GID 1000)."
