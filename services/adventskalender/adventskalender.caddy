@@ -1,0 +1,4 @@
+adventskalender.orfel.de {
+	encode zstd gzip
+	reverse_proxy adventskalender:3000
+}
