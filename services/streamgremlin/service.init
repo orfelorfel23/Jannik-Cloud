@@ -4,4 +4,6 @@ SVC_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 mkdir -p "${SVC_DIR}/config" "${SVC_DIR}/sounds" "${SVC_DIR}/tts_cache"
 chmod -R 777 "${SVC_DIR}/config" "${SVC_DIR}/sounds" "${SVC_DIR}/tts_cache" 2>/dev/null || true
+chown -R 1000:1000 "${SVC_DIR}/config" "${SVC_DIR}/sounds" "${SVC_DIR}/tts_cache" 2>/dev/null || true
+chown 1000:1000 "${SVC_DIR}/.env" "${SVC_DIR}/.env.jonisdaily" "${SVC_DIR}/.env.niggephotography" 2>/dev/null || true
 echo "[streamgremlin] Initialized config and cache directories."
